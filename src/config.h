@@ -24,14 +24,16 @@
 #define CONFIG_H
 
 #include <libKitsunemimiConfig/config_handler.h>
+#include <libKitsunemimiHanamiCommon/config.h>
+#include <libKitsunemimiCommon/logger.h>
 
 /**
  * @brief register configs
  */
 void
-registerConfigs()
+registerConfigs(Kitsunemimi::ErrorContainer &error)
 {
- 
+    Kitsunemimi::Hanami::registerBasicConfigs(error);
 }
 
 #endif // CONFIG_H

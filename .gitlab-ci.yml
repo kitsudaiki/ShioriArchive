@@ -1,4 +1,4 @@
-image: registry.gitlab.com/kitsudaiki/kitsunemimi-ci-docker-images/normal-tests:1.0.0
+image: registry.gitlab.com/kitsudaiki/kitsunemimi-ci-docker-images/normal-tests:1.1.0
 
 stages:
   - build
@@ -13,13 +13,13 @@ build:
     - ssh-keyscan -H 10.0.3.120 >> ~/.ssh/known_hosts
 
     - apt-get update
-    - apt-get install -y libboost-filesystem-dev openssl libssl-dev 
+    - apt-get install -y libssl-dev libcrypto++-dev libsqlite3-dev  uuid-dev 
 
-    - cd /builds/kitsudaiki/NanamiSecret
+    - cd /builds/kitsudaiki/SagiriArchive
     - ./build.sh
 
     - mkdir upload
-    - cp ../result/NanamiSecret upload/
+    - cp ../result/SagiriArchive upload/
 
   artifacts:
     paths:

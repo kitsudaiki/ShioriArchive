@@ -25,10 +25,11 @@
 #include <config.h>
 #include <args.h>
 #include <thread>
+#include <callbacks.h>
+#include <sagiri_root.h>
 
 #include <libKitsunemimiHanamiCommon/generic_main.h>
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
-
 
 using Kitsunemimi::Hanami::HanamiMessaging;
 using Kitsunemimi::Hanami::initMain;
@@ -41,6 +42,27 @@ int main(int argc, char *argv[])
         LOG_ERROR(error);
         return 1;
     }
+
+    // initialize server and connections based on the config-file
+    const std::vector<std::string> groupNames = {"Misaka"};
+    if(HanamiMessaging::getInstance()->initialize("Sagiri",
+                                                  groupNames,
+                                                  nullptr,
+                                                  streamDataCallback,
+                                                  error,
+                                                  true) == false)
+    {
+        LOG_ERROR(error);
+        return 1;
+    }
+
+    SagiriRoot rootObj;
+    if(rootObj.init() == false) {
+        return 1;
+    }
+
+    // sleep forever
+    std::this_thread::sleep_until(std::chrono::time_point<std::chrono::system_clock>::max());
 
     return 0;
 }

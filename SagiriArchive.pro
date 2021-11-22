@@ -84,8 +84,20 @@ INCLUDEPATH += ../libKitsunemimiCrypto/include
 INCLUDEPATH += $$PWD \
                src
 
-SOURCES += src/main.cpp
+SOURCES += src/main.cpp \
+    src/api/data_files/add_train_data.cpp \
+    src/api/data_files/delete_train_data.cpp \
+    src/api/data_files/get_train_data.cpp \
+    src/database/train_data_table.cpp \
+    src/sagiri_root.cpp
 
 HEADERS += \
+    src/api/blossom_initializing.h \
+    src/api/data_files/add_train_data.h \
+    src/api/data_files/delete_train_data.h \
+    src/api/data_files/get_train_data.h \
     src/args.h \
-    src/config.h
+    src/callbacks.h \
+    src/config.h \
+    src/database/train_data_table.h \
+    src/sagiri_root.h

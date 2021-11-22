@@ -1,5 +1,5 @@
 /**
- * @file        config.h
+ * @file        add_train_data.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,21 @@
  *      limitations under the License.
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef ADD_TRAIN_DATA_H
+#define ADD_TRAIN_DATA_H
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiHanamiCommon/config.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiHanamiMessaging/hanami_blossom.h>
 
-/**
- * @brief register configs
- */
-void
-registerConfigs(Kitsunemimi::ErrorContainer &error)
+class AddTrainData
+        : public Kitsunemimi::Hanami::HanamiBlossom
 {
-    Kitsunemimi::Hanami::registerBasicConfigs(error);
+public:
+    AddTrainData();
 
-    REGISTER_STRING_CONFIG("Sagiri", "train_data_location", error, "", true);
-}
+protected:
+    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+                 Kitsunemimi::Sakura::BlossomStatus &status,
+                 Kitsunemimi::ErrorContainer &error);
+};
 
-#endif // CONFIG_H
+#endif // ADD_TRAIN_DATA_H

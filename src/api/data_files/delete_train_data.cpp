@@ -1,5 +1,5 @@
 /**
- * @file        config.h
+ * @file        delete_train_data.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,28 @@
  *      limitations under the License.
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#include "delete_train_data.h"
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiHanamiCommon/config.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <sagiri_root.h>
+#include <libKitsunemimiHanamiCommon/enums.h>
 
-/**
- * @brief register configs
- */
-void
-registerConfigs(Kitsunemimi::ErrorContainer &error)
+using namespace Kitsunemimi::Sakura;
+
+DeleteTrainData::DeleteTrainData()
+    : Kitsunemimi::Hanami::HanamiBlossom()
 {
-    Kitsunemimi::Hanami::registerBasicConfigs(error);
-
-    REGISTER_STRING_CONFIG("Sagiri", "train_data_location", error, "", true);
+    registerInputField("name", false);
+    registerInputField("uuid", false);
 }
 
-#endif // CONFIG_H
+/**
+ * @brief runTask
+ */
+bool
+DeleteTrainData::runTask(BlossomLeaf &blossomLeaf,
+                         BlossomStatus &status,
+                         Kitsunemimi::ErrorContainer &error)
+{
+
+    return true;
+}

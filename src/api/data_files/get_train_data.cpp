@@ -1,5 +1,5 @@
 /**
- * @file        config.h
+ * @file        get_train_data.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,33 @@
  *      limitations under the License.
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#include "get_train_data.h"
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiHanamiCommon/config.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <sagiri_root.h>
+#include <libKitsunemimiHanamiCommon/enums.h>
 
-/**
- * @brief register configs
- */
-void
-registerConfigs(Kitsunemimi::ErrorContainer &error)
+using namespace Kitsunemimi::Sakura;
+
+GetTrainData::GetTrainData()
+    : Kitsunemimi::Hanami::HanamiBlossom()
 {
-    Kitsunemimi::Hanami::registerBasicConfigs(error);
+    registerInputField("name", false);
+    registerInputField("uuid", false);
 
-    REGISTER_STRING_CONFIG("Sagiri", "train_data_location", error, "", true);
+    registerOutputField("uuid", true);
+    registerOutputField("name", true);
+    registerOutputField("type", true);
+    registerOutputField("data", true);
 }
 
-#endif // CONFIG_H
+/**
+ * @brief runTask
+ */
+bool
+GetTrainData::runTask(BlossomLeaf &blossomLeaf,
+                      BlossomStatus &status,
+                      Kitsunemimi::ErrorContainer &error)
+{
+
+    return true;
+}

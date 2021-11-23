@@ -34,6 +34,7 @@ public:
     {
         std::string uuid = "";
         std::string name = "";
+        std::string project = "";
         std::string userUuid = "";
         std::string type = "";
         std::string location = "";
@@ -44,20 +45,12 @@ public:
 
     const std::string addTrainData(const TrainDataData &data,
                                    Kitsunemimi::ErrorContainer &error);
-    bool getTrainDataByName(TrainDataData &result,
-                            Kitsunemimi::TableItem &tableContent,
-                            const std::string &dataName,
-                            Kitsunemimi::ErrorContainer &error);
     bool getTrainData(TrainDataData &result,
-                      Kitsunemimi::TableItem &tableContent,
                       const std::string &uuid,
+                      const std::string &userUuid,
                       Kitsunemimi::ErrorContainer &error);
-    bool getTrainData(Kitsunemimi::TableItem &result,
-                      const std::string &uuid,
-                      Kitsunemimi::ErrorContainer &error);
-    bool getAllTrainData(Kitsunemimi::TableItem &result,
-                         Kitsunemimi::ErrorContainer &error);
     bool deleteTrainData(const std::string &uuid,
+                         const std::string &userUuid,
                          Kitsunemimi::ErrorContainer &error);
 
 private:

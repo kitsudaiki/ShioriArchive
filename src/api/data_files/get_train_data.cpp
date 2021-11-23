@@ -23,19 +23,22 @@
 #include "get_train_data.h"
 
 #include <sagiri_root.h>
+#include <database/train_data_table.h>
+
 #include <libKitsunemimiHanamiCommon/enums.h>
+#include <libKitsunemimiCrypto/common.h>
 
 using namespace Kitsunemimi::Sakura;
 
 GetTrainData::GetTrainData()
     : Kitsunemimi::Sakura::Blossom()
 {
-    registerInputField("name", false);
-    registerInputField("uuid", false);
+    registerInputField("uuid", true);
 
     registerOutputField("uuid");
     registerOutputField("name");
     registerOutputField("type");
+    registerOutputField("user_uuid");
     registerOutputField("data");
 }
 
@@ -44,10 +47,40 @@ GetTrainData::GetTrainData()
  */
 bool
 GetTrainData::runTask(BlossomLeaf &blossomLeaf,
-                      const Kitsunemimi::DataMap &,
+                      const Kitsunemimi::DataMap &context,
                       BlossomStatus &status,
                       Kitsunemimi::ErrorContainer &error)
 {
+    const std::string dataUuid = blossomLeaf.input.getStringByKey("uuid");
+    const std::string userUuid = context.getStringByKey("uuid");
+
+    TrainDataTable::TrainDataData result;
+    if(SagiriRoot::trainDataTable->getTrainData(result, dataUuid, userUuid, error) == false)
+    {
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // write data to file
+    Kitsunemimi::BinaryFile targetFile(result.location, false);
+    Kitsunemimi::DataBuffer data;
+    if(targetFile.readCompleteFile(data) == false)
+    {
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Failed to read train-data from file \"" + result.location + "\"");
+        return false;
+    }
+    targetFile.closeFile();
+
+    std::string base64String;
+    Kitsunemimi::Crypto::encodeBase64(base64String, data.data, data.usedBufferSize);
+
+    // create output
+    blossomLeaf.output.insert("uuid", new Kitsunemimi::DataValue(result.userUuid));
+    blossomLeaf.output.insert("name", new Kitsunemimi::DataValue(result.name));
+    blossomLeaf.output.insert("user_uuid", new Kitsunemimi::DataValue(result.userUuid));
+    blossomLeaf.output.insert("type", new Kitsunemimi::DataValue(result.type));
+    blossomLeaf.output.insert("data", new Kitsunemimi::DataValue(base64String));
 
     return true;
 }

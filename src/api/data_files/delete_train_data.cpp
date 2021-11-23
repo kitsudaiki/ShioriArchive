@@ -23,6 +23,8 @@
 #include "delete_train_data.h"
 
 #include <sagiri_root.h>
+#include <database/train_data_table.h>
+
 #include <libKitsunemimiHanamiCommon/enums.h>
 
 using namespace Kitsunemimi::Sakura;
@@ -30,8 +32,7 @@ using namespace Kitsunemimi::Sakura;
 DeleteTrainData::DeleteTrainData()
     : Kitsunemimi::Sakura::Blossom()
 {
-    registerInputField("name", false);
-    registerInputField("uuid", false);
+    registerInputField("uuid", true);
 }
 
 /**
@@ -39,10 +40,25 @@ DeleteTrainData::DeleteTrainData()
  */
 bool
 DeleteTrainData::runTask(BlossomLeaf &blossomLeaf,
-                         const Kitsunemimi::DataMap &,
+                         const Kitsunemimi::DataMap &context,
                          BlossomStatus &status,
                          Kitsunemimi::ErrorContainer &error)
 {
+    const std::string dataUuid = blossomLeaf.input.getStringByKey("uuid");
+    const std::string userUuid = context.getStringByKey("uuid");
+
+    TrainDataTable::TrainDataData result;
+    if(SagiriRoot::trainDataTable->getTrainData(result, dataUuid, userUuid, error) == false)
+    {
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    if(SagiriRoot::trainDataTable->deleteTrainData(dataUuid, userUuid, error) == false)
+    {
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
 
     return true;
 }

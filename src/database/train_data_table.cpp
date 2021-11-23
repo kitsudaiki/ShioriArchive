@@ -71,106 +71,45 @@ TrainDataTable::addTrainData(const TrainDataData &data,
 }
 
 /**
- * @brief TestFilesTable::getUserByName
- * @param result
- * @param tableContent
- * @param userName
- * @param error
- * @return
- */
-bool
-TrainDataTable::getTrainDataByName(TrainDataData &result,
-                                   Kitsunemimi::TableItem &tableContent,
-                                   const std::string &dataName,
-                                   Kitsunemimi::ErrorContainer &error)
-{
-    // get user from db
-    if(getFromDb(&tableContent, "name", dataName, error) == false)
-    {
-        LOG_ERROR(error);
-        return false;
-    }
-
-    // check response
-    if(tableContent.getNumberOfRows() == 0)
-    {
-        error.addMeesage("Train-Data with name '" + dataName + "' not found;");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    if(tableContent.getNumberOfRows() > 1)
-    {
-        error.addMeesage("Too many train-data found for name '" + dataName + "';");
-        error.addSolution("Use the uuid instead of the name.");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    // prepare result
-    processGetResult(result, tableContent);
-
-    return true;
-}
-
-/**
- * @brief TestFilesTable::getUser
- * @param result
- * @param uuid
- * @param error
- * @return
- */
-bool
-TrainDataTable::getTrainData(TrainDataData &result,
-                             Kitsunemimi::TableItem &tableContent,
-                             const std::string &uuid,
-                             Kitsunemimi::ErrorContainer &error)
-{
-    if(getTrainData(tableContent, uuid, error) == false) {
-        return false;
-    }
-
-    processGetResult(result, tableContent);
-
-    return true;
-}
-
-/**
  * @brief UsersDatabase::getUser
  * @param userID
  * @param error
  * @return
  */
 bool
-TrainDataTable::getTrainData(Kitsunemimi::TableItem &result,
+TrainDataTable::getTrainData(TrainDataData &result,
                              const std::string &uuid,
+                             const std::string &userUuid,
                              Kitsunemimi::ErrorContainer &error)
 {
-    // get user from db
-    if(getFromDb(&result, uuid, error) == false) {
-        return false;
-    }
+    Kitsunemimi::TableItem tableContent;
 
-    if(result.getNumberOfRows() == 0)
+    // get user from db
+    std::vector<RequestCondition> conditions;
+    conditions.emplace_back("uuid", uuid);
+    conditions.emplace_back("user_uuid", userUuid);
+
+    // get user from db
+    if(getFromDb(&tableContent, conditions, error) == false)
     {
-        error.addMeesage("Train-Data with ID '" + uuid + "' not found;");
         LOG_ERROR(error);
         return false;
     }
 
-    return true;
-}
+    if(tableContent.getNumberOfRows() == 0)
+    {
+        error.addMeesage("Train-Data with ID '"
+                         + uuid
+                         + "' for user '"
+                         + userUuid
+                         + "'not found;");
+        LOG_ERROR(error);
+        return false;
+    }
 
-/**
- * @brief UsersDatabase::getAllUser
- * @param error
- * @return
- */
-bool
-TrainDataTable::getAllTrainData(Kitsunemimi::TableItem &result,
-                                Kitsunemimi::ErrorContainer &error)
-{
-    return getAllFromDb(&result, error);
+    processGetResult(result, tableContent);
+
+    return true;
 }
 
 /**
@@ -181,9 +120,13 @@ TrainDataTable::getAllTrainData(Kitsunemimi::TableItem &result,
  */
 bool
 TrainDataTable::deleteTrainData(const std::string &uuid,
+                                const std::string &userUuid,
                                 Kitsunemimi::ErrorContainer &error)
 {
-    return deleteFromDb(uuid, error);
+    std::vector<RequestCondition> conditions;
+    conditions.emplace_back("uuid", uuid);
+    conditions.emplace_back("user_uuid", userUuid);
+    return deleteFromDb(conditions, error);
 }
 
 /**

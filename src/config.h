@@ -35,7 +35,7 @@ registerConfigs(Kitsunemimi::ErrorContainer &error)
 {
     Kitsunemimi::Hanami::registerBasicConfigs(error);
 
-    REGISTER_STRING_CONFIG("Sagiri", "train_data_location", error, "", true);
+    REGISTER_STRING_CONFIG("sagiri", "train_data_location", error, "", true);
 }
 
 #endif // CONFIG_H

@@ -37,15 +37,15 @@ using Kitsunemimi::Hanami::initMain;
 int main(int argc, char *argv[])
 {
     Kitsunemimi::ErrorContainer error;
-    if(initMain(argc, argv, "SagiriArchive", &registerArguments, &registerConfigs, error) == false)
+    if(initMain(argc, argv, "sagiri", &registerArguments, &registerConfigs, error) == false)
     {
         LOG_ERROR(error);
         return 1;
     }
 
     // initialize server and connections based on the config-file
-    const std::vector<std::string> groupNames = {"Misaka"};
-    if(HanamiMessaging::getInstance()->initialize("Sagiri",
+    const std::vector<std::string> groupNames = {"misaka"};
+    if(HanamiMessaging::getInstance()->initialize("sagiri",
                                                   groupNames,
                                                   nullptr,
                                                   streamDataCallback,

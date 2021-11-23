@@ -66,7 +66,7 @@ AddTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // get directory to store data from config
     bool success = false;
-    std::string targetFilePath = GET_STRING_CONFIG("Sagiri", "train_data_location", success);
+    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "train_data_location", success);
     if(success == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;

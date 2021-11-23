@@ -39,7 +39,7 @@ void
 trainDataBlossomes()
 {
     SakuraLangInterface* interface = SakuraLangInterface::getInstance();
-    const std::string group = "special";
+    const std::string group = "-";
 
     assert(interface->addBlossom(group, "add_train_data", new AddTrainData()));
     assert(interface->addBlossom(group, "get_train_data", new GetTrainData()));

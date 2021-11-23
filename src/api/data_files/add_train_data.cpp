@@ -38,16 +38,16 @@
 using namespace Kitsunemimi;
 
 AddTrainData::AddTrainData()
-    : Kitsunemimi::Hanami::HanamiBlossom()
+    : Kitsunemimi::Sakura::Blossom()
 {
     registerInputField("name", true);
     registerInputField("type", true);
     registerInputField("data", true);
 
-    registerOutputField("uuid", true);
-    registerOutputField("name", true);
-    registerOutputField("user_uuid", true);
-    registerOutputField("type", true);
+    registerOutputField("uuid");
+    registerOutputField("name");
+    registerOutputField("user_uuid");
+    registerOutputField("type");
 }
 
 /**
@@ -55,34 +55,14 @@ AddTrainData::AddTrainData()
  */
 bool
 AddTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
+                      const Kitsunemimi::DataMap &context,
                       Sakura::BlossomStatus &status,
                       ErrorContainer &error)
 {
     const std::string name = blossomLeaf.input.getStringByKey("name");
     const std::string type = blossomLeaf.input.getStringByKey("type");
     const std::string base64Data = blossomLeaf.input.getStringByKey("data");
-
-    // get token
-    const std::string token = blossomLeaf.input.getStringByKey("token");
-    if(token == "")
-    {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("request has not token, even it is required");
-        return false;
-    }
-
-    // check auth
-    Json::JsonItem userData;
-    if(checkPermission(userData, token, status, error) == false) {
-        return false;
-    }
-    const std::string userUuid = userData["token_content"]["uuid"].getString();
-    if(userUuid == "")
-    {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("User-UUID is missing in token-data");
-        return false;
-    }
+    const std::string userUuid = context.getStringByKey("uuid");
 
     // get directory to store data from config
     bool success = false;

@@ -28,15 +28,15 @@
 using namespace Kitsunemimi::Sakura;
 
 GetTrainData::GetTrainData()
-    : Kitsunemimi::Hanami::HanamiBlossom()
+    : Kitsunemimi::Sakura::Blossom()
 {
     registerInputField("name", false);
     registerInputField("uuid", false);
 
-    registerOutputField("uuid", true);
-    registerOutputField("name", true);
-    registerOutputField("type", true);
-    registerOutputField("data", true);
+    registerOutputField("uuid");
+    registerOutputField("name");
+    registerOutputField("type");
+    registerOutputField("data");
 }
 
 /**
@@ -44,6 +44,7 @@ GetTrainData::GetTrainData()
  */
 bool
 GetTrainData::runTask(BlossomLeaf &blossomLeaf,
+                      const Kitsunemimi::DataMap &,
                       BlossomStatus &status,
                       Kitsunemimi::ErrorContainer &error)
 {

@@ -23,16 +23,17 @@
 #ifndef GET_TRAIN_DATA_H
 #define GET_TRAIN_DATA_H
 
-#include <libKitsunemimiHanamiMessaging/hanami_blossom.h>
+#include <libKitsunemimiSakuraLang/blossom.h>
 
 class GetTrainData
-        : public Kitsunemimi::Hanami::HanamiBlossom
+        : public Kitsunemimi::Sakura::Blossom
 {
 public:
     GetTrainData();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+                 const Kitsunemimi::DataMap &,
                  Kitsunemimi::Sakura::BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
 };

@@ -28,7 +28,7 @@
 using namespace Kitsunemimi::Sakura;
 
 DeleteTrainData::DeleteTrainData()
-    : Kitsunemimi::Hanami::HanamiBlossom()
+    : Kitsunemimi::Sakura::Blossom()
 {
     registerInputField("name", false);
     registerInputField("uuid", false);
@@ -39,6 +39,7 @@ DeleteTrainData::DeleteTrainData()
  */
 bool
 DeleteTrainData::runTask(BlossomLeaf &blossomLeaf,
+                         const Kitsunemimi::DataMap &,
                          BlossomStatus &status,
                          Kitsunemimi::ErrorContainer &error)
 {

@@ -1,5 +1,5 @@
 /**
- * @file        delete_train_data.cpp
+ * @file        create_token.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,46 +20,42 @@
  *      limitations under the License.
  */
 
-#include "delete_train_data.h"
+#include "list_train_data.h"
 
 #include <sagiri_root.h>
 #include <database/train_data_table.h>
-#include <libKitsunemimiJson/json_item.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
-using namespace Kitsunemimi;
+using namespace Kitsunemimi::Sakura;
 
-DeleteTrainData::DeleteTrainData()
+ListTrainData::ListTrainData()
     : Kitsunemimi::Sakura::Blossom()
 {
-    registerInputField("uuid", true);
+    registerOutputField("header");
+    registerOutputField("body");
 }
 
 /**
  * @brief runTask
  */
 bool
-DeleteTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
-                         const Kitsunemimi::DataMap &context,
-                         Sakura::BlossomStatus &status,
-                         ErrorContainer &error)
+ListTrainData::runTask(BlossomLeaf &blossomLeaf,
+                       const Kitsunemimi::DataMap &,
+                       BlossomStatus &status,
+                       Kitsunemimi::ErrorContainer &error)
 {
-    const std::string dataUuid = blossomLeaf.input.getStringByKey("uuid");
-    const std::string userUuid = context.getStringByKey("uuid");
-
-    Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::trainDataTable->getTrainData(result, dataUuid, userUuid, error) == false)
+    // get data from table
+    Kitsunemimi::TableItem table;
+    if(SagiriRoot::trainDataTable->getAllTrainData(table, error) == false)
     {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
-    if(SagiriRoot::trainDataTable->deleteTrainData(dataUuid, userUuid, error) == false)
-    {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
+    table.deleteColumn("pw_hash");
+    blossomLeaf.output.insert("header", table.getInnerHeader());
+    blossomLeaf.output.insert("body", table.getBody());
 
     return true;
 }

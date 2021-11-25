@@ -69,7 +69,7 @@ AddTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
     std::string targetFilePath = GET_STRING_CONFIG("sagiri", "train_data_location", success);
     if(success == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("file-location to store train-data is missing in the config");
         return false;
     }
@@ -81,20 +81,20 @@ AddTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
     targetFilePath.append(name + "_" + type + "_" + userUuid);
 
     // decode base64-data
-    Kitsunemimi::DataBuffer data;
-    if(Kitsunemimi::Crypto::decodeBase64(data, base64Data) == false)
+    DataBuffer data;
+    if(Crypto::decodeBase64(data, base64Data) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
+        status.statusCode = Hanami::BAD_REQUEST_RTYPE;
         status.errorMessage = "Data are no valid base64.";
         error.addMeesage(status.errorMessage);
         return false;
     }
 
     // write data to file
-    Kitsunemimi::BinaryFile targetFile(targetFilePath, false);
+    BinaryFile targetFile(targetFilePath, false);
     if(targetFile.writeCompleteFile(data) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to write train-data to file \"" + targetFilePath + "\"");
         return false;
     }
@@ -109,15 +109,15 @@ AddTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const std::string uuid = SagiriRoot::trainDataTable->addTrainData(newDbData, error);
     if(uuid == "")
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // create output
-    blossomLeaf.output.insert("uuid", new Kitsunemimi::DataValue(uuid));
-    blossomLeaf.output.insert("name", new Kitsunemimi::DataValue(name));
-    blossomLeaf.output.insert("user_uuid", new Kitsunemimi::DataValue(userUuid));
-    blossomLeaf.output.insert("type", new Kitsunemimi::DataValue(type));
+    blossomLeaf.output.insert("uuid", new DataValue(uuid));
+    blossomLeaf.output.insert("name", new DataValue(name));
+    blossomLeaf.output.insert("user_uuid", new DataValue(userUuid));
+    blossomLeaf.output.insert("type", new DataValue(type));
 
     return true;
 }

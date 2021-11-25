@@ -26,6 +26,7 @@
 #include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
 #include <libKitsunemimiCommon/logger.h>
 
+#include <api/data_files/list_train_data.h>
 #include <api/data_files/get_train_data.h>
 #include <api/data_files/add_train_data.h>
 #include <api/data_files/delete_train_data.h>
@@ -39,11 +40,12 @@ void
 trainDataBlossomes()
 {
     SakuraLangInterface* interface = SakuraLangInterface::getInstance();
-    const std::string group = "-";
+    const std::string group = "train_data";
 
-    assert(interface->addBlossom(group, "add_train_data", new AddTrainData()));
-    assert(interface->addBlossom(group, "get_train_data", new GetTrainData()));
-    assert(interface->addBlossom(group, "delete_train_data", new DeleteTrainData()));
+    assert(interface->addBlossom(group, "add", new AddTrainData()));
+    assert(interface->addBlossom(group, "get", new GetTrainData()));
+    assert(interface->addBlossom(group, "delete", new DeleteTrainData()));
+    assert(interface->addBlossom(group, "list", new ListTrainData()));
 }
 
 void

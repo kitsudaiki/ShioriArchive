@@ -27,13 +27,15 @@
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiCrypto/common.h>
+#include <libKitsunemimiJson/json_item.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi;
 
 GetTrainData::GetTrainData()
-    : Kitsunemimi::Sakura::Blossom()
+    : Sakura::Blossom()
 {
     registerInputField("uuid", true);
+    registerInputField("with_data", true);
 
     registerOutputField("uuid");
     registerOutputField("name");
@@ -46,41 +48,47 @@ GetTrainData::GetTrainData()
  * @brief runTask
  */
 bool
-GetTrainData::runTask(BlossomLeaf &blossomLeaf,
+GetTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
                       const Kitsunemimi::DataMap &context,
-                      BlossomStatus &status,
-                      Kitsunemimi::ErrorContainer &error)
+                      Sakura::BlossomStatus &status,
+                      ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.getStringByKey("uuid");
     const std::string userUuid = context.getStringByKey("uuid");
 
-    TrainDataTable::TrainDataData result;
+    Kitsunemimi::Json::JsonItem result;
     if(SagiriRoot::trainDataTable->getTrainData(result, dataUuid, userUuid, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
-    // write data to file
-    Kitsunemimi::BinaryFile targetFile(result.location, false);
-    Kitsunemimi::DataBuffer data;
-    if(targetFile.readCompleteFile(data) == false)
+    // get location
+    const std::string location = result.get("location").getString();
+    result.remove("location");
+
+    // create base-output
+    blossomLeaf.output = *result.getItemContent()->toMap();
+
+    // read data from file and add to output, if requested
+    if(blossomLeaf.input.getStringByKey("with_data") == "true")
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to read train-data from file \"" + result.location + "\"");
-        return false;
+        BinaryFile targetFile(location, false);
+        DataBuffer data;
+        if(targetFile.readCompleteFile(data) == false)
+        {
+            status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+            error.addMeesage("Failed to read train-data from file \"" + location + "\"");
+            return false;
+        }
+        targetFile.closeFile();
+
+        std::string base64String;
+        Crypto::encodeBase64(base64String, data.data, data.usedBufferSize);
+
+        // create output
+        blossomLeaf.output.insert("data", new DataValue(base64String));
     }
-    targetFile.closeFile();
-
-    std::string base64String;
-    Kitsunemimi::Crypto::encodeBase64(base64String, data.data, data.usedBufferSize);
-
-    // create output
-    blossomLeaf.output.insert("uuid", new Kitsunemimi::DataValue(result.userUuid));
-    blossomLeaf.output.insert("name", new Kitsunemimi::DataValue(result.name));
-    blossomLeaf.output.insert("user_uuid", new Kitsunemimi::DataValue(result.userUuid));
-    blossomLeaf.output.insert("type", new Kitsunemimi::DataValue(result.type));
-    blossomLeaf.output.insert("data", new Kitsunemimi::DataValue(base64String));
 
     return true;
 }

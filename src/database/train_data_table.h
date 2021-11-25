@@ -26,6 +26,12 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiSakuraDatabase/sql_table.h>
 
+namespace Kitsunemimi {
+namespace Json {
+class JsonItem;
+}
+}
+
 class TrainDataTable
         : public Kitsunemimi::Sakura::SqlTable
 {
@@ -45,16 +51,18 @@ public:
 
     const std::string addTrainData(const TrainDataData &data,
                                    Kitsunemimi::ErrorContainer &error);
-    bool getTrainData(TrainDataData &result,
+    bool getTrainData(Kitsunemimi::Json::JsonItem &result,
                       const std::string &uuid,
                       const std::string &userUuid,
                       Kitsunemimi::ErrorContainer &error);
+    bool getAllTrainData(Kitsunemimi::TableItem &result,
+                         Kitsunemimi::ErrorContainer &error);
     bool deleteTrainData(const std::string &uuid,
                          const std::string &userUuid,
                          Kitsunemimi::ErrorContainer &error);
 
 private:
-    void processGetResult(TrainDataData &result,
+    void processGetResult(Kitsunemimi::Json::JsonItem &result,
                           Kitsunemimi::TableItem &tableContent);
 };
 

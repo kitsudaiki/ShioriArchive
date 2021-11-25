@@ -24,6 +24,8 @@
 
 #include <libKitsunemimiCommon/common_items/table_item.h>
 #include <libKitsunemimiCommon/common_methods/string_methods.h>
+#include <libKitsunemimiJson/json_item.h>
+
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
 TrainDataTable::TrainDataTable(Kitsunemimi::Sakura::SqlDatabase* db)
@@ -77,7 +79,7 @@ TrainDataTable::addTrainData(const TrainDataData &data,
  * @return
  */
 bool
-TrainDataTable::getTrainData(TrainDataData &result,
+TrainDataTable::getTrainData(Kitsunemimi::Json::JsonItem &result,
                              const std::string &uuid,
                              const std::string &userUuid,
                              Kitsunemimi::ErrorContainer &error)
@@ -113,6 +115,19 @@ TrainDataTable::getTrainData(TrainDataData &result,
 }
 
 /**
+ * @brief TrainDataTable::getAllTrainData
+ * @param result
+ * @param error
+ * @return
+ */
+bool
+TrainDataTable::getAllTrainData(Kitsunemimi::TableItem &result,
+                                Kitsunemimi::ErrorContainer &error)
+{
+    return getAllFromDb(&result, error);
+}
+
+/**
  * @brief UsersDatabase::deleteUser
  * @param userID
  * @param error
@@ -135,13 +150,12 @@ TrainDataTable::deleteTrainData(const std::string &uuid,
  * @param tableContent
  */
 void
-TrainDataTable::processGetResult(TrainDataData &result,
+TrainDataTable::processGetResult(Kitsunemimi::Json::JsonItem &result,
                                  Kitsunemimi::TableItem &tableContent)
 {
     const Kitsunemimi::DataItem* firstRow = tableContent.getBody()->get(0);
-    result.uuid = firstRow->get("uuid")->toValue()->getString();
-    result.name = firstRow->get("name")->toValue()->getString();
-    result.userUuid = firstRow->get("user_uuid")->toValue()->getString();
-    result.type = firstRow->get("type")->toValue()->getString();
-    result.location = firstRow->get("location")->toValue()->getBool();
+
+    for(uint32_t i = 0; i < m_tableHeader.size(); i++) {
+        result.insert(m_tableHeader.at(i).name, firstRow->get(i));
+    }
 }

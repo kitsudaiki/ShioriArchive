@@ -31,9 +31,12 @@
 using namespace Kitsunemimi;
 
 DeleteTrainData::DeleteTrainData()
-    : Kitsunemimi::Sakura::Blossom()
+    : Kitsunemimi::Sakura::Blossom("Delete a speific set of train-data.")
 {
-    registerInputField("uuid", true);
+    registerInputField("uuid",
+                       Sakura::SAKURA_STRING_TYPE,
+                       true,
+                       "UUID of the train-data set to delete.");
 }
 
 /**

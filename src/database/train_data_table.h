@@ -24,7 +24,7 @@
 #define TEST_FILES_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiSakuraDatabase/sql_table.h>
+#include <libKitsunemimiHanamiDatabase/hanami_sql_table.h>
 
 namespace Kitsunemimi {
 namespace Json {
@@ -33,23 +33,13 @@ class JsonItem;
 }
 
 class TrainDataTable
-        : public Kitsunemimi::Sakura::SqlTable
+        : public Kitsunemimi::Hanami::HanamiSqlTable
 {
 public:
-    struct TrainDataData
-    {
-        std::string uuid = "";
-        std::string name = "";
-        std::string project = "";
-        std::string userUuid = "";
-        std::string type = "";
-        std::string location = "";
-    };
-
     TrainDataTable(Kitsunemimi::Sakura::SqlDatabase* db);
     ~TrainDataTable();
 
-    const std::string addTrainData(const TrainDataData &data,
+    bool addTrainData(Kitsunemimi::Json::JsonItem &data,
                                    Kitsunemimi::ErrorContainer &error);
     bool getTrainData(Kitsunemimi::Json::JsonItem &result,
                       const std::string &uuid,

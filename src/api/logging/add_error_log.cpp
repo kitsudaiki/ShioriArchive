@@ -3,7 +3,7 @@
 using namespace Kitsunemimi;
 
 AddErrorLog::AddErrorLog()
-    : Kitsunemimi::Sakura::Blossom()
+    : Kitsunemimi::Sakura::Blossom("Add new error-entry.")
 {
 
 }

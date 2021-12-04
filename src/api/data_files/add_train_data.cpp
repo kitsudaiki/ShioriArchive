@@ -30,6 +30,8 @@
 #include <libKitsunemimiHanamiCommon/structs.h>
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 
+#include <libKitsunemimiSakuraLang/structs.h>
+
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiJson/json_item.h>
@@ -38,16 +40,33 @@
 using namespace Kitsunemimi;
 
 AddTrainData::AddTrainData()
-    : Kitsunemimi::Sakura::Blossom()
+    : Kitsunemimi::Sakura::Blossom("Add new set of train-data.")
 {
-    registerInputField("name", true);
-    registerInputField("type", true);
-    registerInputField("data", true);
+    registerInputField("name",
+                       Sakura::SAKURA_STRING_TYPE,
+                       true,
+                       "Name of the new set.");
+    registerInputField("type",
+                       Sakura::SAKURA_STRING_TYPE,
+                       true,
+                       "Type of the new set (For example: CSV)");
+    registerInputField("data",
+                       Sakura::SAKURA_STRING_TYPE,
+                       true,
+                       "New data as base64-string.");
 
-    registerOutputField("uuid");
-    registerOutputField("name");
-    registerOutputField("user_uuid");
-    registerOutputField("type");
+    registerOutputField("uuid",
+                        Sakura::SAKURA_STRING_TYPE,
+                        "UUID of the new set.");
+    registerOutputField("name",
+                        Sakura::SAKURA_STRING_TYPE,
+                        "Name of the new set.");
+    registerOutputField("user_uuid",
+                        Sakura::SAKURA_STRING_TYPE,
+                        "UUID of the user who uploaded the data.");
+    registerOutputField("type",
+                        Sakura::SAKURA_STRING_TYPE,
+                        "Type of the new set (For example: CSV)");
 }
 
 /**
@@ -101,23 +120,24 @@ AddTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
     targetFile.closeFile();
 
     // register in database
-    TrainDataTable::TrainDataData newDbData;
-    newDbData.name = name;
-    newDbData.type = type;
-    newDbData.userUuid = userUuid;
-    newDbData.location = targetFilePath;
-    const std::string uuid = SagiriRoot::trainDataTable->addTrainData(newDbData, error);
-    if(uuid == "")
+    Kitsunemimi::Json::JsonItem newDbData;
+    newDbData.insert("name", name);
+    newDbData.insert("user_uuid", userUuid);
+    newDbData.insert("type", type);
+    newDbData.insert("location", targetFilePath);
+
+    newDbData.insert("project_uuid", "-");
+    newDbData.insert("owner_uuid", "-");
+    newDbData.insert("visibility", 0);
+
+    if(SagiriRoot::trainDataTable->addTrainData(newDbData, error) == false)
     {
         status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // create output
-    blossomLeaf.output.insert("uuid", new DataValue(uuid));
-    blossomLeaf.output.insert("name", new DataValue(name));
-    blossomLeaf.output.insert("user_uuid", new DataValue(userUuid));
-    blossomLeaf.output.insert("type", new DataValue(type));
+    blossomLeaf.output = *newDbData.getItemContent()->toMap();
 
     return true;
 }

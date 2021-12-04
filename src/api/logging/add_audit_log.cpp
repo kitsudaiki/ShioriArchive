@@ -3,7 +3,7 @@
 using namespace Kitsunemimi;
 
 AddAuditLog::AddAuditLog()
-    : Kitsunemimi::Sakura::Blossom()
+    : Kitsunemimi::Sakura::Blossom("Add new audit-entry.")
 {
 
 }

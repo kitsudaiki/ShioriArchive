@@ -32,16 +32,16 @@
 using namespace Kitsunemimi;
 
 GetTrainData::GetTrainData()
-    : Sakura::Blossom()
+    : Sakura::Blossom("Get information of a specific set of train-data.")
 {
-    registerInputField("uuid", true);
+    /*registerInputField("uuid", true);
     registerInputField("with_data", true);
 
     registerOutputField("uuid");
     registerOutputField("name");
     registerOutputField("type");
     registerOutputField("user_uuid");
-    registerOutputField("data");
+    registerOutputField("data");*/
 }
 
 /**

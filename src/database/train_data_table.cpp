@@ -29,7 +29,7 @@
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
 TrainDataTable::TrainDataTable(Kitsunemimi::Sakura::SqlDatabase* db)
-    : SqlTable(db)
+    : HanamiSqlTable(db)
 {
     m_tableName = "train_data";
 
@@ -50,6 +50,7 @@ TrainDataTable::TrainDataTable(Kitsunemimi::Sakura::SqlDatabase* db)
 
     DbHeaderEntry location;
     location.name = "location";
+    location.hide = true;
     m_tableHeader.push_back(location);
 }
 
@@ -61,15 +62,11 @@ TrainDataTable::~TrainDataTable() {}
  * @param errorMessage
  * @return
  */
-const std::string
-TrainDataTable::addTrainData(const TrainDataData &data,
+bool
+TrainDataTable::addTrainData(Kitsunemimi::Json::JsonItem &data,
                              Kitsunemimi::ErrorContainer &error)
 {
-    const std::vector<std::string> values = { data.name,
-                                              data.userUuid,
-                                              data.type,
-                                              data.location };
-    return insertToDb(values, error);
+    return add(data, error);
 }
 
 /**
@@ -84,32 +81,17 @@ TrainDataTable::getTrainData(Kitsunemimi::Json::JsonItem &result,
                              const std::string &userUuid,
                              Kitsunemimi::ErrorContainer &error)
 {
-    Kitsunemimi::TableItem tableContent;
-
     // get user from db
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);
     conditions.emplace_back("user_uuid", userUuid);
 
     // get user from db
-    if(getFromDb(&tableContent, conditions, error) == false)
+    if(get(result, conditions, error) == false)
     {
         LOG_ERROR(error);
         return false;
     }
-
-    if(tableContent.getNumberOfRows() == 0)
-    {
-        error.addMeesage("Train-Data with ID '"
-                         + uuid
-                         + "' for user '"
-                         + userUuid
-                         + "'not found;");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    processGetResult(result, tableContent);
 
     return true;
 }
@@ -124,7 +106,7 @@ bool
 TrainDataTable::getAllTrainData(Kitsunemimi::TableItem &result,
                                 Kitsunemimi::ErrorContainer &error)
 {
-    return getAllFromDb(&result, error);
+    return getAll(result, error);
 }
 
 /**

@@ -26,6 +26,8 @@
 #include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
 #include <libKitsunemimiCommon/logger.h>
 
+#include <libKitsunemimiHanamiEndpoints/endpoint.h>
+
 #include <api/data_files/list_train_data.h>
 #include <api/data_files/get_train_data.h>
 #include <api/data_files/add_train_data.h>
@@ -39,13 +41,38 @@ using Kitsunemimi::Sakura::SakuraLangInterface;
 void
 trainDataBlossomes()
 {
+    Kitsunemimi::Hanami::Endpoint* endpoints = Kitsunemimi::Hanami::Endpoint::getInstance();
     SakuraLangInterface* interface = SakuraLangInterface::getInstance();
     const std::string group = "train_data";
 
     assert(interface->addBlossom(group, "add", new AddTrainData()));
+    assert(endpoints->addEndpoint("train_data",
+                                  Kitsunemimi::Hanami::POST_TYPE,
+                                  Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                                  group,
+                                  "add"));
+
     assert(interface->addBlossom(group, "get", new GetTrainData()));
+    assert(endpoints->addEndpoint("train_data",
+                                  Kitsunemimi::Hanami::GET_TYPE,
+                                  Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                                  group,
+                                  "get"));
+
     assert(interface->addBlossom(group, "delete", new DeleteTrainData()));
+    assert(endpoints->addEndpoint("train_data",
+                                  Kitsunemimi::Hanami::DELETE_TYPE,
+                                  Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                                  group,
+                                  "delete"));
+
     assert(interface->addBlossom(group, "list", new ListTrainData()));
+    assert(endpoints->addEndpoint("train_datas",
+                                  Kitsunemimi::Hanami::GET_TYPE,
+                                  Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                                  group,
+                                  "list"));
+
 }
 
 void

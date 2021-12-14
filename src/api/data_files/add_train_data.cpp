@@ -37,35 +37,35 @@
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
 
-using namespace Kitsunemimi;
+using namespace Kitsunemimi::Sakura;
 
 AddTrainData::AddTrainData()
     : Kitsunemimi::Sakura::Blossom("Add new set of train-data.")
 {
     registerInputField("name",
-                       Sakura::SAKURA_STRING_TYPE,
+                       SAKURA_STRING_TYPE,
                        true,
                        "Name of the new set.");
     registerInputField("type",
-                       Sakura::SAKURA_STRING_TYPE,
+                       SAKURA_STRING_TYPE,
                        true,
                        "Type of the new set (For example: CSV)");
     registerInputField("data",
-                       Sakura::SAKURA_STRING_TYPE,
+                       SAKURA_STRING_TYPE,
                        true,
                        "New data as base64-string.");
 
     registerOutputField("uuid",
-                        Sakura::SAKURA_STRING_TYPE,
+                        SAKURA_STRING_TYPE,
                         "UUID of the new set.");
     registerOutputField("name",
-                        Sakura::SAKURA_STRING_TYPE,
+                        SAKURA_STRING_TYPE,
                         "Name of the new set.");
     registerOutputField("user_uuid",
-                        Sakura::SAKURA_STRING_TYPE,
+                        SAKURA_STRING_TYPE,
                         "UUID of the user who uploaded the data.");
     registerOutputField("type",
-                        Sakura::SAKURA_STRING_TYPE,
+                        SAKURA_STRING_TYPE,
                         "Type of the new set (For example: CSV)");
 }
 
@@ -73,10 +73,10 @@ AddTrainData::AddTrainData()
  * @brief runTask
  */
 bool
-AddTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
+AddTrainData::runTask(BlossomLeaf &blossomLeaf,
                       const Kitsunemimi::DataMap &context,
-                      Sakura::BlossomStatus &status,
-                      ErrorContainer &error)
+                      BlossomStatus &status,
+                      Kitsunemimi::ErrorContainer &error)
 {
     const std::string name = blossomLeaf.input.getStringByKey("name");
     const std::string type = blossomLeaf.input.getStringByKey("type");
@@ -88,7 +88,7 @@ AddTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
     std::string targetFilePath = GET_STRING_CONFIG("sagiri", "train_data_location", success);
     if(success == false)
     {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("file-location to store train-data is missing in the config");
         return false;
     }
@@ -100,20 +100,20 @@ AddTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
     targetFilePath.append(name + "_" + type + "_" + userUuid);
 
     // decode base64-data
-    DataBuffer data;
-    if(Crypto::decodeBase64(data, base64Data) == false)
+    Kitsunemimi::DataBuffer data;
+    if(Kitsunemimi::Crypto::decodeBase64(data, base64Data) == false)
     {
-        status.statusCode = Hanami::BAD_REQUEST_RTYPE;
+        status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
         status.errorMessage = "Data are no valid base64.";
         error.addMeesage(status.errorMessage);
         return false;
     }
 
     // write data to file
-    BinaryFile targetFile(targetFilePath, false);
+    Kitsunemimi::BinaryFile targetFile(targetFilePath, false);
     if(targetFile.writeCompleteFile(data) == false)
     {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode =Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to write train-data to file \"" + targetFilePath + "\"");
         return false;
     }
@@ -132,7 +132,7 @@ AddTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     if(SagiriRoot::trainDataTable->addTrainData(newDbData, error) == false)
     {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

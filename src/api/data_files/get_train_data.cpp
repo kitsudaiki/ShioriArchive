@@ -29,29 +29,47 @@
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
 
-using namespace Kitsunemimi;
+using namespace Kitsunemimi::Sakura;
 
 GetTrainData::GetTrainData()
-    : Sakura::Blossom("Get information of a specific set of train-data.")
+    : Blossom("Get information of a specific set of train-data.")
 {
-    /*registerInputField("uuid", true);
-    registerInputField("with_data", true);
+    registerInputField("uuid",
+                       SAKURA_STRING_TYPE,
+                       true,
+                       "UUID of the train-data set to delete.");
+    registerInputField("with_data",
+                       SAKURA_BOOL_TYPE,
+                       true,
+                       "Have to be set to true to also return the data "
+                       "and not only the meta-information");
 
-    registerOutputField("uuid");
-    registerOutputField("name");
-    registerOutputField("type");
-    registerOutputField("user_uuid");
-    registerOutputField("data");*/
+    registerOutputField("uuid",
+                        SAKURA_STRING_TYPE,
+                        "UUID of the train-data-set.");
+    registerOutputField("name",
+                        SAKURA_STRING_TYPE,
+                        "Name of the train-data-set.");
+    registerOutputField("type",
+                        SAKURA_STRING_TYPE,
+                        "Type of the new set (For example: CSV)");
+    registerOutputField("user_uuid",
+                        SAKURA_STRING_TYPE,
+                        "UUID of the user who uploaded the data.");
+    registerOutputField("data",
+                        SAKURA_STRING_TYPE,
+                        "If the flag 'with_data' was set the true, this field contains the data "
+                        "of the stored train-data-set as base64 encoded string.");
 }
 
 /**
  * @brief runTask
  */
 bool
-GetTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
+GetTrainData::runTask(BlossomLeaf &blossomLeaf,
                       const Kitsunemimi::DataMap &context,
-                      Sakura::BlossomStatus &status,
-                      ErrorContainer &error)
+                      BlossomStatus &status,
+                      Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.getStringByKey("uuid");
     const std::string userUuid = context.getStringByKey("uuid");
@@ -59,7 +77,7 @@ GetTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
     Kitsunemimi::Json::JsonItem result;
     if(SagiriRoot::trainDataTable->getTrainData(result, dataUuid, userUuid, error) == false)
     {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -73,21 +91,21 @@ GetTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
     // read data from file and add to output, if requested
     if(blossomLeaf.input.getStringByKey("with_data") == "true")
     {
-        BinaryFile targetFile(location, false);
-        DataBuffer data;
+        Kitsunemimi::BinaryFile targetFile(location, false);
+        Kitsunemimi::DataBuffer data;
         if(targetFile.readCompleteFile(data) == false)
         {
-            status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+            status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
             error.addMeesage("Failed to read train-data from file \"" + location + "\"");
             return false;
         }
         targetFile.closeFile();
 
         std::string base64String;
-        Crypto::encodeBase64(base64String, data.data, data.usedBufferSize);
+        Kitsunemimi::Crypto::encodeBase64(base64String, data.data, data.usedBufferSize);
 
         // create output
-        blossomLeaf.output.insert("data", new DataValue(base64String));
+        blossomLeaf.output.insert("data", new Kitsunemimi::DataValue(base64String));
     }
 
     return true;

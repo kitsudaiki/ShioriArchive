@@ -78,9 +78,9 @@ AddTrainData::runTask(BlossomLeaf &blossomLeaf,
                       BlossomStatus &status,
                       Kitsunemimi::ErrorContainer &error)
 {
-    const std::string name = blossomLeaf.input.getStringByKey("name");
-    const std::string type = blossomLeaf.input.getStringByKey("type");
-    const std::string base64Data = blossomLeaf.input.getStringByKey("data");
+    const std::string name = blossomLeaf.input.get("name").getString();
+    const std::string type = blossomLeaf.input.get("type").getString();
+    const std::string base64Data = blossomLeaf.input.get("data").getString();
     const std::string userUuid = context.getStringByKey("uuid");
 
     // get directory to store data from config
@@ -120,24 +120,20 @@ AddTrainData::runTask(BlossomLeaf &blossomLeaf,
     targetFile.closeFile();
 
     // register in database
-    Kitsunemimi::Json::JsonItem newDbData;
-    newDbData.insert("name", name);
-    newDbData.insert("user_uuid", userUuid);
-    newDbData.insert("type", type);
-    newDbData.insert("location", targetFilePath);
+    blossomLeaf.output.insert("name", name);
+    blossomLeaf.output.insert("user_uuid", userUuid);
+    blossomLeaf.output.insert("type", type);
+    blossomLeaf.output.insert("location", targetFilePath);
 
-    newDbData.insert("project_uuid", "-");
-    newDbData.insert("owner_uuid", "-");
-    newDbData.insert("visibility", 0);
+    blossomLeaf.output.insert("project_uuid", "-");
+    blossomLeaf.output.insert("owner_uuid", "-");
+    blossomLeaf.output.insert("visibility", 0);
 
-    if(SagiriRoot::trainDataTable->addTrainData(newDbData, error) == false)
+    if(SagiriRoot::trainDataTable->addTrainData(blossomLeaf.output, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-
-    // create output
-    blossomLeaf.output = *newDbData.getItemContent()->toMap();
 
     return true;
 }

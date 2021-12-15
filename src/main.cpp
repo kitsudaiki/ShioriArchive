@@ -30,6 +30,7 @@
 
 #include <libKitsunemimiHanamiCommon/generic_main.h>
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
+#include <libKitsunemimiHanamiPredefinitions/init_predefined_blossoms.h>
 
 using Kitsunemimi::Hanami::HanamiMessaging;
 using Kitsunemimi::Hanami::initMain;
@@ -42,6 +43,8 @@ int main(int argc, char *argv[])
         LOG_ERROR(error);
         return 1;
     }
+
+    Kitsunemimi::Hanami::initPredefinedBlossoms();
 
     // initialize server and connections based on the config-file
     const std::vector<std::string> groupNames = {"misaka"};

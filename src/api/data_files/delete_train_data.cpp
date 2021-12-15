@@ -48,7 +48,7 @@ DeleteTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
                          Sakura::BlossomStatus &status,
                          ErrorContainer &error)
 {
-    const std::string dataUuid = blossomLeaf.input.getStringByKey("uuid");
+    const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
     const std::string userUuid = context.getStringByKey("uuid");
 
     Kitsunemimi::Json::JsonItem result;

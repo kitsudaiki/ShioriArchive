@@ -71,25 +71,21 @@ GetTrainData::runTask(BlossomLeaf &blossomLeaf,
                       BlossomStatus &status,
                       Kitsunemimi::ErrorContainer &error)
 {
-    const std::string dataUuid = blossomLeaf.input.getStringByKey("uuid");
+    const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
     const std::string userUuid = context.getStringByKey("uuid");
 
-    Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::trainDataTable->getTrainData(result, dataUuid, userUuid, error) == false)
+    if(SagiriRoot::trainDataTable->getTrainData(blossomLeaf.output, dataUuid, userUuid, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // get location
-    const std::string location = result.get("location").getString();
-    result.remove("location");
-
-    // create base-output
-    blossomLeaf.output = *result.getItemContent()->toMap();
+    const std::string location = blossomLeaf.output.get("location").getString();
+    blossomLeaf.output.remove("location");
 
     // read data from file and add to output, if requested
-    if(blossomLeaf.input.getStringByKey("with_data") == "true")
+    if(blossomLeaf.input.get("with_data").getString() == "true")
     {
         Kitsunemimi::BinaryFile targetFile(location, false);
         Kitsunemimi::DataBuffer data;
@@ -105,7 +101,7 @@ GetTrainData::runTask(BlossomLeaf &blossomLeaf,
         Kitsunemimi::Crypto::encodeBase64(base64String, data.data, data.usedBufferSize);
 
         // create output
-        blossomLeaf.output.insert("data", new Kitsunemimi::DataValue(base64String));
+        blossomLeaf.output.insert("data", base64String);
     }
 
     return true;

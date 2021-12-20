@@ -37,6 +37,8 @@ DeleteTrainData::DeleteTrainData()
                        Sakura::SAKURA_STRING_TYPE,
                        true,
                        "UUID of the train-data set to delete.");
+    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+                                 "[a-fA-F0-9]{12}"));
 }
 
 /**

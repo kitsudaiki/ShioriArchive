@@ -42,19 +42,26 @@ using namespace Kitsunemimi::Sakura;
 AddTrainData::AddTrainData()
     : Kitsunemimi::Sakura::Blossom("Add new set of train-data.")
 {
+    // input
     registerInputField("name",
                        SAKURA_STRING_TYPE,
                        true,
                        "Name of the new set.");
+    assert(addFieldBorder("name", 4, 256));
+    assert(addFieldRegex("name", "[a-zA-Z][a-zA-Z_0-9]*"));
+
     registerInputField("type",
                        SAKURA_STRING_TYPE,
                        true,
-                       "Type of the new set (For example: CSV)");
+                       "Type of the new set (options: csv or mnist)");
+    assert(addFieldRegex("type", "(csv|mnist)"));
+
     registerInputField("data",
                        SAKURA_STRING_TYPE,
                        true,
                        "New data as base64-string.");
 
+    // output
     registerOutputField("uuid",
                         SAKURA_STRING_TYPE,
                         "UUID of the new set.");

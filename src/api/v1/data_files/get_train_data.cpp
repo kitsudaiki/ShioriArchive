@@ -38,6 +38,9 @@ GetTrainData::GetTrainData()
                        SAKURA_STRING_TYPE,
                        true,
                        "UUID of the train-data set to delete.");
+    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+                                 "[a-fA-F0-9]{12}"));
+
     registerInputField("with_data",
                        SAKURA_BOOL_TYPE,
                        true,
@@ -74,7 +77,10 @@ GetTrainData::runTask(BlossomLeaf &blossomLeaf,
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
     const std::string userUuid = context.getStringByKey("uuid");
 
-    if(SagiriRoot::trainDataTable->getTrainData(blossomLeaf.output, dataUuid, userUuid, error) == false)
+    if(SagiriRoot::trainDataTable->getTrainData(blossomLeaf.output,
+                                                dataUuid,
+                                                userUuid,
+                                                error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

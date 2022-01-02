@@ -43,37 +43,22 @@ AddTrainData::AddTrainData()
     : Kitsunemimi::Sakura::Blossom("Add new set of train-data.")
 {
     // input
-    registerInputField("name",
+    registerInputField("uuid",
                        SAKURA_STRING_TYPE,
                        true,
                        "Name of the new set.");
-    assert(addFieldBorder("name", 4, 256));
-    assert(addFieldRegex("name", "[a-zA-Z][a-zA-Z_0-9]*"));
+    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+                                 "[a-fA-F0-9]{12}"));
 
-    registerInputField("type",
-                       SAKURA_STRING_TYPE,
+    registerInputField("position",
+                       SAKURA_INT_TYPE,
                        true,
-                       "Type of the new set (options: csv or mnist)");
-    assert(addFieldRegex("type", "(csv|mnist)"));
+                       "Segment-position, where the new data have to be written into the file.");
 
     registerInputField("data",
                        SAKURA_STRING_TYPE,
                        true,
                        "New data as base64-string.");
-
-    // output
-    registerOutputField("uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the new set.");
-    registerOutputField("name",
-                        SAKURA_STRING_TYPE,
-                        "Name of the new set.");
-    registerOutputField("user_uuid",
-                        SAKURA_STRING_TYPE,
-                        "UUID of the user who uploaded the data.");
-    registerOutputField("type",
-                        SAKURA_STRING_TYPE,
-                        "Type of the new set (For example: CSV)");
 }
 
 /**
@@ -85,26 +70,28 @@ AddTrainData::runTask(BlossomLeaf &blossomLeaf,
                       BlossomStatus &status,
                       Kitsunemimi::ErrorContainer &error)
 {
-    const std::string name = blossomLeaf.input.get("name").getString();
-    const std::string type = blossomLeaf.input.get("type").getString();
+    const std::string uuid = blossomLeaf.input.get("uuid").getString();
     const std::string base64Data = blossomLeaf.input.get("data").getString();
+    const long position = blossomLeaf.input.get("position").getLong();
     const std::string userUuid = context.getStringByKey("uuid");
 
-    // get directory to store data from config
-    bool success = false;
-    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "train_data_location", success);
-    if(success == false)
+    // get location from database
+    Kitsunemimi::Json::JsonItem result;
+    if(SagiriRoot::trainDataTable->getTrainData(result, uuid, userUuid, error, true) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("file-location to store train-data is missing in the config");
+        status.errorMessage = "Data with uuid '" + uuid + "' not found.";
+        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
         return false;
     }
+    const std::string targetFilePath = result.get("location").getString();
 
-    // build absolut file-path to store the file
-    if(targetFilePath.at(targetFilePath.size() - 1) != '/') {
-        targetFilePath.append("/");
+    if(base64Data.size() == 0)
+    {
+        status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
+        status.errorMessage = "Data are missing in request";
+        error.addMeesage(status.errorMessage);
+        return false;
     }
-    targetFilePath.append(name + "_" + type + "_" + userUuid);
 
     // decode base64-data
     Kitsunemimi::DataBuffer data;
@@ -118,29 +105,13 @@ AddTrainData::runTask(BlossomLeaf &blossomLeaf,
 
     // write data to file
     Kitsunemimi::BinaryFile targetFile(targetFilePath, false);
-    if(targetFile.writeCompleteFile(data) == false)
+    if(targetFile.writeSegment(data, position, data.usedBufferSize) == false)
     {
         status.statusCode =Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to write train-data to file \"" + targetFilePath + "\"");
         return false;
     }
     targetFile.closeFile();
-
-    // register in database
-    blossomLeaf.output.insert("name", name);
-    blossomLeaf.output.insert("user_uuid", userUuid);
-    blossomLeaf.output.insert("type", type);
-    blossomLeaf.output.insert("location", targetFilePath);
-
-    blossomLeaf.output.insert("project_uuid", "-");
-    blossomLeaf.output.insert("owner_uuid", "-");
-    blossomLeaf.output.insert("visibility", 0);
-
-    if(SagiriRoot::trainDataTable->addTrainData(blossomLeaf.output, error) == false)
-    {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
 
     return true;
 }

@@ -31,6 +31,7 @@
 #include <api/v1/data_files/list_train_data.h>
 #include <api/v1/data_files/get_train_data.h>
 #include <api/v1/data_files/add_train_data.h>
+#include <api/v1/data_files/create_train_data.h>
 #include <api/v1/data_files/delete_train_data.h>
 
 using Kitsunemimi::Sakura::SakuraLangInterface;
@@ -45,33 +46,40 @@ trainDataBlossomes()
     SakuraLangInterface* interface = SakuraLangInterface::getInstance();
     const std::string group = "train_data";
 
+    assert(interface->addBlossom(group, "create", new CreateTrainData()));
+    endpoints->addEndpoint("v1/train_data",
+                           Kitsunemimi::Hanami::POST_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "create");
+
     assert(interface->addBlossom(group, "add", new AddTrainData()));
-    assert(endpoints->addEndpoint("v1/train_data",
-                                  Kitsunemimi::Hanami::POST_TYPE,
-                                  Kitsunemimi::Hanami::BLOSSOM_TYPE,
-                                  group,
-                                  "add"));
+    endpoints->addEndpoint("v1/train_data",
+                           Kitsunemimi::Hanami::PUT_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "add");
 
     assert(interface->addBlossom(group, "get", new GetTrainData()));
-    assert(endpoints->addEndpoint("v1/train_data",
-                                  Kitsunemimi::Hanami::GET_TYPE,
-                                  Kitsunemimi::Hanami::BLOSSOM_TYPE,
-                                  group,
-                                  "get"));
+    endpoints->addEndpoint("v1/train_data",
+                           Kitsunemimi::Hanami::GET_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "get");
 
     assert(interface->addBlossom(group, "delete", new DeleteTrainData()));
-    assert(endpoints->addEndpoint("v1/train_data",
-                                  Kitsunemimi::Hanami::DELETE_TYPE,
-                                  Kitsunemimi::Hanami::BLOSSOM_TYPE,
-                                  group,
-                                  "delete"));
+    endpoints->addEndpoint("v1/train_data",
+                           Kitsunemimi::Hanami::DELETE_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "delete");
 
     assert(interface->addBlossom(group, "list", new ListTrainData()));
-    assert(endpoints->addEndpoint("v1/train_datas",
-                                  Kitsunemimi::Hanami::GET_TYPE,
-                                  Kitsunemimi::Hanami::BLOSSOM_TYPE,
-                                  group,
-                                  "list"));
+    endpoints->addEndpoint("v1/train_datas",
+                           Kitsunemimi::Hanami::GET_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "list");
 
 }
 

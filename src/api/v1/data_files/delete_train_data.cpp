@@ -54,7 +54,7 @@ DeleteTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const std::string userUuid = context.getStringByKey("uuid");
 
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::trainDataTable->getTrainData(result, dataUuid, userUuid, error) == false)
+    if(SagiriRoot::trainDataTable->getTrainData(result, dataUuid, userUuid, error, false) == false)
     {
         status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

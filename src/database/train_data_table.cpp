@@ -79,7 +79,8 @@ bool
 TrainDataTable::getTrainData(Kitsunemimi::Json::JsonItem &result,
                              const std::string &uuid,
                              const std::string &userUuid,
-                             Kitsunemimi::ErrorContainer &error)
+                             Kitsunemimi::ErrorContainer &error,
+                             const bool showHiddenValues)
 {
     // get user from db
     std::vector<RequestCondition> conditions;
@@ -87,7 +88,7 @@ TrainDataTable::getTrainData(Kitsunemimi::Json::JsonItem &result,
     conditions.emplace_back("user_uuid", userUuid);
 
     // get user from db
-    if(get(result, conditions, error) == false)
+    if(get(result, conditions, error, showHiddenValues) == false)
     {
         LOG_ERROR(error);
         return false;

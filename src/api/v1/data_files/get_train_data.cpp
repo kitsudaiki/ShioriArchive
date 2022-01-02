@@ -43,7 +43,7 @@ GetTrainData::GetTrainData()
 
     registerInputField("with_data",
                        SAKURA_BOOL_TYPE,
-                       true,
+                       false,
                        "Have to be set to true to also return the data "
                        "and not only the meta-information");
 
@@ -80,7 +80,7 @@ GetTrainData::runTask(BlossomLeaf &blossomLeaf,
     if(SagiriRoot::trainDataTable->getTrainData(blossomLeaf.output,
                                                 dataUuid,
                                                 userUuid,
-                                                error) == false)
+                                                error, false) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

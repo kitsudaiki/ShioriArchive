@@ -102,6 +102,7 @@ INCLUDEPATH += $$PWD \
 
 SOURCES += src/main.cpp \
     src/api/v1/data_files/add_train_data.cpp \
+    src/api/v1/data_files/create_train_data.cpp \
     src/api/v1/data_files/delete_train_data.cpp \
     src/api/v1/data_files/get_train_data.cpp \
     src/api/v1/data_files/list_train_data.cpp \
@@ -113,6 +114,7 @@ SOURCES += src/main.cpp \
 HEADERS += \
     src/api/blossom_initializing.h \
     src/api/v1/data_files/add_train_data.h \
+    src/api/v1/data_files/create_train_data.h \
     src/api/v1/data_files/delete_train_data.h \
     src/api/v1/data_files/get_train_data.h \
     src/api/v1/data_files/list_train_data.h \

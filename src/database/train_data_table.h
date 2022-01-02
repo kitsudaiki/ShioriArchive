@@ -40,11 +40,12 @@ public:
     ~TrainDataTable();
 
     bool addTrainData(Kitsunemimi::Json::JsonItem &data,
-                                   Kitsunemimi::ErrorContainer &error);
+                      Kitsunemimi::ErrorContainer &error);
     bool getTrainData(Kitsunemimi::Json::JsonItem &result,
                       const std::string &uuid,
                       const std::string &userUuid,
-                      Kitsunemimi::ErrorContainer &error);
+                      Kitsunemimi::ErrorContainer &error,
+                      const bool showHiddenValues);
     bool getAllTrainData(Kitsunemimi::TableItem &result,
                          Kitsunemimi::ErrorContainer &error);
     bool deleteTrainData(const std::string &uuid,

@@ -24,7 +24,9 @@
 
 #include <sagiri_root.h>
 #include <database/train_data_table.h>
+
 #include <libKitsunemimiJson/json_item.h>
+#include <libKitsunemimiCommon/common_methods/file_methods.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
@@ -54,13 +56,21 @@ DeleteTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const std::string userUuid = context.getStringByKey("uuid");
 
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::trainDataTable->getTrainData(result, dataUuid, userUuid, error, false) == false)
+    if(SagiriRoot::trainDataTable->getTrainData(result, dataUuid, userUuid, error, true) == false)
     {
         status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
+    const std::string location = result.get("location").getString();
+
     if(SagiriRoot::trainDataTable->deleteTrainData(dataUuid, userUuid, error) == false)
+    {
+        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    if(Kitsunemimi::deleteFileOrDir(location, error) == false)
     {
         status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

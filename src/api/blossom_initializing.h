@@ -75,7 +75,7 @@ trainDataBlossomes()
                            "delete");
 
     assert(interface->addBlossom(group, "list", new ListTrainData()));
-    endpoints->addEndpoint("v1/train_datas",
+    endpoints->addEndpoint("v1/train_data/all",
                            Kitsunemimi::Hanami::GET_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,

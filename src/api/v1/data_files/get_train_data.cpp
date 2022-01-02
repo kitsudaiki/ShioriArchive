@@ -110,5 +110,10 @@ GetTrainData::runTask(BlossomLeaf &blossomLeaf,
         blossomLeaf.output.insert("data", base64String);
     }
 
+    // remove irrelevant fields
+    blossomLeaf.output.remove("owner_uuid");
+    blossomLeaf.output.remove("project_uuid");
+    blossomLeaf.output.remove("visibility");
+
     return true;
 }

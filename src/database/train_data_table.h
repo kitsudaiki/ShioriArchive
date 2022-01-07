@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef TRAIN_DATA_TABLE_H
-#define TEST_FILES_TABLE_H
+#ifndef SAGIRIARCHIVE_TRAIN_DATA_TABLE_H
+#define SAGIRIARCHIVE_TRAIN_DATA_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiHanamiDatabase/hanami_sql_table.h>
@@ -51,10 +51,6 @@ public:
     bool deleteTrainData(const std::string &uuid,
                          const std::string &userUuid,
                          Kitsunemimi::ErrorContainer &error);
-
-private:
-    void processGetResult(Kitsunemimi::Json::JsonItem &result,
-                          Kitsunemimi::TableItem &tableContent);
 };
 
-#endif // TEST_FILES_TABLE_H
+#endif // SAGIRIARCHIVE_TRAIN_DATA_TABLE_H

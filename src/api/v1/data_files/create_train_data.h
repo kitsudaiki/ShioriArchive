@@ -1,5 +1,5 @@
-#ifndef CREATETRAINDATA_H
-#define CREATETRAINDATA_H
+#ifndef SAGIRIARCHIVE_CREATETRAINDATA_H
+#define SAGIRIARCHIVE_CREATETRAINDATA_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
@@ -16,4 +16,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // CREATETRAINDATA_H
+#endif // SAGIRIARCHIVE_CREATETRAINDATA_H

@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef GET_TRAIN_DATA_H
-#define GET_TRAIN_DATA_H
+#ifndef SAGIRIARCHIVE_GET_TRAIN_DATA_H
+#define SAGIRIARCHIVE_GET_TRAIN_DATA_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
@@ -38,4 +38,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // GET_TRAIN_DATA_H
+#endif // SAGIRIARCHIVE_GET_TRAIN_DATA_H

@@ -32,6 +32,10 @@ using namespace Kitsunemimi::Sakura;
 ListTrainData::ListTrainData()
     : Kitsunemimi::Sakura::Blossom("Get information of all uploaded sets fo train-data as table.")
 {
+    //----------------------------------------------------------------------------------------------
+    // output
+    //----------------------------------------------------------------------------------------------
+
     registerOutputField("header",
                         SAKURA_ARRAY_TYPE,
                         "Array with the namings all columns of the table.");
@@ -39,6 +43,10 @@ ListTrainData::ListTrainData()
     registerOutputField("body",
                         SAKURA_ARRAY_TYPE,
                         "Array with all rows of the table, which array arrays too.");
+
+    //----------------------------------------------------------------------------------------------
+    //
+    //----------------------------------------------------------------------------------------------
 }
 
 /**

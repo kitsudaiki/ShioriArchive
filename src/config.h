@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef SAGIRIARCHIVE_CONFIG_H
+#define SAGIRIARCHIVE_CONFIG_H
 
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiHanamiCommon/config.h>
@@ -38,4 +38,4 @@ registerConfigs(Kitsunemimi::ErrorContainer &error)
     REGISTER_STRING_CONFIG("sagiri", "train_data_location", error, "", true);
 }
 
-#endif // CONFIG_H
+#endif // SAGIRIARCHIVE_CONFIG_H

@@ -28,6 +28,11 @@
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
+/**
+ * @brief constructor
+ *
+ * @param db pointer to database
+ */
 TrainDataTable::TrainDataTable(Kitsunemimi::Sakura::SqlDatabase* db)
     : HanamiSqlTable(db)
 {
@@ -54,13 +59,18 @@ TrainDataTable::TrainDataTable(Kitsunemimi::Sakura::SqlDatabase* db)
     m_tableHeader.push_back(location);
 }
 
+/**
+ * @brief destructor
+ */
 TrainDataTable::~TrainDataTable() {}
 
 /**
- * @brief Users::addUser
- * @param data
- * @param errorMessage
- * @return
+ * @brief add new metadata of a train-data-set into the database
+ *
+ * @param userData json-item with all information of the data to add to database
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 TrainDataTable::addTrainData(Kitsunemimi::Json::JsonItem &data,
@@ -70,10 +80,15 @@ TrainDataTable::addTrainData(Kitsunemimi::Json::JsonItem &data,
 }
 
 /**
- * @brief UsersDatabase::getUser
- * @param userID
- * @param error
- * @return
+ * @brief get a metadata-entry for a specific train-data-set from the database
+ *
+ * @param result reference for the result-output
+ * @param uuid uuid of the data
+ * @param userUuid uuid of the user
+ * @param error reference for error-output
+ * @param showHiddenValues set to true to also show as hidden marked fields
+ *
+ * @return true, if successful, else false
  */
 bool
 TrainDataTable::getTrainData(Kitsunemimi::Json::JsonItem &result,
@@ -98,10 +113,12 @@ TrainDataTable::getTrainData(Kitsunemimi::Json::JsonItem &result,
 }
 
 /**
- * @brief TrainDataTable::getAllTrainData
- * @param result
- * @param error
- * @return
+ * @brief get metadata of all train-data-sets from the database
+ *
+ * @param result reference for the result-output
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 TrainDataTable::getAllTrainData(Kitsunemimi::TableItem &result,
@@ -111,10 +128,13 @@ TrainDataTable::getAllTrainData(Kitsunemimi::TableItem &result,
 }
 
 /**
- * @brief UsersDatabase::deleteUser
- * @param userID
- * @param error
- * @return
+ * @brief delete metadata of a train-data-set from the database
+ *
+ * @param uuid uuid of the data
+ * @param userUuid uuid of the user
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 TrainDataTable::deleteTrainData(const std::string &uuid,
@@ -125,20 +145,4 @@ TrainDataTable::deleteTrainData(const std::string &uuid,
     conditions.emplace_back("uuid", uuid);
     conditions.emplace_back("user_uuid", userUuid);
     return deleteFromDb(conditions, error);
-}
-
-/**
- * @brief TrainDataTable::processGetResult
- * @param result
- * @param tableContent
- */
-void
-TrainDataTable::processGetResult(Kitsunemimi::Json::JsonItem &result,
-                                 Kitsunemimi::TableItem &tableContent)
-{
-    const Kitsunemimi::DataItem* firstRow = tableContent.getBody()->get(0);
-
-    for(uint32_t i = 0; i < m_tableHeader.size(); i++) {
-        result.insert(m_tableHeader.at(i).name, firstRow->get(i));
-    }
 }

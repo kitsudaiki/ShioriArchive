@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef LISTTRAINDATA_H
-#define LISTTRAINDATA_H
+#ifndef SAGIRIARCHIVE_LISTTRAINDATA_H
+#define SAGIRIARCHIVE_LISTTRAINDATA_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
@@ -38,4 +38,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // LISTTRAINDATA_H
+#endif // SAGIRIARCHIVE_LISTTRAINDATA_H

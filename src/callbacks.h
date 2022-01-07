@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef CALLBACKS_H
-#define CALLBACKS_H
+#ifndef SAGIRIARCHIVE_CALLBACKS_H
+#define SAGIRIARCHIVE_CALLBACKS_H
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 
@@ -33,4 +33,4 @@ void streamDataCallback(void*,
 
 }
 
-#endif // CALLBACKS_H
+#endif // SAGIRIARCHIVE_CALLBACKS_H

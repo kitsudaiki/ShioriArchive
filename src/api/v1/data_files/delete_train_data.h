@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef DELETE_TRAIN_DATA_H
-#define DELETE_TRAIN_DATA_H
+#ifndef SAGIRIARCHIVE_DELETE_TRAIN_DATA_H
+#define SAGIRIARCHIVE_DELETE_TRAIN_DATA_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
@@ -38,4 +38,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // DELETE_TRAIN_DATA_H
+#endif // SAGIRIARCHIVE_DELETE_TRAIN_DATA_H

@@ -42,7 +42,10 @@ using namespace Kitsunemimi::Sakura;
 AddTrainData::AddTrainData()
     : Kitsunemimi::Sakura::Blossom("Add new set of train-data.")
 {
+    //----------------------------------------------------------------------------------------------
     // input
+    //----------------------------------------------------------------------------------------------
+
     registerInputField("uuid",
                        SAKURA_STRING_TYPE,
                        true,
@@ -54,11 +57,16 @@ AddTrainData::AddTrainData()
                        SAKURA_INT_TYPE,
                        true,
                        "Segment-position, where the new data have to be written into the file.");
+    assert(addFieldBorder("position", 0, 10000000000));
 
     registerInputField("data",
                        SAKURA_STRING_TYPE,
                        true,
                        "New data as base64-string.");
+
+    //----------------------------------------------------------------------------------------------
+    //
+    //----------------------------------------------------------------------------------------------
 }
 
 /**
@@ -85,6 +93,7 @@ AddTrainData::runTask(BlossomLeaf &blossomLeaf,
     }
     const std::string targetFilePath = result.get("location").getString();
 
+    // check data-input
     if(base64Data.size() == 0)
     {
         status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;

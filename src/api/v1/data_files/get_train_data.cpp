@@ -34,6 +34,10 @@ using namespace Kitsunemimi::Sakura;
 GetTrainData::GetTrainData()
     : Blossom("Get information of a specific set of train-data.")
 {
+    //----------------------------------------------------------------------------------------------
+    // input
+    //----------------------------------------------------------------------------------------------
+
     registerInputField("uuid",
                        SAKURA_STRING_TYPE,
                        true,
@@ -46,6 +50,10 @@ GetTrainData::GetTrainData()
                        false,
                        "Have to be set to true to also return the data "
                        "and not only the meta-information");
+
+    //----------------------------------------------------------------------------------------------
+    // output
+    //----------------------------------------------------------------------------------------------
 
     registerOutputField("uuid",
                         SAKURA_STRING_TYPE,
@@ -63,6 +71,10 @@ GetTrainData::GetTrainData()
                         SAKURA_STRING_TYPE,
                         "If the flag 'with_data' was set the true, this field contains the data "
                         "of the stored train-data-set as base64 encoded string.");
+
+    //----------------------------------------------------------------------------------------------
+    //
+    //----------------------------------------------------------------------------------------------
 }
 
 /**
@@ -76,23 +88,24 @@ GetTrainData::runTask(BlossomLeaf &blossomLeaf,
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
     const std::string userUuid = context.getStringByKey("uuid");
+    const bool withData = blossomLeaf.input.get("with_data").getBool();
 
     if(SagiriRoot::trainDataTable->getTrainData(blossomLeaf.output,
                                                 dataUuid,
                                                 userUuid,
-                                                error, false) == false)
+                                                error,
+                                                true) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
-    // get location
-    const std::string location = blossomLeaf.output.get("location").getString();
-    blossomLeaf.output.remove("location");
-
+    std::cout<<blossomLeaf.input.toString(true)<<std::endl;
     // read data from file and add to output, if requested
-    if(blossomLeaf.input.get("with_data").getString() == "true")
+    if(withData)
     {
+        const std::string location = blossomLeaf.output.get("location").getString();
+
         Kitsunemimi::BinaryFile targetFile(location, false);
         Kitsunemimi::DataBuffer data;
         if(targetFile.readCompleteFile(data) == false)
@@ -106,6 +119,11 @@ GetTrainData::runTask(BlossomLeaf &blossomLeaf,
         std::string base64String;
         Kitsunemimi::Crypto::encodeBase64(base64String, data.data, data.usedBufferSize);
 
+        for(int i = 0; i < 100; i++) {
+            std::cout<<base64String[i];
+        }
+        std::cout<<std::endl;
+
         // create output
         blossomLeaf.output.insert("data", base64String);
     }
@@ -114,6 +132,7 @@ GetTrainData::runTask(BlossomLeaf &blossomLeaf,
     blossomLeaf.output.remove("owner_uuid");
     blossomLeaf.output.remove("project_uuid");
     blossomLeaf.output.remove("visibility");
+    blossomLeaf.output.remove("location");
 
     return true;
 }

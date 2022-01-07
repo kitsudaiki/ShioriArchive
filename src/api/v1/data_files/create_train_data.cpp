@@ -20,7 +20,10 @@ using namespace Kitsunemimi::Sakura;
 CreateTrainData::CreateTrainData()
     : Kitsunemimi::Sakura::Blossom("Init new set of train-data.")
 {
+    //----------------------------------------------------------------------------------------------
     // input
+    //----------------------------------------------------------------------------------------------
+
     registerInputField("name",
                        SAKURA_STRING_TYPE,
                        true,
@@ -32,6 +35,7 @@ CreateTrainData::CreateTrainData()
                        SAKURA_INT_TYPE,
                        true,
                        "Total size of the data-set.");
+    assert(addFieldBorder("data_size", 1, 10000000000));
 
     registerInputField("type",
                        SAKURA_STRING_TYPE,
@@ -39,8 +43,10 @@ CreateTrainData::CreateTrainData()
                        "Type of the new set (options: csv or mnist)");
     assert(addFieldRegex("type", "(csv|mnist)"));
 
-
+    //----------------------------------------------------------------------------------------------
     // output
+    //----------------------------------------------------------------------------------------------
+
     registerOutputField("uuid",
                         SAKURA_STRING_TYPE,
                         "UUID of the new set.");
@@ -53,6 +59,10 @@ CreateTrainData::CreateTrainData()
     registerOutputField("type",
                         SAKURA_STRING_TYPE,
                         "Type of the new set (For example: CSV)");
+
+    //----------------------------------------------------------------------------------------------
+    //
+    //----------------------------------------------------------------------------------------------
 }
 
 bool

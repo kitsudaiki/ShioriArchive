@@ -1,5 +1,5 @@
 /**
- * @file        config.h
+ * @file        create_token.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,22 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_CONFIG_H
-#define SAGIRIARCHIVE_CONFIG_H
+#ifndef SAGIRIARCHIVE_LISTTRAINDATA_H
+#define SAGIRIARCHIVE_LISTTRAINDATA_H
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiHanamiCommon/config.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiSakuraLang/blossom.h>
 
-/**
- * @brief register configs
- */
-void
-registerConfigs(Kitsunemimi::ErrorContainer &error)
+class ListTrainData
+        : public Kitsunemimi::Sakura::Blossom
 {
-    Kitsunemimi::Hanami::registerBasicConfigs(error);
+public:
+    ListTrainData();
 
-    REGISTER_STRING_CONFIG("sagiri", "train_data_location", error, "", true);
-}
+protected:
+    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+                 const Kitsunemimi::DataMap &,
+                 Kitsunemimi::Sakura::BlossomStatus &status,
+                 Kitsunemimi::ErrorContainer &error);
+};
 
-#endif // SAGIRIARCHIVE_CONFIG_H
+#endif // SAGIRIARCHIVE_LISTTRAINDATA_H

@@ -1,5 +1,5 @@
 /**
- * @file        config.h
+ * @file        add_audit_log.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,23 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_CONFIG_H
-#define SAGIRIARCHIVE_CONFIG_H
+#include "add_audit_log.h"
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiHanamiCommon/config.h>
-#include <libKitsunemimiCommon/logger.h>
+using namespace Kitsunemimi;
 
-/**
- * @brief register configs
- */
-void
-registerConfigs(Kitsunemimi::ErrorContainer &error)
+AddAuditLog::AddAuditLog()
+    : Kitsunemimi::Sakura::Blossom("Add new audit-entry.")
 {
-    Kitsunemimi::Hanami::registerBasicConfigs(error);
 
-    REGISTER_STRING_CONFIG("sagiri", "train_data_location", error, "", true);
 }
-
-#endif // SAGIRIARCHIVE_CONFIG_H
+/**
+ * @brief runTask
+ */
+bool
+AddAuditLog::runTask(Sakura::BlossomLeaf &blossomLeaf,
+                     const Kitsunemimi::DataMap &context,
+                     Sakura::BlossomStatus &status,
+                     ErrorContainer &error)
+{
+    return true;
+}

@@ -1,5 +1,5 @@
 /**
- * @file        config.h
+ * @file        add_error_log.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,22 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_CONFIG_H
-#define SAGIRIARCHIVE_CONFIG_H
+#ifndef SAGIRIARCHIVE_ADDERRORLOG_H
+#define SAGIRIARCHIVE_ADDERRORLOG_H
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiHanamiCommon/config.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiSakuraLang/blossom.h>
 
-/**
- * @brief register configs
- */
-void
-registerConfigs(Kitsunemimi::ErrorContainer &error)
+class AddErrorLog
+        : public Kitsunemimi::Sakura::Blossom
 {
-    Kitsunemimi::Hanami::registerBasicConfigs(error);
+public:
+    AddErrorLog();
 
-    REGISTER_STRING_CONFIG("sagiri", "train_data_location", error, "", true);
-}
+protected:
+    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+                 const Kitsunemimi::DataMap &context,
+                 Kitsunemimi::Sakura::BlossomStatus &status,
+                 Kitsunemimi::ErrorContainer &error);
+};
 
-#endif // SAGIRIARCHIVE_CONFIG_H
+#endif // SAGIRIARCHIVE_ADDERRORLOG_H

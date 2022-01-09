@@ -52,10 +52,11 @@ function get_required_kitsune_lib_repo () {
 function get_required_private_repo_gitlab () {
     REPO_NAME=$1
     TAG_OR_BRANCH=$2
-    NUMBER_OF_THREADS=$3
+    TOKEN=$3
+    NUMBER_OF_THREADS=$4
 
     # clone repo
-    git clone http://kitsudaiki:4Zzazyw2Dmx1fBxnsPys@10.0.3.120/kitsudaiki/$REPO_NAME.git "$PARENT_DIR/$REPO_NAME"
+    git clone http://kitsudaiki:$TOKEN@10.0.3.120/kitsudaiki/$REPO_NAME.git "$PARENT_DIR/$REPO_NAME"
     cd "$PARENT_DIR/$REPO_NAME"
     git checkout $TAG_OR_BRANCH
 
@@ -81,50 +82,36 @@ function get_required_private_repo_github () {
 echo ""
 echo "###########################################################################################################"
 echo ""
-get_required_kitsune_lib_repo "libKitsunemimiCommon" "v0.18.0" 4
+get_required_kitsune_lib_repo "libKitsunemimiCommon" "master" 8
+get_required_kitsune_lib_repo "libKitsunemimiJson" "master" 1
+get_required_kitsune_lib_repo "libKitsunemimiJinja2" "master" 1
+get_required_kitsune_lib_repo "libKitsunemimiIni" "master" 1
+get_required_kitsune_lib_repo "libKitsunemimiNetwork" "master" 8
+get_required_kitsune_lib_repo "libKitsunemimiArgs" "master" 8
+get_required_kitsune_lib_repo "libKitsunemimiConfig" "master" 8
 echo ""
 echo "###########################################################################################################"
 echo ""
-get_required_kitsune_lib_repo "libKitsunemimiPersistence" "v0.10.2" 4
+get_required_private_repo_github "libKitsunemimiSqlite" "master" 8
+get_required_private_repo_github "libKitsunemimiCrypto" "master" 8
+get_required_private_repo_github "libKitsunemimiJwt" "master" 8
 echo ""
 echo "###########################################################################################################"
 echo ""
-get_required_kitsune_lib_repo "libKitsunemimiJson" "v0.10.6" 1
+get_required_kitsune_lib_repo "libKitsunemimiSakuraNetwork" "master" 8
+get_required_kitsune_lib_repo "libKitsunemimiSakuraLang" "master" 1
+get_required_private_repo_github "libKitsunemimiSakuraDatabase" "master" 8
 echo ""
 echo "###########################################################################################################"
 echo ""
-get_required_kitsune_lib_repo "libKitsunemimiJinja2" "v0.8.1" 1
+get_required_private_repo_gitlab "libKitsunemimiHanamiCommon" "master" "2ue6RNxkCDs2A7qp1xtN" 8
+get_required_private_repo_gitlab "libKitsunemimiHanamiDatabase" "master" "UjDbSSJzoU3uK4pZynmD" 8
+get_required_private_repo_gitlab "libKitsunemimiHanamiEndpoints" "master" "ysR35grcGsLpFQiXXf1A" 1
+get_required_private_repo_gitlab "libKitsunemimiHanamiMessaging" "master" "vkEae-QF8jvt9W2xz3LR" 8
+get_required_private_repo_gitlab "libKitsunemimiHanamiPredefinitions" "master" "8_D9Z_gRjC7TmFQi-tsD" 8
 echo ""
 echo "###########################################################################################################"
-echo ""
-get_required_kitsune_lib_repo "libKitsunemimiIni" "v0.4.7" 1
-echo ""
-echo "###########################################################################################################"
-echo ""
-get_required_kitsune_lib_repo "libKitsunemimiNetwork" "v0.6.6" 4
-echo ""
-echo "###########################################################################################################"
-echo ""
-get_required_kitsune_lib_repo "libKitsunemimiSakuraNetwork" "v0.6.0" 4
-echo ""
-echo "###########################################################################################################"
-echo ""
-get_required_kitsune_lib_repo "libKitsunemimiArgs" "v0.2.2" 4
-echo ""
-echo "###########################################################################################################"
-echo ""
-get_required_kitsune_lib_repo "libKitsunemimiConfig" "v0.2.4" 4
-echo ""
-echo "###########################################################################################################"
-echo ""
-get_required_kitsune_lib_repo "libKitsunemimiSakuraLang" "v0.8.0" 1
-echo ""
-echo "###########################################################################################################"
-echo ""
-get_required_private_repo_github "libKitsunemimiSakuraMessaging" "v0.4.1" 4
-echo ""
-echo "###########################################################################################################"
-echo ""
+
 #-----------------------------------------------------------------------------------------------------------------
 
 # create build directory for KyoukoMind and go into this directory
@@ -134,7 +121,7 @@ cd $LIB_KITSUNE_SAKURA_TREE_DIR
 
 # build SagiriArchive with qmake
 /usr/lib/x86_64-linux-gnu/qt5/bin/qmake "$PARENT_DIR/SagiriArchive/SagiriArchive.pro" -spec linux-g++ "CONFIG += optimize_full"
-/usr/bin/make -j4
+/usr/bin/make -j8
 
 # copy build-result and include-files into the result-directory
 cp "$LIB_KITSUNE_SAKURA_TREE_DIR/SagiriArchive" "$RESULT_DIR/"

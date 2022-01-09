@@ -1,7 +1,8 @@
-image: registry.gitlab.com/kitsudaiki/kitsunemimi-ci-docker-images/normal-tests:1.0.0
+image: registry.gitlab.com/kitsudaiki/kitsunemimi-ci-docker-images/normal-tests:1.1.0
 
 stages:
   - build
+  - create_image
 
 build:
   stage: build
@@ -11,20 +12,36 @@ build:
     - mkdir -p ~/.ssh
     - touch ~/.ssh/known_hosts
     - ssh-keyscan -H 10.0.3.120 >> ~/.ssh/known_hosts
+    - echo "nameserver 1.1.1.1" > /etc/resolv.conf
 
     - apt-get update
-    - apt-get install -y libboost-filesystem-dev openssl libssl-dev 
+    - apt-get install -y libssl-dev libcrypto++-dev libsqlite3-dev  uuid-dev 
 
-    - cd /builds/kitsudaiki/NanamiSecret
+    - cd /builds/kitsudaiki/SagiriArchive
     - ./build.sh
 
     - mkdir upload
-    - cp ../result/NanamiSecret upload/
+    - cp ../result/SagiriArchive upload/
 
   artifacts:
     paths:
       - upload
     expire_in: 1 week
+  tags:
+    - docker
+
+
+create_image:
+  image: docker:20.10.11
+  stage: create_image
+  script:
+    - ip a
+    - echo "172.17.0.1  registry.kitsunemimi.moe" >> /etc/hosts
+    - docker build -t registry.kitsunemimi.moe:5000/sagiri_archive:$CI_COMMIT_BRANCH .
+    - docker push registry.kitsunemimi.moe:5000/sagiri_archive:$CI_COMMIT_BRANCH
+    - docker rmi registry.kitsunemimi.moe:5000/sagiri_archive:$CI_COMMIT_BRANCH
+  dependencies:
+    - build
   tags:
     - docker
 

@@ -25,44 +25,44 @@
 #include <config.h>
 #include <args.h>
 #include <thread>
+#include <callbacks.h>
+#include <sagiri_root.h>
 
-#include <libKitsunemimiArgs/arg_parser.h>
-#include <libKitsunemimiPersistence/logger/logger.h>
-#include <libKitsunemimiConfig/config_handler.h>
+#include <libKitsunemimiHanamiCommon/generic_main.h>
+#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
+#include <libKitsunemimiHanamiPredefinitions/init_predefined_blossoms.h>
+
+using Kitsunemimi::Hanami::HanamiMessaging;
+using Kitsunemimi::Hanami::initMain;
 
 int main(int argc, char *argv[])
 {
-    Kitsunemimi::Persistence::initConsoleLogger(true);
-
-    // create and init argument-parser
-    Kitsunemimi::Args::ArgParser argParser;
-    registerArguments(argParser);
-
-    // parse cli-input
-    if(argParser.parse(argc, argv) == false) {
+    Kitsunemimi::ErrorContainer error;
+    if(initMain(argc, argv, "sagiri", &registerArguments, &registerConfigs, error) == false)
+    {
+        LOG_ERROR(error);
         return 1;
     }
 
-    // init config-file
-    std::string configPath = argParser.getStringValue("config");
-    if(configPath == "") {
-        configPath = "/etc/SagiriArchive/SagiriArchive.conf";
-    }
-    if(Kitsunemimi::Config::initConfig(configPath) == false) {
+    Kitsunemimi::Hanami::initPredefinedBlossoms();
+
+    // initialize server and connections based on the config-file
+    const std::vector<std::string> groupNames = {"misaka"};
+    if(HanamiMessaging::getInstance()->initialize("sagiri",
+                                                  groupNames,
+                                                  nullptr,
+                                                  streamDataCallback,
+                                                  error,
+                                                  true) == false)
+    {
+        LOG_ERROR(error);
         return 1;
     }
-    registerConfigs();
 
-    // get config-parameter for logger
-    bool success = false;
-    const bool enableDebug = GET_BOOL_CONFIG("DEFAULT", "debug", success);
-    assert(success);
-    const std::string logPath = GET_STRING_CONFIG("DEFAULT", "log_path", success);
-    assert(success);
-
-    // init logger
-    Kitsunemimi::Persistence::initConsoleLogger(enableDebug);
-    Kitsunemimi::Persistence::initFileLogger(logPath, "SagiriArchive", enableDebug);
+    SagiriRoot rootObj;
+    if(rootObj.init() == false) {
+        return 1;
+    }
 
     // sleep forever
     std::this_thread::sleep_until(std::chrono::time_point<std::chrono::system_clock>::max());

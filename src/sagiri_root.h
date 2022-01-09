@@ -1,5 +1,5 @@
 /**
- * @file        config.h
+ * @file        sagiri_root.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,25 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_CONFIG_H
-#define SAGIRIARCHIVE_CONFIG_H
+#ifndef SAGIRIARCHIVE_SAGIRIROOT_H
+#define SAGIRIARCHIVE_SAGIRIROOT_H
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiHanamiCommon/config.h>
-#include <libKitsunemimiCommon/logger.h>
-
-/**
- * @brief register configs
- */
-void
-registerConfigs(Kitsunemimi::ErrorContainer &error)
-{
-    Kitsunemimi::Hanami::registerBasicConfigs(error);
-
-    REGISTER_STRING_CONFIG("sagiri", "train_data_location", error, "", true);
+namespace Kitsunemimi {
+namespace Sakura {
+class SqlDatabase;
 }
+}
+class TrainDataTable;
 
-#endif // SAGIRIARCHIVE_CONFIG_H
+class SagiriRoot
+{
+public:
+    SagiriRoot();
+
+    bool init();
+
+    static TrainDataTable* trainDataTable;
+    static Kitsunemimi::Sakura::SqlDatabase* database;
+};
+
+#endif // SAGIRIARCHIVE_SAGIRIROOT_H

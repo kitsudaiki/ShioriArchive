@@ -75,6 +75,7 @@ CreateTrainData::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     const std::string type = blossomLeaf.input.get("type").getString();
     const long dataSize = blossomLeaf.input.get("data_size").getLong();
     const std::string userUuid = context.getStringByKey("uuid");
+    const std::string projectUuid = context.getStringByKey("projects");
 
     // get directory to store data from config
     bool success = false;
@@ -107,7 +108,10 @@ CreateTrainData::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     blossomLeaf.output.insert("owner_uuid", "-");
     blossomLeaf.output.insert("visibility", 0);
 
-    if(SagiriRoot::trainDataTable->addTrainData(blossomLeaf.output, error) == false)
+    if(SagiriRoot::trainDataTable->addTrainData(blossomLeaf.output,
+                                                userUuid,
+                                                projectUuid,
+                                                error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

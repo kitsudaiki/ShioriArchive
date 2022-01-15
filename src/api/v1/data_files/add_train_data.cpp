@@ -82,10 +82,17 @@ AddTrainData::runTask(BlossomLeaf &blossomLeaf,
     const std::string base64Data = blossomLeaf.input.get("data").getString();
     const long position = blossomLeaf.input.get("position").getLong();
     const std::string userUuid = context.getStringByKey("uuid");
+    const std::string projectUuid = context.getStringByKey("projects");
+    const bool isAdmin = context.getBoolByKey("is_admin");
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::trainDataTable->getTrainData(result, uuid, userUuid, error, true) == false)
+    if(SagiriRoot::trainDataTable->getTrainData(result,
+                                                uuid,
+                                                userUuid,
+                                                projectUuid,
+                                                isAdmin,
+                                                error, true) == false)
     {
         status.errorMessage = "Data with uuid '" + uuid + "' not found.";
         status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;

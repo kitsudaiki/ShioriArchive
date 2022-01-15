@@ -83,7 +83,9 @@ TrainDataTable::addTrainData(Kitsunemimi::Json::JsonItem &data,
  *
  * @param result reference for the result-output
  * @param uuid uuid of the data
- * @param userUuid uuid of the user
+ * @param userUuid user-uuid to filter
+ * @param projectUuid project-uuid to filter
+ * @param isAdmin true, if use who makes request is admin
  * @param error reference for error-output
  * @param showHiddenValues set to true to also show as hidden marked fields
  *
@@ -116,6 +118,9 @@ TrainDataTable::getTrainData(Kitsunemimi::Json::JsonItem &result,
  * @brief get metadata of all train-data-sets from the database
  *
  * @param result reference for the result-output
+ * @param userUuid user-uuid to filter
+ * @param projectUuid project-uuid to filter
+ * @param isAdmin true, if use who makes request is admin
  * @param error reference for error-output
  *
  * @return true, if successful, else false
@@ -134,7 +139,9 @@ TrainDataTable::getAllTrainData(Kitsunemimi::TableItem &result,
  * @brief delete metadata of a train-data-set from the database
  *
  * @param uuid uuid of the data
- * @param userUuid uuid of the user
+ * @param userUuid user-uuid to filter
+ * @param projectUuid project-uuid to filter
+ * @param isAdmin true, if use who makes request is admin
  * @param error reference for error-output
  *
  * @return true, if successful, else false

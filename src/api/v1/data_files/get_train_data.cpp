@@ -87,12 +87,16 @@ GetTrainData::runTask(BlossomLeaf &blossomLeaf,
                       Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
-    const std::string userUuid = context.getStringByKey("uuid");
     const bool withData = blossomLeaf.input.get("with_data").getBool();
+    const std::string userUuid = context.getStringByKey("uuid");
+    const std::string projectUuid = context.getStringByKey("projects");
+    const bool isAdmin = context.getBoolByKey("is_admin");
 
     if(SagiriRoot::trainDataTable->getTrainData(blossomLeaf.output,
                                                 dataUuid,
                                                 userUuid,
+                                                projectUuid,
+                                                isAdmin,
                                                 error,
                                                 true) == false)
     {

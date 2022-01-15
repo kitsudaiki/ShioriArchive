@@ -43,11 +43,6 @@ TrainDataTable::TrainDataTable(Kitsunemimi::Sakura::SqlDatabase* db)
     name.maxLength = 256;
     m_tableHeader.push_back(name);
 
-    DbHeaderEntry user;
-    user.name = "user_uuid";
-    user.maxLength = 256;
-    m_tableHeader.push_back(user);
-
     DbHeaderEntry type;
     type.name = "type";
     type.maxLength = 64;
@@ -68,15 +63,19 @@ TrainDataTable::~TrainDataTable() {}
  * @brief add new metadata of a train-data-set into the database
  *
  * @param userData json-item with all information of the data to add to database
+ * @param userUuid user-uuid to filter
+ * @param projectUuid project-uuid to filter
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
 TrainDataTable::addTrainData(Kitsunemimi::Json::JsonItem &data,
+                             const std::string &userUuid,
+                             const std::string &projectUuid,
                              Kitsunemimi::ErrorContainer &error)
 {
-    return add(data, error);
+    return add(data, userUuid, projectUuid, error);
 }
 
 /**
@@ -94,16 +93,17 @@ bool
 TrainDataTable::getTrainData(Kitsunemimi::Json::JsonItem &result,
                              const std::string &uuid,
                              const std::string &userUuid,
+                             const std::string &projectUuid,
+                             const bool isAdmin,
                              Kitsunemimi::ErrorContainer &error,
                              const bool showHiddenValues)
 {
     // get user from db
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);
-    conditions.emplace_back("user_uuid", userUuid);
 
     // get user from db
-    if(get(result, conditions, error, showHiddenValues) == false)
+    if(get(result, userUuid, projectUuid, isAdmin, conditions, error, showHiddenValues) == false)
     {
         LOG_ERROR(error);
         return false;
@@ -122,9 +122,12 @@ TrainDataTable::getTrainData(Kitsunemimi::Json::JsonItem &result,
  */
 bool
 TrainDataTable::getAllTrainData(Kitsunemimi::TableItem &result,
+                                const std::string &userUuid,
+                                const std::string &projectUuid,
+                                const bool isAdmin,
                                 Kitsunemimi::ErrorContainer &error)
 {
-    return getAll(result, error);
+    return getAll(result, userUuid, projectUuid, isAdmin, error);
 }
 
 /**
@@ -139,10 +142,11 @@ TrainDataTable::getAllTrainData(Kitsunemimi::TableItem &result,
 bool
 TrainDataTable::deleteTrainData(const std::string &uuid,
                                 const std::string &userUuid,
+                                const std::string &projectUuid,
+                                const bool isAdmin,
                                 Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);
-    conditions.emplace_back("user_uuid", userUuid);
-    return deleteFromDb(conditions, error);
+    return del(conditions, userUuid, projectUuid, isAdmin, error);
 }

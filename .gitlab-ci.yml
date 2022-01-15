@@ -17,7 +17,7 @@ build:
     - apt-get update
     - apt-get install -y libssl-dev libcrypto++-dev libsqlite3-dev  uuid-dev 
 
-    - cd /builds/kitsudaiki/SagiriArchive
+    - cd /builds/hanami/SagiriArchive
     - ./build.sh
 
     - mkdir upload
@@ -38,7 +38,7 @@ create_image:
     - ip a
     - echo "172.17.0.1  registry.kitsunemimi.moe" >> /etc/hosts
     - >
-      if [ "$CI_COMMIT_BRANCH" != "" ]; then
+      if [ "$CI_COMMIT_BRANCH" == "master" ]; then
         docker build -t registry.kitsunemimi.moe:5000/sagiri_archive:$CI_COMMIT_BRANCH .
         docker push registry.kitsunemimi.moe:5000/sagiri_archive:$CI_COMMIT_BRANCH
         docker rmi registry.kitsunemimi.moe:5000/sagiri_archive:$CI_COMMIT_BRANCH

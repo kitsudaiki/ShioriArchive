@@ -31,17 +31,17 @@ CreateTrainData::CreateTrainData()
     assert(addFieldBorder("name", 4, 256));
     assert(addFieldRegex("name", "[a-zA-Z][a-zA-Z_0-9]*"));
 
-    registerInputField("data_size",
+    registerInputField("input_data_size",
                        SAKURA_INT_TYPE,
                        true,
-                       "Total size of the data-set.");
+                       "Total size of the input-data.");
     assert(addFieldBorder("data_size", 1, 10000000000));
 
-    registerInputField("type",
-                       SAKURA_STRING_TYPE,
+    registerInputField("label_data_size",
+                       SAKURA_INT_TYPE,
                        true,
-                       "Type of the new set (options: csv or mnist)");
-    assert(addFieldRegex("type", "(csv|mnist)"));
+                       "Total size of the label-data.");
+    assert(addFieldBorder("data_size", 1, 10000000000));
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -100,12 +100,11 @@ CreateTrainData::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
 
     // register in database
     blossomLeaf.output.insert("name", name);
-    blossomLeaf.output.insert("user_uuid", userUuid);
     blossomLeaf.output.insert("type", type);
     blossomLeaf.output.insert("location", targetFilePath);
 
-    blossomLeaf.output.insert("project_uuid", "-");
-    blossomLeaf.output.insert("owner_uuid", "-");
+    blossomLeaf.output.insert("project_uuid", projectUuid);
+    blossomLeaf.output.insert("owner_uuid", userUuid);
     blossomLeaf.output.insert("visibility", 0);
 
     if(SagiriRoot::trainDataTable->addTrainData(blossomLeaf.output,

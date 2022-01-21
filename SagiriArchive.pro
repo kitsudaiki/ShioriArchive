@@ -101,9 +101,10 @@ INCLUDEPATH += $$PWD \
                src
 
 SOURCES += src/main.cpp \
-    src/api/v1/data_files/add_train_data.cpp \
-    src/api/v1/data_files/create_train_data.cpp \
+    src/api/v1/data_files/mnist/add_train_data.cpp \
+    src/api/v1/data_files/mnist/create_train_data.cpp \
     src/api/v1/data_files/delete_train_data.cpp \
+    src/api/v1/data_files/mnist/finalize_train_data.cpp \
     src/api/v1/data_files/get_train_data.cpp \
     src/api/v1/data_files/list_train_data.cpp \
     src/api/v1/logging/add_audit_log.cpp \
@@ -113,9 +114,10 @@ SOURCES += src/main.cpp \
 
 HEADERS += \
     src/api/blossom_initializing.h \
-    src/api/v1/data_files/add_train_data.h \
-    src/api/v1/data_files/create_train_data.h \
+    src/api/v1/data_files/mnist/add_train_data.h \
+    src/api/v1/data_files/mnist/create_train_data.h \
     src/api/v1/data_files/delete_train_data.h \
+    src/api/v1/data_files/mnist/finalize_train_data.h \
     src/api/v1/data_files/get_train_data.h \
     src/api/v1/data_files/list_train_data.h \
     src/api/v1/logging/add_audit_log.h \

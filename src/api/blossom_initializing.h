@@ -30,8 +30,9 @@
 
 #include <api/v1/data_files/list_train_data.h>
 #include <api/v1/data_files/get_train_data.h>
-#include <api/v1/data_files/add_train_data.h>
-#include <api/v1/data_files/create_train_data.h>
+#include <api/v1/data_files/mnist/add_train_data.h>
+#include <api/v1/data_files/mnist/create_train_data.h>
+#include <api/v1/data_files/mnist/finalize_train_data.h>
 #include <api/v1/data_files/delete_train_data.h>
 
 using Kitsunemimi::Sakura::SakuraLangInterface;
@@ -59,6 +60,13 @@ trainDataBlossomes()
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "add");
+
+    assert(interface->addBlossom(group, "finalize", new FinalizeTrainData()));
+    endpoints->addEndpoint("v1/train_data",
+                           Kitsunemimi::Hanami::PUT_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "finalize");
 
     assert(interface->addBlossom(group, "get", new GetTrainData()));
     endpoints->addEndpoint("v1/train_data",

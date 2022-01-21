@@ -59,6 +59,12 @@ AddTrainData::AddTrainData()
                        "Segment-position, where the new data have to be written into the file.");
     assert(addFieldBorder("position", 0, 10000000000));
 
+    registerInputField("data_type",
+                       SAKURA_STRING_TYPE,
+                       true,
+                       "Type of the new data (options: input or label)");
+    assert(addFieldRegex("data_type", "(input|label)"));
+
     registerInputField("data",
                        SAKURA_STRING_TYPE,
                        true,
@@ -81,6 +87,7 @@ AddTrainData::runTask(BlossomLeaf &blossomLeaf,
     const std::string uuid = blossomLeaf.input.get("uuid").getString();
     const std::string base64Data = blossomLeaf.input.get("data").getString();
     const long position = blossomLeaf.input.get("position").getLong();
+    const std::string dataType = blossomLeaf.input.get("data_type").getString();
     const std::string userUuid = context.getStringByKey("uuid");
     const std::string projectUuid = context.getStringByKey("projects");
     const bool isAdmin = context.getBoolByKey("is_admin");
@@ -92,13 +99,18 @@ AddTrainData::runTask(BlossomLeaf &blossomLeaf,
                                                 userUuid,
                                                 projectUuid,
                                                 isAdmin,
-                                                error, true) == false)
+                                                error,
+                                                true) == false)
     {
         status.errorMessage = "Data with uuid '" + uuid + "' not found.";
         status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
         return false;
     }
-    const std::string targetFilePath = result.get("location").getString();
+
+    const std::string targetFilePath = result.get("location").getString()
+                                       + "_"
+                                       + dataType
+                                       + "_temp";
 
     // check data-input
     if(base64Data.size() == 0)

@@ -1,5 +1,5 @@
 /**
- * @file        finalize_train_data.h
+ * @file        delete_data_set.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,27 +20,22 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_FINALIZETRAINDATA_H
-#define SAGIRIARCHIVE_FINALIZETRAINDATA_H
+#ifndef SAGIRIARCHIVE_DELETE_DATA_SET_H
+#define SAGIRIARCHIVE_DELETE_DATA_SET_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-class FinalizeTrainData
+class DeleteDataSet
         : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    FinalizeTrainData();
+    DeleteDataSet();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
                  const Kitsunemimi::DataMap &context,
                  Kitsunemimi::Sakura::BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
-
-private:
-    bool convertMnistData(Kitsunemimi::DataBuffer &resultBuffer,
-                        const Kitsunemimi::DataBuffer &inputBuffer,
-                        const Kitsunemimi::DataBuffer &labelBuffer);
 };
 
-#endif // SAGIRIARCHIVE_FINALIZETRAINDATA_H
+#endif // SAGIRIARCHIVE_DELETE_DATA_SET_H

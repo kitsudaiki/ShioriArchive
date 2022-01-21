@@ -1,5 +1,5 @@
 /**
- * @file        delete_train_data.cpp
+ * @file        delete_data_set.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,10 +20,10 @@
  *      limitations under the License.
  */
 
-#include "delete_train_data.h"
+#include "delete_data_set.h"
 
 #include <sagiri_root.h>
-#include <database/train_data_table.h>
+#include <database/data_set_table.h>
 
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/common_methods/file_methods.h>
@@ -32,7 +32,7 @@
 
 using namespace Kitsunemimi;
 
-DeleteTrainData::DeleteTrainData()
+DeleteDataSet::DeleteDataSet()
     : Kitsunemimi::Sakura::Blossom("Delete a speific set of train-data.")
 {
     //----------------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ DeleteTrainData::DeleteTrainData()
  * @brief runTask
  */
 bool
-DeleteTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
+DeleteDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
                          const Kitsunemimi::DataMap &context,
                          Sakura::BlossomStatus &status,
                          ErrorContainer &error)
@@ -67,7 +67,7 @@ DeleteTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::trainDataTable->getTrainData(result,
+    if(SagiriRoot::dataSetTable->getDataSet(result,
                                                 dataUuid,
                                                 userUuid,
                                                 projectUuid,
@@ -83,7 +83,7 @@ DeleteTrainData::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const std::string location = result.get("location").getString();
 
     // delete entry from db
-    if(SagiriRoot::trainDataTable->deleteTrainData(dataUuid,
+    if(SagiriRoot::dataSetTable->deleteDataSet(dataUuid,
                                                    userUuid,
                                                    projectUuid,
                                                    isAdmin,

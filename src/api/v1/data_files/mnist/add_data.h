@@ -1,5 +1,5 @@
 /**
- * @file        get_train_data.h
+ * @file        add_data.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,22 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_GET_TRAIN_DATA_H
-#define SAGIRIARCHIVE_GET_TRAIN_DATA_H
+#ifndef SAGIRIARCHIVE_MNIST_ADD_DATA_H
+#define SAGIRIARCHIVE_MNIST_ADD_DATA_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-class GetTrainData
+class AddDataSet
         : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    GetTrainData();
+    AddDataSet();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
-                 const Kitsunemimi::DataMap &,
+                 const Kitsunemimi::DataMap &context,
                  Kitsunemimi::Sakura::BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SAGIRIARCHIVE_GET_TRAIN_DATA_H
+#endif // SAGIRIARCHIVE_MNIST_ADD_DATA_H

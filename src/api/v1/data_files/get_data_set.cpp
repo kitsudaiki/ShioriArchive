@@ -1,5 +1,5 @@
 /**
- * @file        get_train_data.cpp
+ * @file        get_data_set.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,10 +20,10 @@
  *      limitations under the License.
  */
 
-#include "get_train_data.h"
+#include "get_data_set.h"
 
 #include <sagiri_root.h>
-#include <database/train_data_table.h>
+#include <database/data_set_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiCrypto/common.h>
@@ -31,7 +31,7 @@
 
 using namespace Kitsunemimi::Sakura;
 
-GetTrainData::GetTrainData()
+GetDataSet::GetDataSet()
     : Blossom("Get information of a specific set of train-data.")
 {
     //----------------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ GetTrainData::GetTrainData()
  * @brief runTask
  */
 bool
-GetTrainData::runTask(BlossomLeaf &blossomLeaf,
+GetDataSet::runTask(BlossomLeaf &blossomLeaf,
                       const Kitsunemimi::DataMap &context,
                       BlossomStatus &status,
                       Kitsunemimi::ErrorContainer &error)
@@ -92,7 +92,7 @@ GetTrainData::runTask(BlossomLeaf &blossomLeaf,
     const std::string projectUuid = context.getStringByKey("projects");
     const bool isAdmin = context.getBoolByKey("is_admin");
 
-    if(SagiriRoot::trainDataTable->getTrainData(blossomLeaf.output,
+    if(SagiriRoot::dataSetTable->getDataSet(blossomLeaf.output,
                                                 dataUuid,
                                                 userUuid,
                                                 projectUuid,

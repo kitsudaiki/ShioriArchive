@@ -1,5 +1,5 @@
 /**
- * @file        callbacks.h
+ * @file        list_data_set.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,17 +20,22 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_CALLBACKS_H
-#define SAGIRIARCHIVE_CALLBACKS_H
+#ifndef SAGIRIARCHIVE_LIST_DATA_SET_H
+#define SAGIRIARCHIVE_LIST_DATA_SET_H
 
-#include <libKitsunemimiSakuraNetwork/session.h>
+#include <libKitsunemimiSakuraLang/blossom.h>
 
-void streamDataCallback(void*,
-                        Kitsunemimi::Sakura::Session*,
-                        const void*,
-                        const uint64_t)
+class ListDataSet
+        : public Kitsunemimi::Sakura::Blossom
 {
+public:
+    ListDataSet();
 
-}
+protected:
+    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+                 const Kitsunemimi::DataMap &context,
+                 Kitsunemimi::Sakura::BlossomStatus &status,
+                 Kitsunemimi::ErrorContainer &error);
+};
 
-#endif // SAGIRIARCHIVE_CALLBACKS_H
+#endif // SAGIRIARCHIVE_LIST_DATA_SET_H

@@ -1,5 +1,5 @@
 /**
- * @file        finalize_train_data.cpp
+ * @file        finalize_data_set.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,10 +20,10 @@
  *      limitations under the License.
  */
 
-#include "finalize_train_data.h"
+#include "finalize_data_set.h"
 
 #include <sagiri_root.h>
-#include <database/train_data_table.h>
+#include <database/data_set_table.h>
 
 #include <libKitsunemimiHanamiCommon/uuid.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -39,7 +39,7 @@
 
 using namespace Kitsunemimi::Sakura;
 
-FinalizeTrainData::FinalizeTrainData()
+FinalizeDataSet::FinalizeDataSet()
     : Kitsunemimi::Sakura::Blossom("Finalize uploaded train-data by checking completeness of the "
                                    "uploaded and convert into generic format.")
 {
@@ -63,7 +63,7 @@ FinalizeTrainData::FinalizeTrainData()
  * @brief runTask
  */
 bool
-FinalizeTrainData::runTask(BlossomLeaf &blossomLeaf,
+FinalizeDataSet::runTask(BlossomLeaf &blossomLeaf,
                            const Kitsunemimi::DataMap &context,
                            BlossomStatus &status,
                            Kitsunemimi::ErrorContainer &error)
@@ -75,7 +75,7 @@ FinalizeTrainData::runTask(BlossomLeaf &blossomLeaf,
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::trainDataTable->getTrainData(result,
+    if(SagiriRoot::dataSetTable->getDataSet(result,
                                                 uuid,
                                                 userUuid,
                                                 projectUuid,
@@ -140,13 +140,13 @@ FinalizeTrainData::runTask(BlossomLeaf &blossomLeaf,
 }
 
 /**
- * @brief FinalizeTrainData::startMnistTask
+ * @brief FinalizeDataSet::startMnistTask
  * @param inputBuffer
  * @param labelBuffer
  * @return
  */
 bool
-FinalizeTrainData::convertMnistData(Kitsunemimi::DataBuffer &resultBuffer,
+FinalizeDataSet::convertMnistData(Kitsunemimi::DataBuffer &resultBuffer,
                                     const Kitsunemimi::DataBuffer &inputBuffer,
                                     const Kitsunemimi::DataBuffer &labelBuffer)
 {

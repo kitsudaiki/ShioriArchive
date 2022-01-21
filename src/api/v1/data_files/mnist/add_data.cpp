@@ -1,5 +1,5 @@
 /**
- * @file        add_train_data.cpp
+ * @file        add_data.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,10 +20,10 @@
  *      limitations under the License.
  */
 
-#include "add_train_data.h"
+#include "add_data.h"
 
 #include <sagiri_root.h>
-#include <database/train_data_table.h>
+#include <database/data_set_table.h>
 
 #include <libKitsunemimiHanamiCommon/uuid.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -39,7 +39,7 @@
 
 using namespace Kitsunemimi::Sakura;
 
-AddTrainData::AddTrainData()
+AddDataSet::AddDataSet()
     : Kitsunemimi::Sakura::Blossom("Add new set of train-data.")
 {
     //----------------------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ AddTrainData::AddTrainData()
  * @brief runTask
  */
 bool
-AddTrainData::runTask(BlossomLeaf &blossomLeaf,
+AddDataSet::runTask(BlossomLeaf &blossomLeaf,
                       const Kitsunemimi::DataMap &context,
                       BlossomStatus &status,
                       Kitsunemimi::ErrorContainer &error)
@@ -94,7 +94,7 @@ AddTrainData::runTask(BlossomLeaf &blossomLeaf,
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::trainDataTable->getTrainData(result,
+    if(SagiriRoot::dataSetTable->getDataSet(result,
                                                 uuid,
                                                 userUuid,
                                                 projectUuid,

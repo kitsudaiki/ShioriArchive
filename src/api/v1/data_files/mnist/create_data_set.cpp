@@ -1,7 +1,29 @@
-#include "create_train_data.h"
+/**
+ * @file        create_data_set.cpp
+ *
+ * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
+ *
+ * @copyright   Apache License Version 2.0
+ *
+ *      Copyright 2021 Tobias Anker
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
+#include "create_data_set.h"
 
 #include <sagiri_root.h>
-#include <database/train_data_table.h>
+#include <database/data_set_table.h>
 
 #include <libKitsunemimiHanamiCommon/uuid.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -17,7 +39,7 @@
 
 using namespace Kitsunemimi::Sakura;
 
-CreateTrainData::CreateTrainData()
+CreateDataSet::CreateDataSet()
     : Kitsunemimi::Sakura::Blossom("Init new set of train-data.")
 {
     //----------------------------------------------------------------------------------------------
@@ -66,7 +88,7 @@ CreateTrainData::CreateTrainData()
 }
 
 bool
-CreateTrainData::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+CreateDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
                          const Kitsunemimi::DataMap &context,
                          Kitsunemimi::Sakura::BlossomStatus &status,
                          Kitsunemimi::ErrorContainer &error)
@@ -79,7 +101,7 @@ CreateTrainData::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
 
     // get directory to store data from config
     bool success = false;
-    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "train_data_location", success);
+    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
     if(success == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
@@ -107,7 +129,7 @@ CreateTrainData::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     blossomLeaf.output.insert("owner_uuid", userUuid);
     blossomLeaf.output.insert("visibility", 0);
 
-    if(SagiriRoot::trainDataTable->addTrainData(blossomLeaf.output,
+    if(SagiriRoot::dataSetTable->addDataSet(blossomLeaf.output,
                                                 userUuid,
                                                 projectUuid,
                                                 error) == false)

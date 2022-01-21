@@ -24,11 +24,11 @@
 
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
-#include <database/train_data_table.h>
+#include <database/data_set_table.h>
 
 #include <api/blossom_initializing.h>
 
-TrainDataTable* SagiriRoot::trainDataTable = nullptr;
+DataSetTable* SagiriRoot::dataSetTable = nullptr;
 Kitsunemimi::Sakura::SqlDatabase* SagiriRoot::database = nullptr;
 
 SagiriRoot::SagiriRoot() {}
@@ -62,8 +62,8 @@ SagiriRoot::init()
     }
 
     // initialize users-table
-    trainDataTable = new TrainDataTable(database);
-    if(trainDataTable->initTable(error) == false)
+    dataSetTable = new DataSetTable(database);
+    if(dataSetTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize train-data-table in database.");
         LOG_ERROR(error);

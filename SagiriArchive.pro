@@ -104,11 +104,11 @@ SOURCES += src/main.cpp \
     src/api/v1/data_files/delete_data_set.cpp \
     src/api/v1/data_files/get_data_set.cpp \
     src/api/v1/data_files/list_data_set.cpp \
-    src/api/v1/data_files/mnist/add_data.cpp \
     src/api/v1/data_files/mnist/create_data_set.cpp \
     src/api/v1/data_files/mnist/finalize_data_set.cpp \
     src/api/v1/logging/add_audit_log.cpp \
     src/api/v1/logging/add_error_log.cpp \
+    src/core/temp_file_handler.cpp \
     src/database/data_set_table.cpp \
     src/sagiri_root.cpp
 
@@ -117,7 +117,6 @@ HEADERS += \
     src/api/v1/data_files/delete_data_set.h \
     src/api/v1/data_files/get_data_set.h \
     src/api/v1/data_files/list_data_set.h \
-    src/api/v1/data_files/mnist/add_data.h \
     src/api/v1/data_files/mnist/create_data_set.h \
     src/api/v1/data_files/mnist/finalize_data_set.h \
     src/api/v1/logging/add_audit_log.h \
@@ -125,5 +124,6 @@ HEADERS += \
     src/args.h \
     src/callbacks.h \
     src/config.h \
+    src/core/temp_file_handler.h \
     src/database/data_set_table.h \
     src/sagiri_root.h

@@ -25,11 +25,11 @@
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-class CreateDataSet
+class CreateMnistDataSet
         : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    CreateDataSet();
+    CreateMnistDataSet();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,

@@ -25,12 +25,23 @@
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 
+#include <core/temp_file_handler.h>
+#include <sagiri_root.h>
+
 void streamDataCallback(void*,
                         Kitsunemimi::Sakura::Session*,
-                        const void*,
-                        const uint64_t)
+                        const void* data,
+                        const uint64_t dataSize)
 {
+    const uint8_t* ptr = static_cast<const uint8_t*>(data);
 
+    const std::string id(reinterpret_cast<const char*>(ptr), 36);
+    ptr += 36;
+
+    const uint64_t pos = *reinterpret_cast<const uint64_t*>(ptr);
+    ptr += 8;
+
+    SagiriRoot::tempFileHandler->addDataToPos(id, pos, ptr, dataSize - 44);
 }
 
 #endif // SAGIRIARCHIVE_CALLBACKS_H

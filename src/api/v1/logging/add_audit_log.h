@@ -25,11 +25,11 @@
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-class AddAuditLog
+class ForwardSession
         : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    AddAuditLog();
+    ForwardSession();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,

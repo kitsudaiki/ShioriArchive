@@ -24,6 +24,7 @@
 
 #include <sagiri_root.h>
 #include <database/data_set_table.h>
+#include <core/temp_file_handler.h>
 
 #include <libKitsunemimiHanamiCommon/uuid.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -39,7 +40,7 @@
 
 using namespace Kitsunemimi::Sakura;
 
-CreateDataSet::CreateDataSet()
+CreateMnistDataSet::CreateMnistDataSet()
     : Kitsunemimi::Sakura::Blossom("Init new set of train-data.")
 {
     //----------------------------------------------------------------------------------------------
@@ -57,13 +58,13 @@ CreateDataSet::CreateDataSet()
                        SAKURA_INT_TYPE,
                        true,
                        "Total size of the input-data.");
-    assert(addFieldBorder("data_size", 1, 10000000000));
+    assert(addFieldBorder("input_data_size", 1, 10000000000));
 
     registerInputField("label_data_size",
                        SAKURA_INT_TYPE,
                        true,
                        "Total size of the label-data.");
-    assert(addFieldBorder("data_size", 1, 10000000000));
+    assert(addFieldBorder("label_data_size", 1, 10000000000));
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -80,7 +81,13 @@ CreateDataSet::CreateDataSet()
                         "UUID of the user who uploaded the data.");
     registerOutputField("type",
                         SAKURA_STRING_TYPE,
-                        "Type of the new set (For example: CSV)");
+                        "Type of the new set (For example: csv)");
+    registerOutputField("uuid_input_file",
+                        SAKURA_STRING_TYPE,
+                        "UUID to identify the file for date upload of input-data.");
+    registerOutputField("uuid_label_file",
+                        SAKURA_STRING_TYPE,
+                        "UUID to identify the file for date upload of label-data.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -88,14 +95,16 @@ CreateDataSet::CreateDataSet()
 }
 
 bool
-CreateDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
-                         const Kitsunemimi::DataMap &context,
-                         Kitsunemimi::Sakura::BlossomStatus &status,
-                         Kitsunemimi::ErrorContainer &error)
+CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+                            const Kitsunemimi::DataMap &context,
+                            Kitsunemimi::Sakura::BlossomStatus &status,
+                            Kitsunemimi::ErrorContainer &error)
 {
     const std::string name = blossomLeaf.input.get("name").getString();
     const std::string type = blossomLeaf.input.get("type").getString();
-    const long dataSize = blossomLeaf.input.get("data_size").getLong();
+    const long inputDataSize = blossomLeaf.input.get("input_data_size").getLong();
+    const long labelDataSize = blossomLeaf.input.get("label_data_size").getLong();
+
     const std::string userUuid = context.getStringByKey("uuid");
     const std::string projectUuid = context.getStringByKey("projects");
 
@@ -109,35 +118,53 @@ CreateDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
         return false;
     }
 
+    // init temp-file for input-data
+    const std::string inputUuid = Kitsunemimi::Hanami::generateUuid().toString();
+    if(SagiriRoot::tempFileHandler->initNewFile(inputUuid, inputDataSize) == false)
+    {
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Failed to initialize temporary file for new input-data.");
+        return false;
+    }
+
+    // init temp-file for label-data
+    const std::string labelUuid = Kitsunemimi::Hanami::generateUuid().toString();
+    if(SagiriRoot::tempFileHandler->initNewFile(labelUuid, labelDataSize) == false)
+    {
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Failed to initialize temporary file for new label-data.");
+        return false;
+    }
+
     // build absolut file-path to store the file
     if(targetFilePath.at(targetFilePath.size() - 1) != '/') {
         targetFilePath.append("/");
     }
     targetFilePath.append(name + "_" + type + "_" + userUuid);
 
-    // init empty file with the size for the complete data-set
-    Kitsunemimi::BinaryFile targetFile(targetFilePath, false);
-    targetFile.allocateStorage(dataSize, 1);
-    targetFile.closeFile();
-
     // register in database
     blossomLeaf.output.insert("name", name);
     blossomLeaf.output.insert("type", type);
     blossomLeaf.output.insert("location", targetFilePath);
-
     blossomLeaf.output.insert("project_uuid", projectUuid);
     blossomLeaf.output.insert("owner_uuid", userUuid);
     blossomLeaf.output.insert("visibility", 0);
 
+    // add to database
     if(SagiriRoot::dataSetTable->addDataSet(blossomLeaf.output,
-                                                userUuid,
-                                                projectUuid,
-                                                error) == false)
+                                            userUuid,
+                                            projectUuid,
+                                            error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
+    // add values to output
+    blossomLeaf.output.insert("uuid_input_file", inputUuid);
+    blossomLeaf.output.insert("uuid_label_file", labelUuid);
+
+    // remove blocked values from output
     blossomLeaf.output.remove("location");
     blossomLeaf.output.remove("project_uuid");
     blossomLeaf.output.remove("owner_uuid");

@@ -30,7 +30,6 @@
 
 #include <api/v1/data_files/list_data_set.h>
 #include <api/v1/data_files/get_data_set.h>
-#include <api/v1/data_files/mnist/add_data.h>
 #include <api/v1/data_files/mnist/create_data_set.h>
 #include <api/v1/data_files/mnist/finalize_data_set.h>
 #include <api/v1/data_files/delete_data_set.h>
@@ -41,28 +40,21 @@ using Kitsunemimi::Sakura::SakuraLangInterface;
  * @brief init special blossoms
  */
 void
-dataSetBlossomes()
+proxyBlossoms()
 {
     Kitsunemimi::Hanami::Endpoint* endpoints = Kitsunemimi::Hanami::Endpoint::getInstance();
     SakuraLangInterface* interface = SakuraLangInterface::getInstance();
     const std::string group = "data_set";
 
-    assert(interface->addBlossom(group, "create", new CreateDataSet()));
-    endpoints->addEndpoint("v1/data_set",
+    assert(interface->addBlossom(group, "create", new CreateMnistDataSet()));
+    endpoints->addEndpoint("v1/mnist/data_set",
                            Kitsunemimi::Hanami::POST_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "create");
 
-    assert(interface->addBlossom(group, "add", new AddDataSet()));
-    endpoints->addEndpoint("v1/data_set",
-                           Kitsunemimi::Hanami::PUT_TYPE,
-                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
-                           group,
-                           "add");
-
-    assert(interface->addBlossom(group, "finalize", new FinalizeDataSet()));
-    endpoints->addEndpoint("v1/data_set",
+    assert(interface->addBlossom(group, "finalize", new FinalizeMnistDataSet()));
+    endpoints->addEndpoint("v1/mnist/data_set",
                            Kitsunemimi::Hanami::PUT_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
@@ -94,7 +86,7 @@ dataSetBlossomes()
 void
 initBlossoms()
 {
-    dataSetBlossomes();
+    proxyBlossoms();
 }
 
 #endif // SAGIRIARCHIVE_BLOSSOM_INITIALIZING_H

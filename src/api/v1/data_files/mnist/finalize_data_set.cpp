@@ -24,6 +24,7 @@
 
 #include <sagiri_root.h>
 #include <database/data_set_table.h>
+#include <core/temp_file_handler.h>
 
 #include <libKitsunemimiHanamiCommon/uuid.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -39,7 +40,7 @@
 
 using namespace Kitsunemimi::Sakura;
 
-FinalizeDataSet::FinalizeDataSet()
+FinalizeMnistDataSet::FinalizeMnistDataSet()
     : Kitsunemimi::Sakura::Blossom("Finalize uploaded train-data by checking completeness of the "
                                    "uploaded and convert into generic format.")
 {
@@ -53,6 +54,26 @@ FinalizeDataSet::FinalizeDataSet()
                        "Name of the new set.");
     assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
                                  "[a-fA-F0-9]{12}"));
+    registerInputField("uuid_input_file",
+                       SAKURA_STRING_TYPE,
+                       true,
+                       "UUID to identify the file for date upload of input-data.");
+    assert(addFieldRegex("uuid_input_file", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+                                            "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+    registerInputField("uuid_label_file",
+                       SAKURA_STRING_TYPE,
+                       true,
+                       "UUID to identify the file for date upload of label-data.");
+    assert(addFieldRegex("uuid_label_file", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+                                            "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+
+    //----------------------------------------------------------------------------------------------
+    // output
+    //----------------------------------------------------------------------------------------------
+
+    registerOutputField("uuid",
+                        SAKURA_STRING_TYPE,
+                        "UUID of the new set.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -63,12 +84,15 @@ FinalizeDataSet::FinalizeDataSet()
  * @brief runTask
  */
 bool
-FinalizeDataSet::runTask(BlossomLeaf &blossomLeaf,
-                           const Kitsunemimi::DataMap &context,
-                           BlossomStatus &status,
-                           Kitsunemimi::ErrorContainer &error)
+FinalizeMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
+                              const Kitsunemimi::DataMap &context,
+                              BlossomStatus &status,
+                              Kitsunemimi::ErrorContainer &error)
 {
     const std::string uuid = blossomLeaf.input.get("uuid").getString();
+    const std::string inputUuid = blossomLeaf.input.get("uuid_input_file").getString();
+    const std::string labelUuid = blossomLeaf.input.get("uuid_label_file").getString();
+
     const std::string userUuid = context.getStringByKey("uuid");
     const std::string projectUuid = context.getStringByKey("projects");
     const bool isAdmin = context.getBoolByKey("is_admin");
@@ -76,12 +100,12 @@ FinalizeDataSet::runTask(BlossomLeaf &blossomLeaf,
     // get location from database
     Kitsunemimi::Json::JsonItem result;
     if(SagiriRoot::dataSetTable->getDataSet(result,
-                                                uuid,
-                                                userUuid,
-                                                projectUuid,
-                                                isAdmin,
-                                                error,
-                                                true) == false)
+                                            uuid,
+                                            userUuid,
+                                            projectUuid,
+                                            isAdmin,
+                                            error,
+                                            true) == false)
     {
         status.errorMessage = "Data with uuid '" + uuid + "' not found.";
         status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
@@ -90,27 +114,21 @@ FinalizeDataSet::runTask(BlossomLeaf &blossomLeaf,
 
     // read input-data from temp-file
     Kitsunemimi::DataBuffer inputBuffer;
-    const std::string inputTempFilePath = result.get("location").getString() + "_input_temp";
-    Kitsunemimi::BinaryFile inputTempFile(inputTempFilePath, false);
-    if(inputTempFile.readCompleteFile(inputBuffer) == false)
+    if(SagiriRoot::tempFileHandler->getData(inputBuffer, inputUuid) == false)
     {
-        status.statusCode =Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to read input-data from file \"" + inputTempFilePath + "\"");
+        status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
+        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
         return false;
     }
-    inputTempFile.closeFile();
 
     // read label from temp-file
     Kitsunemimi::DataBuffer labelBuffer;
-    const std::string labelTempFilePath = result.get("location").getString() + "_label_temp";
-    Kitsunemimi::BinaryFile labelTempFile(labelTempFilePath, false);
-    if(labelTempFile.writeCompleteFile(labelBuffer) == false)
+    if(SagiriRoot::tempFileHandler->getData(labelBuffer, labelUuid) == false)
     {
-        status.statusCode =Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to read label-data from file \"" + labelTempFilePath + "\"");
+        status.errorMessage = "Label-data with uuid '" + inputUuid + "' not found.";
+        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
         return false;
     }
-    labelTempFile.closeFile();
 
     // write data to file
     Kitsunemimi::DataBuffer resultBuffer;
@@ -126,29 +144,35 @@ FinalizeDataSet::runTask(BlossomLeaf &blossomLeaf,
     Kitsunemimi::BinaryFile targetFile(targetFilePath, false);
     if(targetFile.writeCompleteFile(resultBuffer) == false)
     {
-        status.statusCode =Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to write train-data to file \"" + targetFilePath + "\"");
         return false;
     }
     targetFile.closeFile();
 
     // delete temp-files
-    Kitsunemimi::deleteFileOrDir(inputTempFilePath, error);
-    Kitsunemimi::deleteFileOrDir(labelTempFilePath, error);
+    SagiriRoot::tempFileHandler->removeData(inputUuid);
+    SagiriRoot::tempFileHandler->removeData(labelUuid);
+
+    // create output
+    blossomLeaf.output.insert("uuid", uuid);
 
     return true;
 }
 
 /**
- * @brief FinalizeDataSet::startMnistTask
- * @param inputBuffer
- * @param labelBuffer
- * @return
+ * @brief convert mnist-data into generic format
+ *
+ * @param resultBuffer buffer for the resulting file, which should be written back to disc
+ * @param inputBuffer buffer with input-data
+ * @param labelBuffer buffer with label-data
+ *
+ * @return true, if successfull, else false
  */
 bool
-FinalizeDataSet::convertMnistData(Kitsunemimi::DataBuffer &resultBuffer,
-                                    const Kitsunemimi::DataBuffer &inputBuffer,
-                                    const Kitsunemimi::DataBuffer &labelBuffer)
+FinalizeMnistDataSet::convertMnistData(Kitsunemimi::DataBuffer &resultBuffer,
+                                       const Kitsunemimi::DataBuffer &inputBuffer,
+                                       const Kitsunemimi::DataBuffer &labelBuffer)
 {
     const uint64_t dataOffset = 16;
     const uint64_t labelOffset = 8;
@@ -179,8 +203,9 @@ FinalizeDataSet::convertMnistData(Kitsunemimi::DataBuffer &resultBuffer,
 
     // get pictures
     const uint32_t pictureSize = numberOfRows * numberOfColumns;
-    const uint64_t retSize = (numberOfImages * pictureSize + 10) * 4;
+    const uint64_t retSize = (numberOfImages * (pictureSize + 10)) * 4;
     Kitsunemimi::allocateBlocks_DataBuffer(resultBuffer, Kitsunemimi::calcBytesToBlocks(retSize));
+    resultBuffer.usedBufferSize = retSize;
     float* resultPtr = static_cast<float*>(resultBuffer.data);
     uint64_t resultPos = 0;
     uint64_t dataPos = 0;
@@ -191,18 +216,19 @@ FinalizeDataSet::convertMnistData(Kitsunemimi::DataBuffer &resultBuffer,
         return false;
     }
 
+    // copy values of each pixel into the resulting file
     for(uint32_t pic = 0; pic < numberOfImages; pic++)
     {
         // input
         for(uint32_t i = 0; i < pictureSize; i++)
         {
             const uint32_t pos = pic * pictureSize + i + dataOffset;
-            resultPtr[resultPos] = static_cast<float>(dataBufferPtr[pos]);
+            resultPtr[resultPos] = (static_cast<float>(dataBufferPtr[pos]) / 255.0f);
             dataPos++;
             resultPos++;
         }
 
-        // output
+        // label
         for(uint32_t i = 0; i < 10; i++)
         {
             resultPtr[resultPos] = 0.0f;

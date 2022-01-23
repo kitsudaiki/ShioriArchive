@@ -25,11 +25,11 @@
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-class FinalizeDataSet
+class FinalizeMnistDataSet
         : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    FinalizeDataSet();
+    FinalizeMnistDataSet();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,

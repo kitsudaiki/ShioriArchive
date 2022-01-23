@@ -29,6 +29,7 @@ class SqlDatabase;
 }
 }
 class DataSetTable;
+class TempFileHandler;
 
 class SagiriRoot
 {
@@ -37,6 +38,7 @@ public:
 
     bool init();
 
+    static TempFileHandler* tempFileHandler;
     static DataSetTable* dataSetTable;
     static Kitsunemimi::Sakura::SqlDatabase* database;
 };

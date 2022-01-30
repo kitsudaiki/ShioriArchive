@@ -51,7 +51,8 @@ int main(int argc, char *argv[])
     if(HanamiMessaging::getInstance()->initialize("sagiri",
                                                   groupNames,
                                                   nullptr,
-                                                  streamDataCallback,
+                                                  &streamDataCallback,
+                                                  &dataRequestCallback,
                                                   error,
                                                   true) == false)
     {

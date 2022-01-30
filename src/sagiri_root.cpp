@@ -24,18 +24,21 @@
 
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
-#include <database/train_data_table.h>
 
+#include <database/data_set_table.h>
+#include <core/temp_file_handler.h>
 #include <api/blossom_initializing.h>
 
-TrainDataTable* SagiriRoot::trainDataTable = nullptr;
+TempFileHandler* SagiriRoot::tempFileHandler = nullptr;
+DataSetTable* SagiriRoot::dataSetTable = nullptr;
 Kitsunemimi::Sakura::SqlDatabase* SagiriRoot::database = nullptr;
 
 SagiriRoot::SagiriRoot() {}
 
 /**
- * @brief SagiriRoot::init
- * @return
+ * @brief init sagiri-root-object
+ *
+ * @return true, if successfull, else false
  */
 bool
 SagiriRoot::init()
@@ -62,13 +65,16 @@ SagiriRoot::init()
     }
 
     // initialize users-table
-    trainDataTable = new TrainDataTable(database);
-    if(trainDataTable->initTable(error) == false)
+    dataSetTable = new DataSetTable(database);
+    if(dataSetTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize train-data-table in database.");
         LOG_ERROR(error);
         return false;
     }
+
+    // create new tempfile-handler
+    tempFileHandler = new TempFileHandler();
 
     initBlossoms();
 

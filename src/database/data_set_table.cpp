@@ -1,5 +1,5 @@
 /**
- * @file        users_database.cpp
+ * @file        data_set_table.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <database/train_data_table.h>
+#include <database/data_set_table.h>
 
 #include <libKitsunemimiCommon/common_items/table_item.h>
 #include <libKitsunemimiCommon/common_methods/string_methods.h>
@@ -33,10 +33,10 @@
  *
  * @param db pointer to database
  */
-TrainDataTable::TrainDataTable(Kitsunemimi::Sakura::SqlDatabase* db)
+DataSetTable::DataSetTable(Kitsunemimi::Sakura::SqlDatabase* db)
     : HanamiSqlTable(db)
 {
-    m_tableName = "train_data";
+    m_tableName = "data_set";
 
     DbHeaderEntry name;
     name.name = "name";
@@ -57,7 +57,7 @@ TrainDataTable::TrainDataTable(Kitsunemimi::Sakura::SqlDatabase* db)
 /**
  * @brief destructor
  */
-TrainDataTable::~TrainDataTable() {}
+DataSetTable::~DataSetTable() {}
 
 /**
  * @brief add new metadata of a train-data-set into the database
@@ -70,7 +70,7 @@ TrainDataTable::~TrainDataTable() {}
  * @return true, if successful, else false
  */
 bool
-TrainDataTable::addTrainData(Kitsunemimi::Json::JsonItem &data,
+DataSetTable::addDataSet(Kitsunemimi::Json::JsonItem &data,
                              const std::string &userUuid,
                              const std::string &projectUuid,
                              Kitsunemimi::ErrorContainer &error)
@@ -92,7 +92,7 @@ TrainDataTable::addTrainData(Kitsunemimi::Json::JsonItem &data,
  * @return true, if successful, else false
  */
 bool
-TrainDataTable::getTrainData(Kitsunemimi::Json::JsonItem &result,
+DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
                              const std::string &uuid,
                              const std::string &userUuid,
                              const std::string &projectUuid,
@@ -126,7 +126,7 @@ TrainDataTable::getTrainData(Kitsunemimi::Json::JsonItem &result,
  * @return true, if successful, else false
  */
 bool
-TrainDataTable::getAllTrainData(Kitsunemimi::TableItem &result,
+DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
                                 const std::string &userUuid,
                                 const std::string &projectUuid,
                                 const bool isAdmin,
@@ -147,7 +147,7 @@ TrainDataTable::getAllTrainData(Kitsunemimi::TableItem &result,
  * @return true, if successful, else false
  */
 bool
-TrainDataTable::deleteTrainData(const std::string &uuid,
+DataSetTable::deleteDataSet(const std::string &uuid,
                                 const std::string &userUuid,
                                 const std::string &projectUuid,
                                 const bool isAdmin,

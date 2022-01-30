@@ -101,27 +101,29 @@ INCLUDEPATH += $$PWD \
                src
 
 SOURCES += src/main.cpp \
-    src/api/v1/data_files/add_train_data.cpp \
-    src/api/v1/data_files/create_train_data.cpp \
-    src/api/v1/data_files/delete_train_data.cpp \
-    src/api/v1/data_files/get_train_data.cpp \
-    src/api/v1/data_files/list_train_data.cpp \
+    src/api/v1/data_files/delete_data_set.cpp \
+    src/api/v1/data_files/get_data_set.cpp \
+    src/api/v1/data_files/list_data_set.cpp \
+    src/api/v1/data_files/mnist/create_data_set.cpp \
+    src/api/v1/data_files/mnist/finalize_data_set.cpp \
     src/api/v1/logging/add_audit_log.cpp \
     src/api/v1/logging/add_error_log.cpp \
-    src/database/train_data_table.cpp \
+    src/core/temp_file_handler.cpp \
+    src/database/data_set_table.cpp \
     src/sagiri_root.cpp
 
 HEADERS += \
     src/api/blossom_initializing.h \
-    src/api/v1/data_files/add_train_data.h \
-    src/api/v1/data_files/create_train_data.h \
-    src/api/v1/data_files/delete_train_data.h \
-    src/api/v1/data_files/get_train_data.h \
-    src/api/v1/data_files/list_train_data.h \
+    src/api/v1/data_files/delete_data_set.h \
+    src/api/v1/data_files/get_data_set.h \
+    src/api/v1/data_files/list_data_set.h \
+    src/api/v1/data_files/mnist/create_data_set.h \
+    src/api/v1/data_files/mnist/finalize_data_set.h \
     src/api/v1/logging/add_audit_log.h \
     src/api/v1/logging/add_error_log.h \
     src/args.h \
     src/callbacks.h \
     src/config.h \
-    src/database/train_data_table.h \
+    src/core/temp_file_handler.h \
+    src/database/data_set_table.h \
     src/sagiri_root.h

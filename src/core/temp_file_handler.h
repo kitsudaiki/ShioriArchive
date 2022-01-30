@@ -1,5 +1,5 @@
 /**
- * @file        get_train_data.h
+ * @file        temp_file_handler.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,33 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_GET_TRAIN_DATA_H
-#define SAGIRIARCHIVE_GET_TRAIN_DATA_H
+#ifndef TEMPFILEHANDLER_H
+#define TEMPFILEHANDLER_H
 
-#include <libKitsunemimiSakuraLang/blossom.h>
+#include <string>
+#include <map>
 
-class GetTrainData
-        : public Kitsunemimi::Sakura::Blossom
+namespace Kitsunemimi {
+class BinaryFile;
+struct DataBuffer;
+}
+
+class TempFileHandler
 {
 public:
-    GetTrainData();
+    TempFileHandler();
+    ~TempFileHandler();
 
-protected:
-    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
-                 const Kitsunemimi::DataMap &,
-                 Kitsunemimi::Sakura::BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+    bool initNewFile(const std::string &id, const uint64_t size);
+    bool addDataToPos(const std::string &id,
+                      const uint64_t pos,
+                      const void* data,
+                      const uint64_t size);
+    bool getData(Kitsunemimi::DataBuffer &result, const std::string &id);
+    bool removeData(const std::string &id);
+
+private:
+    std::map<std::string, Kitsunemimi::BinaryFile*> m_tempFiles;
 };
 
-#endif // SAGIRIARCHIVE_GET_TRAIN_DATA_H
+#endif // TEMPFILEHANDLER_H

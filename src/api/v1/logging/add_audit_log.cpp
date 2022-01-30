@@ -24,7 +24,7 @@
 
 using namespace Kitsunemimi;
 
-AddAuditLog::AddAuditLog()
+ForwardSession::ForwardSession()
     : Kitsunemimi::Sakura::Blossom("Add new audit-entry.")
 {
 
@@ -33,7 +33,7 @@ AddAuditLog::AddAuditLog()
  * @brief runTask
  */
 bool
-AddAuditLog::runTask(Sakura::BlossomLeaf &blossomLeaf,
+ForwardSession::runTask(Sakura::BlossomLeaf &blossomLeaf,
                      const Kitsunemimi::DataMap &context,
                      Sakura::BlossomStatus &status,
                      ErrorContainer &error)

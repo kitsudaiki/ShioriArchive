@@ -28,7 +28,8 @@ namespace Sakura {
 class SqlDatabase;
 }
 }
-class TrainDataTable;
+class DataSetTable;
+class TempFileHandler;
 
 class SagiriRoot
 {
@@ -37,7 +38,8 @@ public:
 
     bool init();
 
-    static TrainDataTable* trainDataTable;
+    static TempFileHandler* tempFileHandler;
+    static DataSetTable* dataSetTable;
     static Kitsunemimi::Sakura::SqlDatabase* database;
 };
 

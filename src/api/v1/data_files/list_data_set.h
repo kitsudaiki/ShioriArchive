@@ -1,5 +1,5 @@
 /**
- * @file        callbacks.h
+ * @file        list_data_set.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,28 +20,22 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_CALLBACKS_H
-#define SAGIRIARCHIVE_CALLBACKS_H
+#ifndef SAGIRIARCHIVE_LIST_DATA_SET_H
+#define SAGIRIARCHIVE_LIST_DATA_SET_H
 
-#include <libKitsunemimiSakuraNetwork/session.h>
+#include <libKitsunemimiSakuraLang/blossom.h>
 
-#include <core/temp_file_handler.h>
-#include <sagiri_root.h>
-
-void streamDataCallback(void*,
-                        Kitsunemimi::Sakura::Session*,
-                        const void* data,
-                        const uint64_t dataSize)
+class ListDataSet
+        : public Kitsunemimi::Sakura::Blossom
 {
-    const uint8_t* ptr = static_cast<const uint8_t*>(data);
+public:
+    ListDataSet();
 
-    const std::string id(reinterpret_cast<const char*>(ptr), 36);
-    ptr += 36;
+protected:
+    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+                 const Kitsunemimi::DataMap &context,
+                 Kitsunemimi::Sakura::BlossomStatus &status,
+                 Kitsunemimi::ErrorContainer &error);
+};
 
-    const uint64_t pos = *reinterpret_cast<const uint64_t*>(ptr);
-    ptr += 8;
-
-    SagiriRoot::tempFileHandler->addDataToPos(id, pos, ptr, dataSize - 44);
-}
-
-#endif // SAGIRIARCHIVE_CALLBACKS_H
+#endif // SAGIRIARCHIVE_LIST_DATA_SET_H

@@ -1,5 +1,5 @@
 /**
- * @file        create_token.h
+ * @file        list_data_set.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,16 +20,16 @@
  *      limitations under the License.
  */
 
-#include "list_train_data.h"
+#include "list_data_set.h"
 
 #include <sagiri_root.h>
-#include <database/train_data_table.h>
+#include <database/data_set_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
 using namespace Kitsunemimi::Sakura;
 
-ListTrainData::ListTrainData()
+ListDataSet::ListDataSet()
     : Kitsunemimi::Sakura::Blossom("Get information of all uploaded sets fo train-data as table.")
 {
     //----------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ ListTrainData::ListTrainData()
  * @brief runTask
  */
 bool
-ListTrainData::runTask(BlossomLeaf &blossomLeaf,
+ListDataSet::runTask(BlossomLeaf &blossomLeaf,
                        const Kitsunemimi::DataMap &context,
                        BlossomStatus &status,
                        Kitsunemimi::ErrorContainer &error)
@@ -64,7 +64,7 @@ ListTrainData::runTask(BlossomLeaf &blossomLeaf,
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(SagiriRoot::trainDataTable->getAllTrainData(table,
+    if(SagiriRoot::dataSetTable->getAllDataSet(table,
                                                    userUuid,
                                                    projectUuid,
                                                    isAdmin,

@@ -1,5 +1,5 @@
 /**
- * @file        create_token.h
+ * @file        delete_data_set.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,16 +20,16 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_LISTTRAINDATA_H
-#define SAGIRIARCHIVE_LISTTRAINDATA_H
+#ifndef SAGIRIARCHIVE_DELETE_DATA_SET_H
+#define SAGIRIARCHIVE_DELETE_DATA_SET_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-class ListTrainData
+class DeleteDataSet
         : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    ListTrainData();
+    DeleteDataSet();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
@@ -38,4 +38,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SAGIRIARCHIVE_LISTTRAINDATA_H
+#endif // SAGIRIARCHIVE_DELETE_DATA_SET_H

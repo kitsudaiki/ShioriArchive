@@ -28,11 +28,11 @@
 
 #include <libKitsunemimiHanamiEndpoints/endpoint.h>
 
-#include <api/v1/data_files/list_train_data.h>
-#include <api/v1/data_files/get_train_data.h>
-#include <api/v1/data_files/add_train_data.h>
-#include <api/v1/data_files/create_train_data.h>
-#include <api/v1/data_files/delete_train_data.h>
+#include <api/v1/data_files/list_data_set.h>
+#include <api/v1/data_files/get_data_set.h>
+#include <api/v1/data_files/mnist/create_data_set.h>
+#include <api/v1/data_files/mnist/finalize_data_set.h>
+#include <api/v1/data_files/delete_data_set.h>
 
 using Kitsunemimi::Sakura::SakuraLangInterface;
 
@@ -40,42 +40,42 @@ using Kitsunemimi::Sakura::SakuraLangInterface;
  * @brief init special blossoms
  */
 void
-trainDataBlossomes()
+proxyBlossoms()
 {
     Kitsunemimi::Hanami::Endpoint* endpoints = Kitsunemimi::Hanami::Endpoint::getInstance();
     SakuraLangInterface* interface = SakuraLangInterface::getInstance();
-    const std::string group = "train_data";
+    const std::string group = "data_set";
 
-    assert(interface->addBlossom(group, "create", new CreateTrainData()));
-    endpoints->addEndpoint("v1/train_data",
+    assert(interface->addBlossom(group, "create", new CreateMnistDataSet()));
+    endpoints->addEndpoint("v1/mnist/data_set",
                            Kitsunemimi::Hanami::POST_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "create");
 
-    assert(interface->addBlossom(group, "add", new AddTrainData()));
-    endpoints->addEndpoint("v1/train_data",
+    assert(interface->addBlossom(group, "finalize", new FinalizeMnistDataSet()));
+    endpoints->addEndpoint("v1/mnist/data_set",
                            Kitsunemimi::Hanami::PUT_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
-                           "add");
+                           "finalize");
 
-    assert(interface->addBlossom(group, "get", new GetTrainData()));
-    endpoints->addEndpoint("v1/train_data",
+    assert(interface->addBlossom(group, "get", new GetDataSet()));
+    endpoints->addEndpoint("v1/data_set",
                            Kitsunemimi::Hanami::GET_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "get");
 
-    assert(interface->addBlossom(group, "delete", new DeleteTrainData()));
-    endpoints->addEndpoint("v1/train_data",
+    assert(interface->addBlossom(group, "delete", new DeleteDataSet()));
+    endpoints->addEndpoint("v1/data_set",
                            Kitsunemimi::Hanami::DELETE_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "delete");
 
-    assert(interface->addBlossom(group, "list", new ListTrainData()));
-    endpoints->addEndpoint("v1/train_data/all",
+    assert(interface->addBlossom(group, "list", new ListDataSet()));
+    endpoints->addEndpoint("v1/data_set/all",
                            Kitsunemimi::Hanami::GET_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
@@ -86,7 +86,7 @@ trainDataBlossomes()
 void
 initBlossoms()
 {
-    trainDataBlossomes();
+    proxyBlossoms();
 }
 
 #endif // SAGIRIARCHIVE_BLOSSOM_INITIALIZING_H

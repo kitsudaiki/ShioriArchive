@@ -1,5 +1,5 @@
 /**
- * @file        add_audit_log.h
+ * @file        finalize_data_set.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,27 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_ADDAUDITLOG_H
-#define SAGIRIARCHIVE_ADDAUDITLOG_H
+#ifndef SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H
+#define SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-class ForwardSession
+class FinalizeMnistDataSet
         : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    ForwardSession();
+    FinalizeMnistDataSet();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
                  const Kitsunemimi::DataMap &context,
                  Kitsunemimi::Sakura::BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
+
+private:
+    bool convertMnistData(Kitsunemimi::DataBuffer &resultBuffer,
+                        const Kitsunemimi::DataBuffer &inputBuffer,
+                        const Kitsunemimi::DataBuffer &labelBuffer);
 };
 
-#endif // SAGIRIARCHIVE_ADDAUDITLOG_H
+#endif // SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H

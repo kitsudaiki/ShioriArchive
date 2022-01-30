@@ -23,6 +23,8 @@
 #ifndef SAGIRIARCHIVE_CALLBACKS_H
 #define SAGIRIARCHIVE_CALLBACKS_H
 
+#include <libKitsunemimiCommon/logger.h>
+
 #include <libKitsunemimiSakuraNetwork/session.h>
 
 #include <core/temp_file_handler.h>
@@ -42,6 +44,25 @@ void streamDataCallback(void*,
     ptr += 8;
 
     SagiriRoot::tempFileHandler->addDataToPos(id, pos, ptr, dataSize - 44);
+}
+
+
+void dataRequestCallback(Kitsunemimi::Sakura::Session* session,
+                         const void* data,
+                         const uint64_t dataSize,
+                         const uint64_t blockerId)
+{
+    const char* cData = static_cast<const char*>(data);
+    const std::string location(cData, dataSize);
+
+    Kitsunemimi::BinaryFile targetFile(location, false);
+    Kitsunemimi::DataBuffer buffer;
+    if(targetFile.readCompleteFile(buffer))
+    {
+        Kitsunemimi::ErrorContainer error;
+        session->sendResponse(buffer.data, buffer.usedBufferSize, blockerId, error);
+    }
+    targetFile.closeFile();
 }
 
 #endif // SAGIRIARCHIVE_CALLBACKS_H

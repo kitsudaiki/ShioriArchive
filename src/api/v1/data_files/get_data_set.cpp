@@ -45,12 +45,6 @@ GetDataSet::GetDataSet()
     assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
                                  "[a-fA-F0-9]{12}"));
 
-    registerInputField("with_data",
-                       SAKURA_BOOL_TYPE,
-                       false,
-                       "Have to be set to true to also return the data "
-                       "and not only the meta-information");
-
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
@@ -67,10 +61,9 @@ GetDataSet::GetDataSet()
     registerOutputField("user_uuid",
                         SAKURA_STRING_TYPE,
                         "UUID of the user who uploaded the data.");
-    registerOutputField("data",
+    registerOutputField("location",
                         SAKURA_STRING_TYPE,
-                        "If the flag 'with_data' was set the true, this field contains the data "
-                        "of the stored train-data-set as base64 encoded string.");
+                        "File path on local storage.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -87,56 +80,26 @@ GetDataSet::runTask(BlossomLeaf &blossomLeaf,
                       Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
-    const bool withData = blossomLeaf.input.get("with_data").getBool();
     const std::string userUuid = context.getStringByKey("uuid");
     const std::string projectUuid = context.getStringByKey("projects");
     const bool isAdmin = context.getBoolByKey("is_admin");
 
     if(SagiriRoot::dataSetTable->getDataSet(blossomLeaf.output,
-                                                dataUuid,
-                                                userUuid,
-                                                projectUuid,
-                                                isAdmin,
-                                                error,
-                                                true) == false)
+                                            dataUuid,
+                                            userUuid,
+                                            projectUuid,
+                                            isAdmin,
+                                            error,
+                                            true) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
-    }
-
-    std::cout<<blossomLeaf.input.toString(true)<<std::endl;
-    // read data from file and add to output, if requested
-    if(withData)
-    {
-        const std::string location = blossomLeaf.output.get("location").getString();
-
-        Kitsunemimi::BinaryFile targetFile(location, false);
-        Kitsunemimi::DataBuffer data;
-        if(targetFile.readCompleteFile(data) == false)
-        {
-            status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-            error.addMeesage("Failed to read train-data from file \"" + location + "\"");
-            return false;
-        }
-        targetFile.closeFile();
-
-        std::string base64String;
-        Kitsunemimi::Crypto::encodeBase64(base64String, data.data, data.usedBufferSize);
-
-        for(int i = 0; i < 100; i++) {
-            std::cout<<base64String[i];
-        }
-        std::cout<<std::endl;
-
-        // create output
-        blossomLeaf.output.insert("data", base64String);
     }
 
     // remove irrelevant fields
     blossomLeaf.output.remove("owner_uuid");
     blossomLeaf.output.remove("project_uuid");
     blossomLeaf.output.remove("visibility");
-    blossomLeaf.output.remove("location");
 
     return true;
 }

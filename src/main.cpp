@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
                                                   groupNames,
                                                   nullptr,
                                                   &streamDataCallback,
-                                                  &dataRequestCallback,
+                                                  &genericMessageCallback,
                                                   error,
                                                   true) == false)
     {

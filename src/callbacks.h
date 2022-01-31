@@ -24,6 +24,7 @@
 #define SAGIRIARCHIVE_CALLBACKS_H
 
 #include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiJson/json_item.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 
@@ -47,13 +48,19 @@ void streamDataCallback(void*,
 }
 
 
-void dataRequestCallback(Kitsunemimi::Sakura::Session* session,
-                         const void* data,
-                         const uint64_t dataSize,
-                         const uint64_t blockerId)
+void genericMessageCallback(Kitsunemimi::Sakura::Session* session,
+                            const Kitsunemimi::Json::JsonItem& message,
+                            const uint64_t blockerId)
 {
-    const char* cData = static_cast<const char*>(data);
-    const std::string location(cData, dataSize);
+    // get location from message
+    const std::string location = message.get("location").getString();
+    if(location == "")
+    {
+        Kitsunemimi::ErrorContainer error;
+        session->sendResponse("-", 1, blockerId, error);
+        LOG_ERROR(error);
+        return;
+    }
 
     Kitsunemimi::BinaryFile targetFile(location, false);
     Kitsunemimi::DataBuffer buffer;
@@ -61,6 +68,7 @@ void dataRequestCallback(Kitsunemimi::Sakura::Session* session,
     {
         Kitsunemimi::ErrorContainer error;
         session->sendResponse(buffer.data, buffer.usedBufferSize, blockerId, error);
+        LOG_ERROR(error);
     }
     targetFile.closeFile();
 }

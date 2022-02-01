@@ -1,5 +1,5 @@
 /**
- * @file        get_data_set.h
+ * @file        temp_file_handler.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,26 +20,42 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_GET_DATA_SET_H
-#define SAGIRIARCHIVE_GET_DATA_SET_H
+#ifndef DATA_SET_HEADER_H
+#define DATA_SET_HEADER_H
 
-#include <libKitsunemimiSakuraLang/blossom.h>
+#include <stdint.h>
 
-class GetDataSet
-        : public Kitsunemimi::Sakura::Blossom
+enum DataSetType
 {
-public:
-    GetDataSet();
-
-protected:
-    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
-                 const Kitsunemimi::DataMap &,
-                 Kitsunemimi::Sakura::BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
-private:
-    bool getHeaderInformation(Kitsunemimi::Json::JsonItem &result,
-                              const std::string &location,
-                              Kitsunemimi::ErrorContainer &error);
+    UNDEFINED_TYPE = 0,
+    IMAGE_TYPE = 1,
+    TABLE_TYPE = 2
 };
 
-#endif // SAGIRIARCHIVE_GET_DATA_SET_H
+struct DataSetHeader
+{
+    uint8_t type = UNDEFINED_TYPE;
+    char name[256];
+};
+
+struct ImageTypeHeader
+{
+    uint64_t numberOfInputsX = 0;
+    uint64_t numberOfInputsY = 0;
+    uint64_t numberOfOutputs = 0;
+    uint64_t numberOfImages = 0;
+};
+
+struct TableTypeHeader
+{
+    uint64_t numberOfColumns = 0;
+};
+
+struct TableHeaderEntry
+{
+    char name[256];
+    bool isInput = false;
+    bool isOutput = false;
+};
+
+#endif // DATA_SET_HEADER_H

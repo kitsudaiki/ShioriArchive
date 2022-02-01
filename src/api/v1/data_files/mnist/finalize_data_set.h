@@ -25,6 +25,8 @@
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
+#include <core/data_set_header.h>
+
 class FinalizeMnistDataSet
         : public Kitsunemimi::Sakura::Blossom
 {
@@ -38,9 +40,10 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 
 private:
-    bool convertMnistData(Kitsunemimi::DataBuffer &resultBuffer,
-                        const Kitsunemimi::DataBuffer &inputBuffer,
-                        const Kitsunemimi::DataBuffer &labelBuffer);
+    bool convertMnistData(ImageTypeHeader &header,
+                          Kitsunemimi::DataBuffer &resultBuffer,
+                          const Kitsunemimi::DataBuffer &inputBuffer,
+                          const Kitsunemimi::DataBuffer &labelBuffer);
 };
 
 #endif // SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H

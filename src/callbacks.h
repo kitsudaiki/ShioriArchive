@@ -30,6 +30,7 @@
 
 #include <core/temp_file_handler.h>
 #include <sagiri_root.h>
+#include <core/data_set_header.h>
 
 void streamDataCallback(void*,
                         Kitsunemimi::Sakura::Session*,
@@ -67,7 +68,17 @@ void genericMessageCallback(Kitsunemimi::Sakura::Session* session,
     if(targetFile.readCompleteFile(buffer))
     {
         Kitsunemimi::ErrorContainer error;
-        session->sendResponse(buffer.data, buffer.usedBufferSize, blockerId, error);
+
+        // get header-offset
+        u_int64_t offset = 0;
+        if(static_cast<uint8_t*>(buffer.data)[0] == IMAGE_TYPE) {
+            offset = sizeof(DataSetHeader) + sizeof(ImageTypeHeader);
+        }
+
+        session->sendResponse(&static_cast<uint8_t*>(buffer.data)[offset],
+                              buffer.usedBufferSize - offset,
+                              blockerId,
+                              error);
         LOG_ERROR(error);
     }
     targetFile.closeFile();

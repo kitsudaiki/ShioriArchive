@@ -124,6 +124,7 @@ HEADERS += \
     src/args.h \
     src/callbacks.h \
     src/config.h \
+    src/core/data_set_header.h \
     src/core/temp_file_handler.h \
     src/database/data_set_table.h \
     src/sagiri_root.h

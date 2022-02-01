@@ -24,8 +24,11 @@
 
 #include <sagiri_root.h>
 #include <database/data_set_table.h>
+#include <core/data_set_header.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
+
+#include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
 
@@ -64,6 +67,15 @@ GetDataSet::GetDataSet()
     registerOutputField("location",
                         SAKURA_STRING_TYPE,
                         "File path on local storage.");
+    registerOutputField("inputs",
+                        SAKURA_INT_TYPE,
+                        "Number of inputs.");
+    registerOutputField("outputs",
+                        SAKURA_INT_TYPE,
+                        "Number of outputs.");
+    registerOutputField("lines",
+                        SAKURA_INT_TYPE,
+                        "Number of lines.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -96,10 +108,69 @@ GetDataSet::runTask(BlossomLeaf &blossomLeaf,
         return false;
     }
 
+    // get file information
+    const std::string location = blossomLeaf.output.get("location").getString();
+    if(getHeaderInformation(blossomLeaf.output, location, error) == false)
+    {
+        error.addMeesage("Failed the read information from file '" + location + "'");
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
     // remove irrelevant fields
     blossomLeaf.output.remove("owner_uuid");
     blossomLeaf.output.remove("project_uuid");
     blossomLeaf.output.remove("visibility");
 
     return true;
+}
+
+/**
+ * @brief get information from header of file
+ *
+ * @param result reference for result-output
+ * @param location location of the file to read
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
+ */
+bool
+GetDataSet::getHeaderInformation(Kitsunemimi::Json::JsonItem &result,
+                                 const std::string &location,
+                                 Kitsunemimi::ErrorContainer &error)
+{
+    DataSetHeader dataSetHeader;
+    Kitsunemimi::BinaryFile file(location);
+
+    // read data-set-header
+    if(file.readDataFromFile(&dataSetHeader, 0, sizeof(DataSetHeader)) == false)
+    {
+        error.addMeesage("Failed to read data-set-header from file '" + location + "'");
+        return false;
+    }
+
+    if(dataSetHeader.type == IMAGE_TYPE)
+    {
+        // read image-type-header
+        ImageTypeHeader imageTypeHeader;
+        if(file.readDataFromFile(&imageTypeHeader,
+                                 sizeof(DataSetHeader),
+                                 sizeof(ImageTypeHeader)) == false)
+        {
+            error.addMeesage("Failed to read image-type-header from file '" + location + "'");
+            return false;
+        }
+
+        // write information to result
+        const uint64_t size = imageTypeHeader.numberOfInputsX * imageTypeHeader.numberOfInputsY;
+        result.insert("inputs", static_cast<long>(size));
+        result.insert("outputs", static_cast<long>(imageTypeHeader.numberOfOutputs));
+        result.insert("lines", static_cast<long>(imageTypeHeader.numberOfImages));
+
+        return true;
+    }
+
+    // TODO: handle other types
+
+    return false;
 }

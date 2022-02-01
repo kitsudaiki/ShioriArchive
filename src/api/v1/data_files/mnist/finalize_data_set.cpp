@@ -131,8 +131,9 @@ FinalizeMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
     }
 
     // write data to file
-    Kitsunemimi::DataBuffer resultBuffer;
-    if(convertMnistData(resultBuffer, inputBuffer, labelBuffer) == false)
+    Kitsunemimi::DataBuffer resBuffer;
+    ImageTypeHeader imageHeader;
+    if(convertMnistData(imageHeader, resBuffer, inputBuffer, labelBuffer) == false)
     {
         status.statusCode =Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to convert mnist-data");
@@ -142,10 +143,42 @@ FinalizeMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
     // write converted data to real target
     const std::string targetFilePath = result.get("location").getString();
     Kitsunemimi::BinaryFile targetFile(targetFilePath, false);
-    if(targetFile.writeCompleteFile(resultBuffer) == false)
+
+    // allocate storage
+    const uint64_t dataPos = sizeof(DataSetHeader) + sizeof(ImageTypeHeader);
+    if(targetFile.allocateStorage(resBuffer.usedBufferSize + dataPos, 1) == false)
     {
         status.statusCode = Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to write train-data to file \"" + targetFilePath + "\"");
+        error.addMeesage("Allcating storage for file '" + targetFilePath + "\' failed");
+        return false;
+    }
+
+    // write dataset-hader
+    DataSetHeader dataSetHeader;
+    dataSetHeader.type = DataSetType::IMAGE_TYPE;
+    std::strncpy(dataSetHeader.name, result.get("name").getString().c_str(), 256);
+    if(targetFile.writeDataIntoFile(&dataSetHeader, 0, sizeof(DataSetHeader)) == false)
+    {
+        status.statusCode = Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Failed to write data-set-header to file '" + targetFilePath + "'");
+        return false;
+    }
+
+    // write picture-header
+    if(targetFile.writeDataIntoFile(&imageHeader,
+                                    sizeof(DataSetHeader),
+                                    sizeof(ImageTypeHeader)) == false)
+    {
+        status.statusCode = Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Failed to write data-set-header to file '" + targetFilePath + "'");
+        return false;
+    }
+
+    // write payload to file
+    if(targetFile.writeDataIntoFile(resBuffer.data, dataPos, resBuffer.usedBufferSize) == false)
+    {
+        status.statusCode = Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Failed to write payload to file '" + targetFilePath + "'");
         return false;
     }
     targetFile.closeFile();
@@ -163,6 +196,7 @@ FinalizeMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
 /**
  * @brief convert mnist-data into generic format
  *
+ * @param header reference for header with meta-information
  * @param resultBuffer buffer for the resulting file, which should be written back to disc
  * @param inputBuffer buffer with input-data
  * @param labelBuffer buffer with label-data
@@ -170,7 +204,8 @@ FinalizeMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
  * @return true, if successfull, else false
  */
 bool
-FinalizeMnistDataSet::convertMnistData(Kitsunemimi::DataBuffer &resultBuffer,
+FinalizeMnistDataSet::convertMnistData(ImageTypeHeader &header,
+                                       Kitsunemimi::DataBuffer &resultBuffer,
                                        const Kitsunemimi::DataBuffer &inputBuffer,
                                        const Kitsunemimi::DataBuffer &labelBuffer)
 {
@@ -200,6 +235,11 @@ FinalizeMnistDataSet::convertMnistData(Kitsunemimi::DataBuffer &resultBuffer,
     numberOfColumns |= static_cast<uint32_t>(dataBufferPtr[14]) << 8;
     numberOfColumns |= static_cast<uint32_t>(dataBufferPtr[13]) << 16;
     numberOfColumns |= static_cast<uint32_t>(dataBufferPtr[12]) << 24;
+
+    // set information in header
+    header.numberOfInputsX = numberOfColumns;
+    header.numberOfInputsY = numberOfRows;
+    header.numberOfImages = numberOfImages;
 
     // get pictures
     const uint32_t pictureSize = numberOfRows * numberOfColumns;

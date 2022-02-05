@@ -239,6 +239,8 @@ FinalizeMnistDataSet::convertMnistData(ImageTypeHeader &header,
     // set information in header
     header.numberOfInputsX = numberOfColumns;
     header.numberOfInputsY = numberOfRows;
+    // TODO: read number of labels from file
+    header.numberOfOutputs = 10;
     header.numberOfImages = numberOfImages;
 
     // get pictures

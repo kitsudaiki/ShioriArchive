@@ -1,5 +1,5 @@
 /**
- * @file        config.h
+ * @file        delete_request_result.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,23 +20,22 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_CONFIG_H
-#define SAGIRIARCHIVE_CONFIG_H
+#ifndef DELETEREQUESTRESULT_H
+#define DELETEREQUESTRESULT_H
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiHanamiCommon/config.h>
-#include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiSakuraLang/blossom.h>
 
-/**
- * @brief register configs
- */
-void
-registerConfigs(Kitsunemimi::ErrorContainer &error)
+class DeleteRequestResult
+        : public Kitsunemimi::Sakura::Blossom
 {
-    Kitsunemimi::Hanami::registerBasicConfigs(error);
+public:
+    DeleteRequestResult();
 
-    REGISTER_STRING_CONFIG("sagiri", "data_set_location", error, "", true);
-    REGISTER_STRING_CONFIG("sagiri", "result_location", error, "", true);
-}
+protected:
+    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+                 const Kitsunemimi::DataMap &,
+                 Kitsunemimi::Sakura::BlossomStatus &status,
+                 Kitsunemimi::ErrorContainer &error);
+};
 
-#endif // SAGIRIARCHIVE_CONFIG_H
+#endif // DELETEREQUESTRESULT_H

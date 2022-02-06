@@ -36,10 +36,13 @@
 #include <api/v1/data_files/mnist/create_data_set.h>
 #include <api/v1/data_files/mnist/finalize_data_set.h>
 
+#include <api/v1/request_results/delete_request_result.h>
+#include <api/v1/request_results/get_request_result.h>
+
 using Kitsunemimi::Sakura::SakuraLangInterface;
 
 /**
- * @brief init special blossoms
+ * @brief init data_set blossoms
  */
 void
 dataSetBlossoms()
@@ -89,13 +92,38 @@ dataSetBlossoms()
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "list");
+}
 
+/**
+ * @brief init request_result blossoms
+ */
+void
+resultBlossoms()
+{
+    Kitsunemimi::Hanami::Endpoint* endpoints = Kitsunemimi::Hanami::Endpoint::getInstance();
+    SakuraLangInterface* interface = SakuraLangInterface::getInstance();
+    const std::string group = "request_result";
+
+    assert(interface->addBlossom(group, "get", new GetRequestResult()));
+    endpoints->addEndpoint("v1/request_result",
+                           Kitsunemimi::Hanami::GET_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "get");
+
+    assert(interface->addBlossom(group, "delete", new DeleteRequestResult()));
+    endpoints->addEndpoint("v1/request_result",
+                           Kitsunemimi::Hanami::DELETE_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "delete");
 }
 
 void
 initBlossoms()
 {
     dataSetBlossoms();
+    resultBlossoms();
 }
 
 #endif // SAGIRIARCHIVE_BLOSSOM_INITIALIZING_H

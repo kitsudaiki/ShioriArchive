@@ -24,7 +24,9 @@
 #define SAGIRIARCHIVE_CALLBACKS_H
 
 #include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiCommon/files/text_file.h>
 #include <libKitsunemimiJson/json_item.h>
+#include <libKitsunemimiConfig/config_handler.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 
@@ -53,35 +55,64 @@ void genericMessageCallback(Kitsunemimi::Sakura::Session* session,
                             const Kitsunemimi::Json::JsonItem& message,
                             const uint64_t blockerId)
 {
-    // get location from message
-    const std::string location = message.get("location").getString();
-    if(location == "")
-    {
-        Kitsunemimi::ErrorContainer error;
-        session->sendResponse("-", 1, blockerId, error);
-        LOG_ERROR(error);
-        return;
-    }
+    const std::string messageType = message.get("message_type").getString();
 
-    Kitsunemimi::BinaryFile targetFile(location, false);
-    Kitsunemimi::DataBuffer buffer;
-    if(targetFile.readCompleteFile(buffer))
+    if(messageType == "data_set_request")
     {
-        Kitsunemimi::ErrorContainer error;
-
-        // get header-offset
-        u_int64_t offset = 0;
-        if(static_cast<uint8_t*>(buffer.data)[0] == IMAGE_TYPE) {
-            offset = sizeof(DataSetHeader) + sizeof(ImageTypeHeader);
+        // get location from message
+        const std::string location = message.get("location").getString();
+        if(location == "")
+        {
+            Kitsunemimi::ErrorContainer error;
+            session->sendResponse("-", 1, blockerId, error);
+            LOG_ERROR(error);
+            return;
         }
 
-        session->sendResponse(&static_cast<uint8_t*>(buffer.data)[offset],
-                              buffer.usedBufferSize - offset,
-                              blockerId,
-                              error);
-        LOG_ERROR(error);
+        Kitsunemimi::BinaryFile targetFile(location, false);
+        Kitsunemimi::DataBuffer buffer;
+        if(targetFile.readCompleteFile(buffer))
+        {
+            Kitsunemimi::ErrorContainer error;
+
+            // get header-offset
+            u_int64_t offset = 0;
+            if(static_cast<uint8_t*>(buffer.data)[0] == IMAGE_TYPE) {
+                offset = sizeof(DataSetHeader) + sizeof(ImageTypeHeader);
+            }
+
+            session->sendResponse(&static_cast<uint8_t*>(buffer.data)[offset],
+                                  buffer.usedBufferSize - offset,
+                                  blockerId,
+                                  error);
+            LOG_ERROR(error);
+        }
+        targetFile.closeFile();
     }
-    targetFile.closeFile();
+    else if(messageType == "result_push")
+    {
+        bool success = false;
+        Kitsunemimi::ErrorContainer error;
+
+        const std::string resultLocation = GET_STRING_CONFIG("sagiri", "result_location", success);
+
+        const std::string uuid = message.get("uuid").getString();
+        const std::string result = message.get("result").toString();
+
+        // TODO: handle result
+        if(writeFile(resultLocation + "/" + uuid, result, error) == false)
+        {
+            LOG_ERROR(error);
+
+            const std::string ret = "fail";
+            session->sendResponse(ret.c_str(), ret.size(), blockerId, error);
+            return;
+        }
+
+        const std::string ret = "success";
+        session->sendResponse(ret.c_str(), ret.size(), blockerId, error);
+        return;
+    }
 }
 
 #endif // SAGIRIARCHIVE_CALLBACKS_H

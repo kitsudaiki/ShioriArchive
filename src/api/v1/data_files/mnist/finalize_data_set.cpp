@@ -258,6 +258,10 @@ FinalizeMnistDataSet::convertMnistData(ImageTypeHeader &header,
         return false;
     }
 
+    double averageVal = 0.0f;
+    uint64_t valueCounter = 0;
+    float maxVal = 0.0f;
+
     // copy values of each pixel into the resulting file
     for(uint32_t pic = 0; pic < numberOfImages; pic++)
     {
@@ -266,6 +270,14 @@ FinalizeMnistDataSet::convertMnistData(ImageTypeHeader &header,
         {
             const uint32_t pos = pic * pictureSize + i + dataOffset;
             resultPtr[resultPos] = (static_cast<float>(dataBufferPtr[pos]) / 255.0f);
+
+            // update values for metadata
+            averageVal += resultPtr[resultPos];
+            valueCounter++;
+            if(maxVal < resultPtr[resultPos]) {
+                maxVal = resultPtr[resultPos];
+            }
+
             dataPos++;
             resultPos++;
         }
@@ -278,8 +290,12 @@ FinalizeMnistDataSet::convertMnistData(ImageTypeHeader &header,
             resultPos++;
         }
         const uint32_t label = labelBufferPtr[pic + labelOffset];
-        resultPtr[(resultPos - 10) + label] = 1.0f;
+        resultPtr[(resultPos - 10) + label] = maxVal;
     }
+
+    // write additional information to header
+    header.avgValue = averageVal / static_cast<double>(valueCounter);
+    header.maxValue = maxVal;
 
     return true;
 }

@@ -44,6 +44,8 @@ struct ImageTypeHeader
     uint64_t numberOfInputsY = 0;
     uint64_t numberOfOutputs = 0;
     uint64_t numberOfImages = 0;
+    float maxValue = 0.0f;
+    float avgValue = 0.0f;
 };
 
 struct TableTypeHeader

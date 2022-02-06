@@ -76,6 +76,12 @@ GetDataSet::GetDataSet()
     registerOutputField("lines",
                         SAKURA_INT_TYPE,
                         "Number of lines.");
+    registerOutputField("average_value",
+                        SAKURA_FLOAT_TYPE,
+                        "Average value within the data-set.");
+    registerOutputField("max_value",
+                        SAKURA_FLOAT_TYPE,
+                        "Maximum value within the data-set.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -166,6 +172,8 @@ GetDataSet::getHeaderInformation(Kitsunemimi::Json::JsonItem &result,
         result.insert("inputs", static_cast<long>(size));
         result.insert("outputs", static_cast<long>(imageTypeHeader.numberOfOutputs));
         result.insert("lines", static_cast<long>(imageTypeHeader.numberOfImages));
+        result.insert("average_value", static_cast<float>(imageTypeHeader.avgValue));
+        result.insert("max_value", static_cast<float>(imageTypeHeader.maxValue));
 
         return true;
     }

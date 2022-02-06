@@ -290,6 +290,7 @@ FinalizeMnistDataSet::convertMnistData(ImageTypeHeader &header,
             resultPos++;
         }
         const uint32_t label = labelBufferPtr[pic + labelOffset];
+        std::cout<<"label: "<<label<<std::endl;
         resultPtr[(resultPos - 10) + label] = maxVal;
     }
 

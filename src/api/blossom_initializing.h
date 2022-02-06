@@ -30,9 +30,11 @@
 
 #include <api/v1/data_files/list_data_set.h>
 #include <api/v1/data_files/get_data_set.h>
+#include <api/v1/data_files/delete_data_set.h>
+#include <api/v1/data_files/check_data_set.h>
+
 #include <api/v1/data_files/mnist/create_data_set.h>
 #include <api/v1/data_files/mnist/finalize_data_set.h>
-#include <api/v1/data_files/delete_data_set.h>
 
 using Kitsunemimi::Sakura::SakuraLangInterface;
 
@@ -40,7 +42,7 @@ using Kitsunemimi::Sakura::SakuraLangInterface;
  * @brief init special blossoms
  */
 void
-proxyBlossoms()
+dataSetBlossoms()
 {
     Kitsunemimi::Hanami::Endpoint* endpoints = Kitsunemimi::Hanami::Endpoint::getInstance();
     SakuraLangInterface* interface = SakuraLangInterface::getInstance();
@@ -59,6 +61,13 @@ proxyBlossoms()
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "finalize");
+
+    assert(interface->addBlossom(group, "check", new CheckDataSet()));
+    endpoints->addEndpoint("v1/data_set/check",
+                           Kitsunemimi::Hanami::POST_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "check");
 
     assert(interface->addBlossom(group, "get", new GetDataSet()));
     endpoints->addEndpoint("v1/data_set",
@@ -86,7 +95,7 @@ proxyBlossoms()
 void
 initBlossoms()
 {
-    proxyBlossoms();
+    dataSetBlossoms();
 }
 
 #endif // SAGIRIARCHIVE_BLOSSOM_INITIALIZING_H

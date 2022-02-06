@@ -106,6 +106,7 @@ INCLUDEPATH += $$PWD \
                src
 
 SOURCES += src/main.cpp \
+    src/api/v1/data_files/check_data_set.cpp \
     src/api/v1/data_files/delete_data_set.cpp \
     src/api/v1/data_files/get_data_set.cpp \
     src/api/v1/data_files/list_data_set.cpp \
@@ -119,6 +120,7 @@ SOURCES += src/main.cpp \
 
 HEADERS += \
     src/api/blossom_initializing.h \
+    src/api/v1/data_files/check_data_set.h \
     src/api/v1/data_files/delete_data_set.h \
     src/api/v1/data_files/get_data_set.h \
     src/api/v1/data_files/list_data_set.h \

@@ -28,6 +28,8 @@
 
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/common_methods/file_methods.h>
+#include <libKitsunemimiCommon/files/text_file.h>
+#include <libKitsunemimiConfig/config_handler.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
@@ -40,17 +42,19 @@ CheckDataSet::CheckDataSet()
     // input
     //----------------------------------------------------------------------------------------------
 
+    registerInputField("result_uuid",
+                       Sakura::SAKURA_STRING_TYPE,
+                       true,
+                       "UUID of the data-set to compare to.");
+    assert(addFieldRegex("result_uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+                                        "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+
     registerInputField("data_set_uuid",
                        Sakura::SAKURA_STRING_TYPE,
                        true,
                        "UUID of the data-set to compare to.");
     assert(addFieldRegex("data_set_uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
                                           "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
-
-    registerInputField("values",
-                       Sakura::SAKURA_ARRAY_TYPE,
-                       true,
-                       "Array of values to compare.");
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -74,18 +78,29 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
                       Sakura::BlossomStatus &status,
                       ErrorContainer &error)
 {
+    const std::string resultUuid = blossomLeaf.input.get("result_uuid").getString();
     const std::string dataUuid = blossomLeaf.input.get("data_set_uuid").getString();
-    const DataArray* compareData = blossomLeaf.input.get("values").getItemContent()->toArray();
 
     const std::string userUuid = context.getStringByKey("uuid");
     const std::string projectUuid = context.getStringByKey("projects");
     const bool isAdmin = context.getBoolByKey("is_admin");
 
-    // precheck
-    if(compareData->size() == 0)
+    // get result
+    bool success = false;
+    const std::string resultLocation = GET_STRING_CONFIG("sagiri", "result_location", success);
+    const std::string filePath = resultLocation + "/" + resultUuid;
+
+    // TODO: precheck if file exist
+    std::string resultText = "";
+    if(readFile(resultText, filePath, error) == false)
     {
-        status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
-        status.errorMessage = "The 'values' in the request is an empty list.";
+        status.statusCode = Hanami::NOT_FOUND_RTYPE;
+        return false;
+    }
+    Json::JsonItem resultData;
+    if(resultData.parse(resultText, error) == false)
+    {
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -129,6 +144,7 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const float* content = reinterpret_cast<const float*>(&u8Data[dataPos]);
 
     // iterate over all values and check
+    DataArray* compareData = resultData.getItemContent()->toArray();
     for(uint64_t i = 0; i < compareData->size(); i++)
     {
         const uint64_t actualPos = (i * lineSize) + lineOffset;

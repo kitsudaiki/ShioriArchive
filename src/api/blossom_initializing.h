@@ -33,8 +33,8 @@
 #include <api/v1/data_files/delete_data_set.h>
 #include <api/v1/data_files/check_data_set.h>
 
-#include <api/v1/data_files/mnist/create_data_set.h>
-#include <api/v1/data_files/mnist/finalize_data_set.h>
+#include <api/v1/data_files/mnist/create_mnist_data_set.h>
+#include <api/v1/data_files/mnist/finalize_mnist_data_set.h>
 
 #include <api/v1/request_results/delete_request_result.h>
 #include <api/v1/request_results/get_request_result.h>

@@ -20,10 +20,12 @@
  *      limitations under the License.
  */
 
-#ifndef DATA_SET_HEADER_H
-#define DATA_SET_HEADER_H
+#ifndef SAGIRIARCHIVE_DATA_SET_HEADER_H
+#define SAGIRIARCHIVE_DATA_SET_HEADER_H
 
 #include <stdint.h>
+#include <string>
+#include <cstring>
 
 enum DataSetType
 {
@@ -51,6 +53,7 @@ struct ImageTypeHeader
 struct TableTypeHeader
 {
     uint64_t numberOfColumns = 0;
+    uint64_t numberOfLines = 0;
 };
 
 struct TableHeaderEntry
@@ -58,6 +61,19 @@ struct TableHeaderEntry
     char name[256];
     bool isInput = false;
     bool isOutput = false;
+    float multiplicator = 1.0f;
+    float averageVal = 0.0f;
+    float maxVal = 0.0f;
+
+    void setName(const std::string &name)
+    {
+        uint32_t nameSize = name.size();
+        if(nameSize > 255) {
+            nameSize = 255;
+        }
+        memcpy(this->name, name.c_str(), nameSize);
+        this->name[nameSize] = '\0';
+    }
 };
 
-#endif // DATA_SET_HEADER_H
+#endif // SAGIRIARCHIVE_DATA_SET_HEADER_H

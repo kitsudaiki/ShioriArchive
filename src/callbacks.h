@@ -31,8 +31,10 @@
 #include <libKitsunemimiSakuraNetwork/session.h>
 
 #include <core/temp_file_handler.h>
-#include <sagiri_root.h>
 #include <core/data_set_header.h>
+#include <core/data_set_file.h>
+
+#include <sagiri_root.h>
 
 void streamDataCallback(void*,
                         Kitsunemimi::Sakura::Session*,
@@ -52,7 +54,7 @@ void streamDataCallback(void*,
 
 
 void genericMessageCallback(Kitsunemimi::Sakura::Session* session,
-                            const Kitsunemimi::Json::JsonItem& message,
+                            const Kitsunemimi::Json::JsonItem &message,
                             const uint64_t blockerId)
 {
     const std::string messageType = message.get("message_type").getString();
@@ -69,37 +71,39 @@ void genericMessageCallback(Kitsunemimi::Sakura::Session* session,
             return;
         }
 
-        Kitsunemimi::BinaryFile targetFile(location, false);
-        Kitsunemimi::DataBuffer buffer;
-        if(targetFile.readCompleteFile(buffer))
-        {
-            Kitsunemimi::ErrorContainer error;
+        // init file
+        DataSetFile file(location);
+        if(file.readFromFile() == false) {
+            // TODO: error
+            return;
+        }
 
-            // get header-offset
-            u_int64_t offset = 0;
-            if(static_cast<uint8_t*>(buffer.data)[0] == IMAGE_TYPE) {
-                offset = sizeof(DataSetHeader) + sizeof(ImageTypeHeader);
-            }
+        // get payload
+        uint64_t payloadSize = 0;
+        float* payload = file.getPayload(payloadSize);
+        if(payload == nullptr) {
+            // TODO: error
+            return;
+        }
 
-            session->sendResponse(&static_cast<uint8_t*>(buffer.data)[offset],
-                                  buffer.usedBufferSize - offset,
-                                  blockerId,
-                                  error);
+        // send data
+        Kitsunemimi::ErrorContainer error;
+        if(session->sendResponse(payload, payloadSize, blockerId, error) == false) {
             LOG_ERROR(error);
         }
-        targetFile.closeFile();
+
+        return;
     }
     else if(messageType == "result_push")
     {
         bool success = false;
         Kitsunemimi::ErrorContainer error;
 
-        const std::string resultLocation = GET_STRING_CONFIG("sagiri", "result_location", success);
-
         const std::string uuid = message.get("uuid").getString();
         const std::string result = message.get("result").toString();
 
         // TODO: handle result
+        const std::string resultLocation = GET_STRING_CONFIG("sagiri", "result_location", success);
         if(writeFile(resultLocation + "/" + uuid, result, error) == false)
         {
             LOG_ERROR(error);

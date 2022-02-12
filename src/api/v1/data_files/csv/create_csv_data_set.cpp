@@ -1,5 +1,5 @@
 /**
- * @file        create_data_set.cpp
+ * @file        create_csv_data_set.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include "create_data_set.h"
+#include "create_csv_data_set.h"
 
 #include <sagiri_root.h>
 #include <database/data_set_table.h>
@@ -40,7 +40,7 @@
 
 using namespace Kitsunemimi::Sakura;
 
-CreateMnistDataSet::CreateMnistDataSet()
+CreateCsvDataSet::CreateCsvDataSet()
     : Kitsunemimi::Sakura::Blossom("Init new set of train-data.")
 {
     //----------------------------------------------------------------------------------------------
@@ -59,12 +59,6 @@ CreateMnistDataSet::CreateMnistDataSet()
                        true,
                        "Total size of the input-data.");
     assert(addFieldBorder("input_data_size", 1, 10000000000));
-
-    registerInputField("label_data_size",
-                       SAKURA_INT_TYPE,
-                       true,
-                       "Total size of the label-data.");
-    assert(addFieldBorder("label_data_size", 1, 10000000000));
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -85,9 +79,6 @@ CreateMnistDataSet::CreateMnistDataSet()
     registerOutputField("uuid_input_file",
                         SAKURA_STRING_TYPE,
                         "UUID to identify the file for date upload of input-data.");
-    registerOutputField("uuid_label_file",
-                        SAKURA_STRING_TYPE,
-                        "UUID to identify the file for date upload of label-data.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -95,15 +86,13 @@ CreateMnistDataSet::CreateMnistDataSet()
 }
 
 bool
-CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
-                            const Kitsunemimi::DataMap &context,
-                            Kitsunemimi::Sakura::BlossomStatus &status,
-                            Kitsunemimi::ErrorContainer &error)
+CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+                          const Kitsunemimi::DataMap &context,
+                          Kitsunemimi::Sakura::BlossomStatus &status,
+                          Kitsunemimi::ErrorContainer &error)
 {
     const std::string name = blossomLeaf.input.get("name").getString();
-    const std::string type = blossomLeaf.input.get("type").getString();
     const long inputDataSize = blossomLeaf.input.get("input_data_size").getLong();
-    const long labelDataSize = blossomLeaf.input.get("label_data_size").getLong();
 
     const std::string userUuid = context.getStringByKey("uuid");
     const std::string projectUuid = context.getStringByKey("projects");
@@ -127,24 +116,15 @@ CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
         return false;
     }
 
-    // init temp-file for label-data
-    const std::string labelUuid = Kitsunemimi::Hanami::generateUuid().toString();
-    if(SagiriRoot::tempFileHandler->initNewFile(labelUuid, labelDataSize) == false)
-    {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to initialize temporary file for new label-data.");
-        return false;
-    }
-
     // build absolut file-path to store the file
     if(targetFilePath.at(targetFilePath.size() - 1) != '/') {
         targetFilePath.append("/");
     }
-    targetFilePath.append(name + "_" + type + "_" + userUuid);
+    targetFilePath.append(name + "_csv_" + userUuid);
 
     // register in database
     blossomLeaf.output.insert("name", name);
-    blossomLeaf.output.insert("type", type);
+    blossomLeaf.output.insert("type", "csv");
     blossomLeaf.output.insert("location", targetFilePath);
     blossomLeaf.output.insert("project_uuid", projectUuid);
     blossomLeaf.output.insert("owner_uuid", userUuid);
@@ -162,7 +142,6 @@ CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
 
     // add values to output
     blossomLeaf.output.insert("uuid_input_file", inputUuid);
-    blossomLeaf.output.insert("uuid_label_file", labelUuid);
 
     // remove blocked values from output
     blossomLeaf.output.remove("location");

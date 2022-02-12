@@ -1,5 +1,5 @@
 /**
- * @file        create_data_set.h
+ * @file        finalize_mnist_data_set.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,30 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_MNIST_CREATE_DATA_SET_H
-#define SAGIRIARCHIVE_MNIST_CREATE_DATA_SET_H
+#ifndef SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H
+#define SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-class CreateMnistDataSet
+#include <core/data_set_header.h>
+
+class FinalizeMnistDataSet
         : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    CreateMnistDataSet();
+    FinalizeMnistDataSet();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
                  const Kitsunemimi::DataMap &context,
                  Kitsunemimi::Sakura::BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
+
+private:
+    bool convertMnistData(const std::string &filePath,
+                          const std::string &name,
+                          const Kitsunemimi::DataBuffer &inputBuffer,
+                          const Kitsunemimi::DataBuffer &labelBuffer);
 };
 
-#endif // SAGIRIARCHIVE_MNIST_CREATE_DATA_SET_H
+#endif // SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H

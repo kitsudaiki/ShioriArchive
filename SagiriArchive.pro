@@ -107,15 +107,18 @@ INCLUDEPATH += $$PWD \
 
 SOURCES += src/main.cpp \
     src/api/v1/data_files/check_data_set.cpp \
+    src/api/v1/data_files/csv/create_csv_data_set.cpp \
+    src/api/v1/data_files/csv/finalize_csv_data_set.cpp \
     src/api/v1/data_files/delete_data_set.cpp \
     src/api/v1/data_files/get_data_set.cpp \
     src/api/v1/data_files/list_data_set.cpp \
-    src/api/v1/data_files/mnist/create_data_set.cpp \
-    src/api/v1/data_files/mnist/finalize_data_set.cpp \
+    src/api/v1/data_files/mnist/create_mnist_data_set.cpp \
+    src/api/v1/data_files/mnist/finalize_mnist_data_set.cpp \
     src/api/v1/logging/add_audit_log.cpp \
     src/api/v1/logging/add_error_log.cpp \
     src/api/v1/request_results/delete_request_result.cpp \
     src/api/v1/request_results/get_request_result.cpp \
+    src/core/data_set_file.cpp \
     src/core/temp_file_handler.cpp \
     src/database/data_set_table.cpp \
     src/sagiri_root.cpp
@@ -123,11 +126,13 @@ SOURCES += src/main.cpp \
 HEADERS += \
     src/api/blossom_initializing.h \
     src/api/v1/data_files/check_data_set.h \
+    src/api/v1/data_files/csv/create_csv_data_set.h \
+    src/api/v1/data_files/csv/finalize_csv_data_set.h \
     src/api/v1/data_files/delete_data_set.h \
     src/api/v1/data_files/get_data_set.h \
     src/api/v1/data_files/list_data_set.h \
-    src/api/v1/data_files/mnist/create_data_set.h \
-    src/api/v1/data_files/mnist/finalize_data_set.h \
+    src/api/v1/data_files/mnist/create_mnist_data_set.h \
+    src/api/v1/data_files/mnist/finalize_mnist_data_set.h \
     src/api/v1/logging/add_audit_log.h \
     src/api/v1/logging/add_error_log.h \
     src/api/v1/request_results/delete_request_result.h \
@@ -135,6 +140,7 @@ HEADERS += \
     src/args.h \
     src/callbacks.h \
     src/config.h \
+    src/core/data_set_file.h \
     src/core/data_set_header.h \
     src/core/temp_file_handler.h \
     src/database/data_set_table.h \

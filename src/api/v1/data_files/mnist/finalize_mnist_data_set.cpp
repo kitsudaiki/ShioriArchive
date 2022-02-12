@@ -1,5 +1,5 @@
 /**
- * @file        finalize_data_set.cpp
+ * @file        finalize_mnist_data_set.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,11 +20,12 @@
  *      limitations under the License.
  */
 
-#include "finalize_data_set.h"
+#include "finalize_mnist_data_set.h"
 
 #include <sagiri_root.h>
 #include <database/data_set_table.h>
 #include <core/temp_file_handler.h>
+#include <core/data_set_file.h>
 
 #include <libKitsunemimiHanamiCommon/uuid.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -131,57 +132,15 @@ FinalizeMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
     }
 
     // write data to file
-    Kitsunemimi::DataBuffer resBuffer;
-    ImageTypeHeader imageHeader;
-    if(convertMnistData(imageHeader, resBuffer, inputBuffer, labelBuffer) == false)
+    if(convertMnistData(result.get("location").getString(),
+                        result.get("name").getString().c_str(),
+                        inputBuffer,
+                        labelBuffer) == false)
     {
         status.statusCode =Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to convert mnist-data");
         return false;
     }
-
-    // write converted data to real target
-    const std::string targetFilePath = result.get("location").getString();
-    Kitsunemimi::BinaryFile targetFile(targetFilePath, false);
-
-    // allocate storage
-    const uint64_t dataPos = sizeof(DataSetHeader) + sizeof(ImageTypeHeader);
-    if(targetFile.allocateStorage(resBuffer.usedBufferSize + dataPos, 1) == false)
-    {
-        status.statusCode = Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Allcating storage for file '" + targetFilePath + "\' failed");
-        return false;
-    }
-
-    // write dataset-hader
-    DataSetHeader dataSetHeader;
-    dataSetHeader.type = DataSetType::IMAGE_TYPE;
-    std::strncpy(dataSetHeader.name, result.get("name").getString().c_str(), 256);
-    if(targetFile.writeDataIntoFile(&dataSetHeader, 0, sizeof(DataSetHeader)) == false)
-    {
-        status.statusCode = Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to write data-set-header to file '" + targetFilePath + "'");
-        return false;
-    }
-
-    // write picture-header
-    if(targetFile.writeDataIntoFile(&imageHeader,
-                                    sizeof(DataSetHeader),
-                                    sizeof(ImageTypeHeader)) == false)
-    {
-        status.statusCode = Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to write data-set-header to file '" + targetFilePath + "'");
-        return false;
-    }
-
-    // write payload to file
-    if(targetFile.writeDataIntoFile(resBuffer.data, dataPos, resBuffer.usedBufferSize) == false)
-    {
-        status.statusCode = Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to write payload to file '" + targetFilePath + "'");
-        return false;
-    }
-    targetFile.closeFile();
 
     // delete temp-files
     SagiriRoot::tempFileHandler->removeData(inputUuid);
@@ -196,22 +155,26 @@ FinalizeMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
 /**
  * @brief convert mnist-data into generic format
  *
- * @param header reference for header with meta-information
- * @param resultBuffer buffer for the resulting file, which should be written back to disc
+ * @param filePath
+ * @param name
  * @param inputBuffer buffer with input-data
  * @param labelBuffer buffer with label-data
  *
  * @return true, if successfull, else false
  */
 bool
-FinalizeMnistDataSet::convertMnistData(ImageTypeHeader &header,
-                                       Kitsunemimi::DataBuffer &resultBuffer,
+FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
+                                       const std::string &name,
                                        const Kitsunemimi::DataBuffer &inputBuffer,
                                        const Kitsunemimi::DataBuffer &labelBuffer)
 {
+    DataSetFile file(filePath);
+    file.type = IMAGE_TYPE;
+    file.name = name;
+
+    // source-data
     const uint64_t dataOffset = 16;
     const uint64_t labelOffset = 8;
-
     const uint8_t* dataBufferPtr = static_cast<uint8_t*>(inputBuffer.data);
     const uint8_t* labelBufferPtr = static_cast<uint8_t*>(labelBuffer.data);
 
@@ -237,27 +200,26 @@ FinalizeMnistDataSet::convertMnistData(ImageTypeHeader &header,
     numberOfColumns |= static_cast<uint32_t>(dataBufferPtr[12]) << 24;
 
     // set information in header
-    header.numberOfInputsX = numberOfColumns;
-    header.numberOfInputsY = numberOfRows;
+    file.imageHeader.numberOfInputsX = numberOfColumns;
+    file.imageHeader.numberOfInputsY = numberOfRows;
     // TODO: read number of labels from file
-    header.numberOfOutputs = 10;
-    header.numberOfImages = numberOfImages;
+    file.imageHeader.numberOfOutputs = 10;
+    file.imageHeader.numberOfImages = numberOfImages;
 
-    // get pictures
-    const uint32_t pictureSize = numberOfRows * numberOfColumns;
-    const uint64_t retSize = (numberOfImages * (pictureSize + 10)) * 4;
-    Kitsunemimi::allocateBlocks_DataBuffer(resultBuffer, Kitsunemimi::calcBytesToBlocks(retSize));
-    resultBuffer.usedBufferSize = retSize;
-    float* resultPtr = static_cast<float*>(resultBuffer.data);
-    uint64_t resultPos = 0;
-    uint64_t dataPos = 0;
-    uint64_t labelPos = 0;
+    // buffer for values to reduce write-access to file
+    const uint64_t lineSize = (numberOfColumns * numberOfRows) * 10;
+    const uint32_t segmentSize = lineSize * 10000;
+    std::vector<float> segment(segmentSize, 0.0f);
+    uint64_t segmentPos = 0;
+    uint64_t segmentCounter = 0;
 
-    // check to avoid clang-warnings
-    if(resultBuffer.data == nullptr) {
+    // init file
+    if(file.initNewFile() == false) {
         return false;
     }
 
+    // get pictures
+    const uint32_t pictureSize = numberOfRows * numberOfColumns;
     double averageVal = 0.0f;
     uint64_t valueCounter = 0;
     float maxVal = 0.0f;
@@ -269,34 +231,50 @@ FinalizeMnistDataSet::convertMnistData(ImageTypeHeader &header,
         for(uint32_t i = 0; i < pictureSize; i++)
         {
             const uint32_t pos = pic * pictureSize + i + dataOffset;
-            resultPtr[resultPos] = (static_cast<float>(dataBufferPtr[pos]) / 255.0f);
+            segment[segmentPos] = (static_cast<float>(dataBufferPtr[pos]) / 255.0f);
 
             // update values for metadata
-            averageVal += resultPtr[resultPos];
+            averageVal += segment[segmentPos];
             valueCounter++;
-            if(maxVal < resultPtr[resultPos]) {
-                maxVal = resultPtr[resultPos];
+            if(maxVal < segment[segmentPos]) {
+                maxVal = segment[segmentPos];
             }
 
-            dataPos++;
-            resultPos++;
+            segmentPos++;
         }
 
         // label
         for(uint32_t i = 0; i < 10; i++)
         {
-            resultPtr[resultPos] = 0.0f;
-            labelPos++;
-            resultPos++;
+            segment[segmentPos] = 0.0f;
+            segmentPos++;
         }
         const uint32_t label = labelBufferPtr[pic + labelOffset];
-        std::cout<<"label: "<<label<<std::endl;
-        resultPtr[(resultPos - 10) + label] = maxVal;
+        segment[(segmentPos - 10) + label] = maxVal;
+
+        // write line to file, if segment is full
+        if(segmentPos == segmentSize)
+        {
+            file.addBlock(segmentCounter * segmentSize, &segment[0], segmentSize);
+            segmentPos = 0;
+            segmentCounter++;
+        }
+    }
+
+    // write last incomplete segment to file
+    if(segmentPos != 0) {
+        file.addBlock(segmentCounter * segmentSize, &segment[0], segmentPos);
     }
 
     // write additional information to header
-    header.avgValue = averageVal / static_cast<double>(valueCounter);
-    header.maxValue = maxVal;
+    file.imageHeader.avgValue = averageVal / static_cast<double>(valueCounter);
+    file.imageHeader.maxValue = maxVal;
+
+    // update header in file for the final number of lines for the case,
+    // that there were invalid lines
+    if(file.updateHeader() == false) {
+        return false;
+    }
 
     return true;
 }

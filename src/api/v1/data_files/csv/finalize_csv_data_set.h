@@ -1,5 +1,5 @@
 /**
- * @file        finalize_data_set.h
+ * @file        finalize_csv_data_set.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,18 +20,18 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H
-#define SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H
+#ifndef SAGIRIARCHIVE_CSV_FINALIZE_DATA_SET_H
+#define SAGIRIARCHIVE_CSV_FINALIZE_DATA_SET_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
 #include <core/data_set_header.h>
 
-class FinalizeMnistDataSet
+class FinalizeCsvDataSet
         : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    FinalizeMnistDataSet();
+    FinalizeCsvDataSet();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
@@ -40,10 +40,9 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 
 private:
-    bool convertMnistData(ImageTypeHeader &header,
-                          Kitsunemimi::DataBuffer &resultBuffer,
-                          const Kitsunemimi::DataBuffer &inputBuffer,
-                          const Kitsunemimi::DataBuffer &labelBuffer);
+    bool convertCsvData(const std::string &filePath,
+                        const std::string &name,
+                        const Kitsunemimi::DataBuffer &inputBuffer);
 };
 
-#endif // SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H
+#endif // SAGIRIARCHIVE_CSV_FINALIZE_DATA_SET_H

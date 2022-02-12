@@ -25,10 +25,10 @@
 #include <sagiri_root.h>
 #include <database/data_set_table.h>
 #include <core/data_set_header.h>
+#include <core/data_set_file.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
-#include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
 
@@ -145,35 +145,48 @@ GetDataSet::getHeaderInformation(Kitsunemimi::Json::JsonItem &result,
                                  const std::string &location,
                                  Kitsunemimi::ErrorContainer &error)
 {
-    DataSetHeader dataSetHeader;
-    Kitsunemimi::BinaryFile file(location);
+    DataSetFile file(location);
 
     // read data-set-header
-    if(file.readDataFromFile(&dataSetHeader, 0, sizeof(DataSetHeader)) == false)
+    if(file.readFromFile() == false)
     {
-        error.addMeesage("Failed to read data-set-header from file '" + location + "'");
+        error.addMeesage("Failed to read header from file '" + location + "'");
         return false;
     }
 
-    if(dataSetHeader.type == IMAGE_TYPE)
+    if(file.type == IMAGE_TYPE)
     {
-        // read image-type-header
-        ImageTypeHeader imageTypeHeader;
-        if(file.readDataFromFile(&imageTypeHeader,
-                                 sizeof(DataSetHeader),
-                                 sizeof(ImageTypeHeader)) == false)
+        // write information to result
+        const uint64_t size = file.imageHeader.numberOfInputsX * file.imageHeader.numberOfInputsY;
+        result.insert("inputs", static_cast<long>(size));
+        result.insert("outputs", static_cast<long>(file.imageHeader.numberOfOutputs));
+        result.insert("lines", static_cast<long>(file.imageHeader.numberOfImages));
+        result.insert("average_value", static_cast<float>(file.imageHeader.avgValue));
+        result.insert("max_value", static_cast<float>(file.imageHeader.maxValue));
+
+        return true;
+    }
+    else if(file.type == TABLE_TYPE)
+    {
+        long inputs = 0;
+        long outputs = 0;
+
+        // get number of inputs and outputs
+        for(const TableHeaderEntry &entry : file.tableColumns)
         {
-            error.addMeesage("Failed to read image-type-header from file '" + location + "'");
-            return false;
+            if(entry.isInput) {
+                inputs++;
+            }
+            if(entry.isOutput) {
+                outputs++;
+            }
         }
 
-        // write information to result
-        const uint64_t size = imageTypeHeader.numberOfInputsX * imageTypeHeader.numberOfInputsY;
-        result.insert("inputs", static_cast<long>(size));
-        result.insert("outputs", static_cast<long>(imageTypeHeader.numberOfOutputs));
-        result.insert("lines", static_cast<long>(imageTypeHeader.numberOfImages));
-        result.insert("average_value", static_cast<float>(imageTypeHeader.avgValue));
-        result.insert("max_value", static_cast<float>(imageTypeHeader.maxValue));
+        result.insert("inputs", inputs);
+        result.insert("outputs", outputs);
+        result.insert("lines", static_cast<long>(file.tableHeader.numberOfLines));
+        result.insert("average_value", 0.0f);
+        result.insert("max_value", 0.0f);
 
         return true;
     }

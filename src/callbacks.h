@@ -27,6 +27,7 @@
 #include <libKitsunemimiCommon/files/text_file.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiConfig/config_handler.h>
+#include <libKitsunemimiCrypto/common.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 
@@ -53,9 +54,37 @@ void streamDataCallback(void*,
 }
 
 
-void genericMessageCallback(Kitsunemimi::Sakura::Session* session,
-                            const Kitsunemimi::Json::JsonItem &message,
-                            const uint64_t blockerId)
+/**
+ * @brief get the current datetime of the system
+ *
+ * @return datetime as string
+ */
+const std::string
+getDatetime()
+{
+    const time_t now = time(nullptr);
+    tm *ltm = localtime(&now);
+
+    const std::string datatime =
+            std::to_string(1900 + ltm->tm_year)
+            + "-"
+            + std::to_string(1 + ltm->tm_mon)
+            + "-"
+            + std::to_string(ltm->tm_mday)
+            + " "
+            + std::to_string(ltm->tm_hour)
+            + ":"
+            + std::to_string(ltm->tm_min)
+            + ":"
+            + std::to_string(ltm->tm_sec);
+
+    return datatime;
+}
+
+void
+genericMessageCallback(Kitsunemimi::Sakura::Session* session,
+                       const Kitsunemimi::Json::JsonItem &message,
+                       const uint64_t blockerId)
 {
     const std::string messageType = message.get("message_type").getString();
 
@@ -114,6 +143,65 @@ void genericMessageCallback(Kitsunemimi::Sakura::Session* session,
         }
 
         const std::string ret = "success";
+        session->sendResponse(ret.c_str(), ret.size(), blockerId, error);
+        return;
+    }
+    else if(messageType == "error_log")
+    {
+        bool success = false;
+        Kitsunemimi::ErrorContainer error;
+
+        const std::string userUuid = message.get("uuid").getString();
+        const std::string base64Error = message.get("message").toString();
+        const std::string context = message.get("context").toString(true);
+        const std::string values = message.get("values").toString(true);
+
+        // decode message
+        std::string errorMessage;
+        if(Kitsunemimi::Crypto::decodeBase64(errorMessage, base64Error) == false)
+        {
+            error.addMeesage("failed to decode error-message");
+            LOG_ERROR(error);
+            return;
+        }
+
+        // TODO: handle result
+        const std::string resultLocation = GET_STRING_CONFIG("sagiri", "error_location", success);
+        std::string filePath = resultLocation + "/";
+        if(userUuid == "") {
+            filePath += "generic";
+        } else {
+            filePath += userUuid;
+        }
+
+        // create an empty file, if no exist
+        if(std::filesystem::exists(filePath) == false)
+        {
+            // create new file and write content
+            std::ofstream outputFile;
+            outputFile.open(filePath);
+            outputFile.close();
+        }
+
+        // create message
+        std::string finalMessage =
+                "=================================================================================="
+                "\n\ntimestamp: "
+                + getDatetime();
+        if(context != "") {
+            finalMessage += "\n\ncontext: \n" + context;
+        }
+        if(values != "") {
+            finalMessage += "\n\nvalues: \n" + values;
+        }
+        finalMessage += "\n\nerror: \n" + errorMessage + "\n\n";
+
+        // write to file
+        if(appendText(filePath, finalMessage, error) == false) {
+            LOG_ERROR(error);
+        }
+
+        const std::string ret = "-";
         session->sendResponse(ret.c_str(), ret.size(), blockerId, error);
         return;
     }

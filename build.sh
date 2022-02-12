@@ -97,7 +97,7 @@ get_required_private_repo_github "libKitsunemimiJwt" "v0.4.1" 8
 echo ""
 echo "###########################################################################################################"
 echo ""
-get_required_kitsune_lib_repo "libKitsunemimiSakuraNetwork" "v0.8.2" 8
+get_required_kitsune_lib_repo "libKitsunemimiSakuraNetwork" "master" 8
 get_required_kitsune_lib_repo "libKitsunemimiSakuraLang" "v0.12.0" 1
 get_required_private_repo_github "libKitsunemimiSakuraDatabase" "v0.4.1" 8
 echo ""

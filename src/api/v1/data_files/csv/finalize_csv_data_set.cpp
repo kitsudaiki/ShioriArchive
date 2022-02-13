@@ -123,7 +123,7 @@ FinalizeCsvDataSet::runTask(BlossomLeaf &blossomLeaf,
                       inputBuffer) == false)
     {
         status.statusCode =Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Failed to convert mnist-data");
+        error.addMeesage("Failed to convert csv-data");
         return false;
     }
 
@@ -137,10 +137,10 @@ FinalizeCsvDataSet::runTask(BlossomLeaf &blossomLeaf,
 }
 
 /**
- * @brief convert mnist-data into generic format
+ * @brief convert csv-data into generic format
  *
- * @param filePath
- * @param name
+ * @param filePath path to the resulting file
+ * @param name data-set name
  * @param inputBuffer buffer with input-data
  *
  * @return true, if successfull, else false

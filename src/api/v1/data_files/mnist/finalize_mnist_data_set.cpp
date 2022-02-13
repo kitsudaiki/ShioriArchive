@@ -155,8 +155,8 @@ FinalizeMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
 /**
  * @brief convert mnist-data into generic format
  *
- * @param filePath
- * @param name
+ * @param filePath path to the resulting file
+ * @param name data-set name
  * @param inputBuffer buffer with input-data
  * @param labelBuffer buffer with label-data
  *

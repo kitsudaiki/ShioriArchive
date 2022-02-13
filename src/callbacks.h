@@ -25,6 +25,7 @@
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/files/text_file.h>
+#include <libKitsunemimiCommon/common_items/table_item.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiCrypto/common.h>
@@ -52,7 +53,6 @@ void streamDataCallback(void*,
 
     SagiriRoot::tempFileHandler->addDataToPos(id, pos, ptr, dataSize - 44);
 }
-
 
 /**
  * @brief get the current datetime of the system
@@ -146,13 +146,61 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
         session->sendResponse(ret.c_str(), ret.size(), blockerId, error);
         return;
     }
+    else if(messageType == "audit_log")
+    {
+        bool success = false;
+        Kitsunemimi::ErrorContainer error;
+
+        const std::string userUuid = message.get("user_uuid").getString();
+        const std::string component = message.get("component").getString();
+        const std::string endpoint = message.get("endpoint").getString();
+        const std::string type = message.get("type").getString();
+
+        // TODO: handle result
+        const std::string resultLocation = GET_STRING_CONFIG("sagiri", "audit_location", success);
+        std::string filePath = resultLocation + "/";
+        if(userUuid == "") {
+            filePath += "generic";
+        } else {
+            filePath += userUuid;
+        }
+
+        // create an empty file, if no exist
+        if(std::filesystem::exists(filePath) == false)
+        {
+            // create new file and write content
+            std::ofstream outputFile;
+            outputFile.open(filePath);
+            outputFile.close();
+        }
+
+        // init table
+        Kitsunemimi::TableItem tableOutput;
+        tableOutput.addColumn("key");
+        tableOutput.addColumn("value");
+
+        // fill table
+        tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
+        tableOutput.addRow(std::vector<std::string>{"component", component});
+        tableOutput.addRow(std::vector<std::string>{"endpoint", endpoint});
+        tableOutput.addRow(std::vector<std::string>{"type", type});
+
+        // write to file
+        const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
+        if(appendText(filePath, finalMessage, error) == false) {
+            LOG_ERROR(error);
+        }
+
+        return;
+    }
     else if(messageType == "error_log")
     {
         bool success = false;
         Kitsunemimi::ErrorContainer error;
 
-        const std::string userUuid = message.get("uuid").getString();
-        const std::string base64Error = message.get("message").toString();
+        const std::string userUuid = message.get("user_uuid").getString();
+        const std::string component = message.get("component").getString();
+        const std::string base64Error = message.get("message").getString();
         const std::string context = message.get("context").toString(true);
         const std::string values = message.get("values").toString(true);
 
@@ -183,23 +231,35 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
             outputFile.close();
         }
 
-        // create message
-        std::string finalMessage =
-                "=================================================================================="
-                "\n\ntimestamp: "
-                + getDatetime();
+        // init table
+        Kitsunemimi::TableItem tableOutput;
+        tableOutput.addColumn("key");
+        tableOutput.addColumn("value");
+
+        // fill table
+        tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
+        tableOutput.addRow(std::vector<std::string>{"component", component});
         if(context != "") {
-            finalMessage += "\n\ncontext: \n" + context;
+            tableOutput.addRow(std::vector<std::string>{"context", context});
         }
         if(values != "") {
-            finalMessage += "\n\nvalues: \n" + values;
+            tableOutput.addRow(std::vector<std::string>{"values", values});
         }
-        finalMessage += "\n\nerror: \n" + errorMessage + "\n\n";
+        tableOutput.addRow(std::vector<std::string>{"error", errorMessage});
 
         // write to file
+        const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
         if(appendText(filePath, finalMessage, error) == false) {
             LOG_ERROR(error);
         }
+
+        return;
+    }
+    else
+    {
+        Kitsunemimi::ErrorContainer error;
+        error.addMeesage("unknown message-type '" + messageType + "'");
+        LOG_ERROR(error);
 
         const std::string ret = "-";
         session->sendResponse(ret.c_str(), ret.size(), blockerId, error);

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0] - 2022-01-14
+
+### Added
+- audit-log
+- error-log
+- storage for results from kyouko
+
+### Changed
+- use generic file-structure for data-sets and also convert uploaded files into this new format
+- upload data-sets with stream-messages to avoid logging of the data and to be much faster
+
+
 ## [0.1.0] - 2022-01-09
 
 ### Added

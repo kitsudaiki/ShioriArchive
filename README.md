@@ -32,7 +32,7 @@ sqlite3 library | libsqlite3-dev | >= 3.0 | handling of sqlite databases
 
 Repository-Name | Version-Tag | Download-Path
 --- | --- | ---
-libKitsunemimiCommon | v0.25.1 |  https://github.com/kitsudaiki/libKitsunemimiCommon.git
+libKitsunemimiCommon | v0.25.3 |  https://github.com/kitsudaiki/libKitsunemimiCommon.git
 libKitsunemimiJson | v0.11.3 |  https://github.com/kitsudaiki/libKitsunemimiJson.git
 libKitsunemimiJinja2 | v0.9.1 |  https://github.com/kitsudaiki/libKitsunemimiJinja2.git
 libKitsunemimiIni | v0.5.1 |  https://github.com/kitsudaiki/libKitsunemimiIni.git
@@ -42,14 +42,15 @@ libKitsunemimiConfig | v0.4.0 |  https://github.com/kitsudaiki/libKitsunemimiCon
 libKitsunemimiCrypto | v0.2.0 |  -
 libKitsunemimiJwt | v0.4.1 |  -
 libKitsunemimiSqlite | v0.3.0 |  -
-libKitsunemimiSakuraNetwork | v0.8.2 |  https://github.com/kitsudaiki/libKitsunemimiSakuraNetwork.git
+libKitsunemimiSakuraNetwork | v0.8.4 |  https://github.com/kitsudaiki/libKitsunemimiSakuraNetwork.git
 libKitsunemimiSakuraLang | v0.12.0 |  https://github.com/kitsudaiki/libKitsunemimiSakuraLang.git
 libKitsunemimiSakuraDatabase | v0.4.1 |  -
 libKitsunemimiHanamiCommon | v0.1.0 |  -
 libKitsunemimiHanamiEndpoints | v0.1.0 |  -
-libKitsunemimiHanamiDatabase | v0.1.0 |  -
-libKitsunemimiHanamiMessaging | v0.2.0 |  -
-libKitsunemimiHanamiPredefinitions | v0.1.0 |  -
+libKitsunemimiHanamiDatabase | v0.2.0 |  -
+libKitsunemimiHanamiMessaging | v0.3.0 |  -
+libAzukiHeart | v0.1.0 | -
+libMisakaGuard | v0.1.0 | -
 
 HINT: These Kitsunemimi-Libraries will be downloaded and build automatically with the build-script below.
 

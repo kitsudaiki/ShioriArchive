@@ -116,7 +116,9 @@ SOURCES += src/main.cpp \
     src/api/v1/data_files/mnist/finalize_mnist_data_set.cpp \
     src/api/v1/request_results/delete_request_result.cpp \
     src/api/v1/request_results/get_request_result.cpp \
-    src/core/data_set_file.cpp \
+    src/core/data_set_files/data_set_file.cpp \
+    src/core/data_set_files/image_data_set_file.cpp \
+    src/core/data_set_files/table_data_set_file.cpp \
     src/core/temp_file_handler.cpp \
     src/database/data_set_table.cpp \
     src/sagiri_root.cpp
@@ -136,8 +138,9 @@ HEADERS += \
     src/args.h \
     src/callbacks.h \
     src/config.h \
-    src/core/data_set_file.h \
-    src/core/data_set_header.h \
+    src/core/data_set_files/data_set_file.h \
+    src/core/data_set_files/image_data_set_file.h \
+    src/core/data_set_files/table_data_set_file.h \
     src/core/temp_file_handler.h \
     src/database/data_set_table.h \
     src/sagiri_root.h

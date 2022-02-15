@@ -25,7 +25,8 @@
 #include <sagiri_root.h>
 #include <database/data_set_table.h>
 #include <core/temp_file_handler.h>
-#include <core/data_set_file.h>
+#include <core/data_set_files/data_set_file.h>
+#include <core/data_set_files/table_data_set_file.h>
 
 #include <libKitsunemimiHanamiCommon/uuid.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -150,8 +151,8 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
                                    const std::string &name,
                                    const Kitsunemimi::DataBuffer &inputBuffer)
 {
-    DataSetFile file(filePath);
-    file.type = TABLE_TYPE;
+    TableDataSetFile file(filePath);
+    file.type = DataSetFile::TABLE_TYPE;
     file.name = name;
 
     // prepare content-processing
@@ -192,7 +193,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
             for(const std::string &col : lineContent)
             {
                 // create and add header-entry
-                TableHeaderEntry entry;
+                DataSetFile::TableHeaderEntry entry;
                 entry.setName(col);
                 file.tableColumns.push_back(entry);
             }

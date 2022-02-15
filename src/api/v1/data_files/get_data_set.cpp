@@ -24,8 +24,9 @@
 
 #include <sagiri_root.h>
 #include <database/data_set_table.h>
-#include <core/data_set_header.h>
-#include <core/data_set_file.h>
+#include <core/data_set_files/data_set_file.h>
+#include <core/data_set_files/image_data_set_file.h>
+#include <core/data_set_files/table_data_set_file.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
@@ -145,34 +146,47 @@ GetDataSet::getHeaderInformation(Kitsunemimi::Json::JsonItem &result,
                                  const std::string &location,
                                  Kitsunemimi::ErrorContainer &error)
 {
-    DataSetFile file(location);
+    DataSetFile* file = readDataSetFile(location);
+    if(file == nullptr) {
+        return false;
+    }
 
     // read data-set-header
-    if(file.readFromFile() == false)
+    if(file->readFromFile() == false)
     {
         error.addMeesage("Failed to read header from file '" + location + "'");
         return false;
     }
 
-    if(file.type == IMAGE_TYPE)
+    if(file->type == DataSetFile::IMAGE_TYPE)
     {
+        ImageDataSetFile* imgF = dynamic_cast<ImageDataSetFile*>(file);
+        if(imgF == nullptr) {
+            return false;
+        }
+
         // write information to result
-        const uint64_t size = file.imageHeader.numberOfInputsX * file.imageHeader.numberOfInputsY;
+        const uint64_t size = imgF->imageHeader.numberOfInputsX * imgF->imageHeader.numberOfInputsY;
         result.insert("inputs", static_cast<long>(size));
-        result.insert("outputs", static_cast<long>(file.imageHeader.numberOfOutputs));
-        result.insert("lines", static_cast<long>(file.imageHeader.numberOfImages));
-        result.insert("average_value", static_cast<float>(file.imageHeader.avgValue));
-        result.insert("max_value", static_cast<float>(file.imageHeader.maxValue));
+        result.insert("outputs", static_cast<long>(imgF->imageHeader.numberOfOutputs));
+        result.insert("lines", static_cast<long>(imgF->imageHeader.numberOfImages));
+        result.insert("average_value", static_cast<float>(imgF->imageHeader.avgValue));
+        result.insert("max_value", static_cast<float>(imgF->imageHeader.maxValue));
 
         return true;
     }
-    else if(file.type == TABLE_TYPE)
+    else if(file->type == DataSetFile::TABLE_TYPE)
     {
+        TableDataSetFile* imgT = dynamic_cast<TableDataSetFile*>(file);
+        if(imgT == nullptr) {
+            return false;
+        }
+
         long inputs = 0;
         long outputs = 0;
 
         // get number of inputs and outputs
-        for(const TableHeaderEntry &entry : file.tableColumns)
+        for(const DataSetFile::TableHeaderEntry &entry : imgT->tableColumns)
         {
             if(entry.isInput) {
                 inputs++;
@@ -184,7 +198,7 @@ GetDataSet::getHeaderInformation(Kitsunemimi::Json::JsonItem &result,
 
         result.insert("inputs", inputs);
         result.insert("outputs", outputs);
-        result.insert("lines", static_cast<long>(file.tableHeader.numberOfLines));
+        result.insert("lines", static_cast<long>(imgT->tableHeader.numberOfLines));
         result.insert("average_value", 0.0f);
         result.insert("max_value", 0.0f);
 

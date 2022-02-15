@@ -25,7 +25,8 @@
 #include <sagiri_root.h>
 #include <database/data_set_table.h>
 #include <core/temp_file_handler.h>
-#include <core/data_set_file.h>
+#include <core/data_set_files/data_set_file.h>
+#include <core/data_set_files/image_data_set_file.h>
 
 #include <libKitsunemimiHanamiCommon/uuid.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -168,8 +169,8 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
                                        const Kitsunemimi::DataBuffer &inputBuffer,
                                        const Kitsunemimi::DataBuffer &labelBuffer)
 {
-    DataSetFile file(filePath);
-    file.type = IMAGE_TYPE;
+    ImageDataSetFile file(filePath);
+    file.type = DataSetFile::IMAGE_TYPE;
     file.name = name;
 
     // source-data

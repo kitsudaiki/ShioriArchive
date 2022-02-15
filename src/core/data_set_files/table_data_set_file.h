@@ -32,7 +32,9 @@ public:
     TableDataSetFile(const std::string &filePath);
     TableDataSetFile(Kitsunemimi::BinaryFile* file);
     ~TableDataSetFile();
+
     bool updateHeader();
+    bool split(const std::string &newFilePath, const float ratio);
 
     TableTypeHeader tableHeader;
     std::vector<TableHeaderEntry> tableColumns;

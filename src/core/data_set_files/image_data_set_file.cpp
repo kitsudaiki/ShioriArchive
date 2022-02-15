@@ -22,6 +22,8 @@
 
 #include "image_data_set_file.h"
 
+#include <libKitsunemimiCommon/common_methods/file_methods.h>
+
 /**
  * @brief constructor
  *
@@ -51,8 +53,8 @@ ImageDataSetFile::initHeader()
 {
     m_headerSize = sizeof(DataSetHeader) + sizeof(ImageTypeHeader);
 
-    uint64_t lineSize = (imageHeader.numberOfInputsX * imageHeader.numberOfInputsY)
-                        + imageHeader.numberOfOutputs;
+    const uint64_t lineSize = (imageHeader.numberOfInputsX * imageHeader.numberOfInputsY)
+                              + imageHeader.numberOfOutputs;
     m_totalFileSize = m_headerSize + (lineSize * imageHeader.numberOfImages * sizeof(float));
 }
 
@@ -69,8 +71,8 @@ ImageDataSetFile::readHeader(const uint8_t* u8buffer)
     memcpy(&imageHeader, &u8buffer[sizeof(DataSetHeader)], sizeof(ImageTypeHeader));
 
     // get sizes
-    uint64_t lineSize = (imageHeader.numberOfInputsX * imageHeader.numberOfInputsY)
-                        + imageHeader.numberOfOutputs;
+    const uint64_t lineSize = (imageHeader.numberOfInputsX * imageHeader.numberOfInputsY)
+                              + imageHeader.numberOfOutputs;
     m_totalFileSize = m_headerSize + (lineSize * imageHeader.numberOfImages * sizeof(float));
 }
 
@@ -89,6 +91,103 @@ ImageDataSetFile::updateHeader()
     {
         return false;
     }
+
+    return true;
+}
+
+/**
+ * @brief split data-set at a specific point
+ *
+ * @param newFilePath path of the file with the second part
+ * @param ratio ratio-value where to split the file
+ *
+ * @return true, if successful, else false
+ */
+bool
+ImageDataSetFile::split(const std::string &newFilePath, const float ratio)
+{
+    // calculate number of images for each part
+    const uint64_t numberImagesP1 = ratio * imageHeader.numberOfImages;
+    const uint64_t numberImagesP2 = imageHeader.numberOfImages - numberImagesP1;
+
+    // calculate number of values for each part
+    const uint64_t lineSize = (imageHeader.numberOfInputsX * imageHeader.numberOfInputsY)
+                              + imageHeader.numberOfOutputs;
+    const uint64_t numberValuesP1 = numberImagesP1 * lineSize;
+    const uint64_t numberValuesP2 = numberImagesP2 * lineSize;
+
+    // create new file
+    ImageDataSetFile p2(newFilePath);
+    p2.type = DataSetFile::IMAGE_TYPE;
+    p2.name = name;
+    p2.imageHeader = imageHeader;
+    p2.imageHeader.numberOfImages = numberImagesP2;
+    if(p2.initNewFile() == false) {
+        return false;
+    }
+
+    // init buffer
+    float* bufferP1 = new float[numberValuesP1];
+    float* bufferP2 = new float[numberValuesP2];
+
+    // calculate number of bytes for each part
+    const float numberBytesP1 = numberValuesP1 * sizeof(float);
+    const float numberBytesP2 = numberValuesP2 * sizeof(float);
+
+    // read data
+    m_targetFile->readDataFromFile(bufferP1, m_headerSize,                 numberBytesP1);
+    m_targetFile->readDataFromFile(bufferP2, m_headerSize + numberBytesP1, numberBytesP2);
+
+    m_targetFile->closeFile();
+    const std::string filePathP1 = m_targetFile->m_filePath;
+
+    // remove old file
+    Kitsunemimi::ErrorContainer error;
+    if(Kitsunemimi::deleteFileOrDir(filePathP1, error) == false)
+    {
+        // free memory
+        delete[] bufferP1;
+        delete[] bufferP2;
+
+        return false;
+    }
+    delete m_targetFile;
+
+    // reinit file with correct size
+    m_targetFile = new Kitsunemimi::BinaryFile(filePathP1);
+    imageHeader.numberOfImages = numberImagesP1;
+    if(initNewFile() == false)
+    {
+        // free memory
+        delete[] bufferP1;
+        delete[] bufferP2;
+
+        return false;
+    }
+
+    // write data to part1
+    if(addBlock(0, bufferP1, numberValuesP1) == false)
+    {
+        // free memory
+        delete[] bufferP1;
+        delete[] bufferP2;
+
+        return false;
+    }
+
+    // write data to part 2
+    if(p2.addBlock(numberValuesP1, bufferP2, numberValuesP2) == false)
+    {
+        // free memory
+        delete[] bufferP1;
+        delete[] bufferP2;
+
+        return false;
+    }
+
+    // free memory
+    delete[] bufferP1;
+    delete[] bufferP2;
 
     return true;
 }

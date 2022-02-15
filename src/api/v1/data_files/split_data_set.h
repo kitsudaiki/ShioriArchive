@@ -1,5 +1,5 @@
 /**
- * @file        image_data_set_file.h
+ * @file        split_data_set.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,27 +20,22 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_IMAGEDATASETFILE_H
-#define SAGIRIARCHIVE_IMAGEDATASETFILE_H
+#ifndef SAGIRIARCHIVE_SPLITDATASET_H
+#define SAGIRIARCHIVE_SPLITDATASET_H
 
-#include <core/data_set_files/data_set_file.h>
+#include <libKitsunemimiSakuraLang/blossom.h>
 
-class ImageDataSetFile
-        : public DataSetFile
+class SplitDataSet
+        : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    ImageDataSetFile(const std::string &filePath);
-    ImageDataSetFile(Kitsunemimi::BinaryFile* file);
-    ~ImageDataSetFile();
-
-    bool updateHeader();
-    bool split(const std::string &newFilePath, const float ratio);
-
-    ImageTypeHeader imageHeader;
+    SplitDataSet();
 
 protected:
-    void initHeader();
-    void readHeader(const uint8_t* u8buffer);
+    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+                 const Kitsunemimi::DataMap &context,
+                 Kitsunemimi::Sakura::BlossomStatus &status,
+                 Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SAGIRIARCHIVE_IMAGEDATASETFILE_H
+#endif // SAGIRIARCHIVE_SPLITDATASET_H

@@ -115,3 +115,17 @@ TableDataSetFile::updateHeader()
 
     return true;
 }
+
+/**
+ * @brief split data-set at a specific point
+ *
+ * @param newFilePath path of the file with the second part
+ * @param ratio ratio-value where to split the file
+ *
+ * @return true, if successful, else false
+ */
+bool
+TableDataSetFile::split(const std::string &newFilePath, const float ratio)
+{
+
+}

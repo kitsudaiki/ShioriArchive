@@ -99,6 +99,7 @@ public:
                   const u_int64_t numberOfValues);
     float* getPayload(uint64_t &payloadSize);
     virtual bool updateHeader() = 0;
+    virtual bool split(const std::string &newFilePath, const float ratio) = 0;
 
     DataSetType type = UNDEFINED_TYPE;
     std::string name = "";

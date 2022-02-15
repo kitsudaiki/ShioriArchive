@@ -94,9 +94,9 @@ GetDataSet::GetDataSet()
  */
 bool
 GetDataSet::runTask(BlossomLeaf &blossomLeaf,
-                      const Kitsunemimi::DataMap &context,
-                      BlossomStatus &status,
-                      Kitsunemimi::ErrorContainer &error)
+                    const Kitsunemimi::DataMap &context,
+                    BlossomStatus &status,
+                    Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
     const std::string userUuid = context.getStringByKey("uuid");

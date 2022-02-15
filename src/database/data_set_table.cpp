@@ -105,9 +105,41 @@ DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
     conditions.emplace_back("uuid", uuid);
 
     // get user from db
-    if(get(result, userUuid, projectUuid, isAdmin, conditions, error, showHiddenValues) == false)
-    {
-        LOG_ERROR(error);
+    if(get(result, userUuid, projectUuid, isAdmin, conditions, error, showHiddenValues) == false) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * @brief get a metadata-entry for a specific train-data-set from the database
+ *
+ * @param result reference for the result-output
+ * @param name name of the data
+ * @param userUuid user-uuid to filter
+ * @param projectUuid project-uuid to filter
+ * @param isAdmin true, if use who makes request is admin
+ * @param error reference for error-output
+ * @param showHiddenValues set to true to also show as hidden marked fields
+ *
+ * @return true, if successful, else false
+ */
+bool
+DataSetTable::getDataSetByName(Kitsunemimi::Json::JsonItem &result,
+                               const std::string &name,
+                               const std::string &userUuid,
+                               const std::string &projectUuid,
+                               const bool isAdmin,
+                               Kitsunemimi::ErrorContainer &error,
+                               const bool showHiddenValues)
+{
+    // get user from db
+    std::vector<RequestCondition> conditions;
+    conditions.emplace_back("name", name);
+
+    // get user from db
+    if(get(result, userUuid, projectUuid, isAdmin, conditions, error, showHiddenValues) == false) {
         return false;
     }
 

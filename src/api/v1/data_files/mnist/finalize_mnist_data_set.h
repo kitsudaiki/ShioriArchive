@@ -42,6 +42,10 @@ private:
                           const std::string &name,
                           const Kitsunemimi::DataBuffer &inputBuffer,
                           const Kitsunemimi::DataBuffer &labelBuffer);
+    bool convertMnistDataBatch(const std::string &filePath,
+                               const std::string &name,
+                               const Kitsunemimi::DataBuffer &inputBuffer,
+                               const Kitsunemimi::DataBuffer &labelBuffer);
 };
 
 #endif // SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H

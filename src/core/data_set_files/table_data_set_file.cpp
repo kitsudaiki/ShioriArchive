@@ -22,6 +22,8 @@
 
 #include "table_data_set_file.h"
 
+#include <libKitsunemimiCommon/common_methods/file_methods.h>
+
 /**
  * @brief constructor
  *
@@ -127,5 +129,72 @@ TableDataSetFile::updateHeader()
 bool
 TableDataSetFile::split(const std::string &newFilePath, const float ratio)
 {
+    // calculate number of lines for each part
+    const uint64_t numberLinesP1 = ratio * tableHeader.numberOfLines;
+    const uint64_t numberLinesP2 = tableHeader.numberOfLines - numberLinesP1;
 
+    // calculate number of values for each part
+    const uint64_t numberValuesP1 = numberLinesP1 * tableHeader.numberOfColumns;
+    const uint64_t numberValuesP2 = numberLinesP2 * tableHeader.numberOfColumns;
+
+    // create new file
+    TableDataSetFile p2(newFilePath);
+    p2.type = DataSetFile::TABLE_TYPE;
+    p2.name = name;
+    p2.tableHeader = tableHeader;
+    p2.tableHeader.numberOfLines = numberLinesP2;
+    if(p2.initNewFile() == false) {
+        return false;
+    }
+
+    // init buffer
+    float* bufferP1 = new float[numberValuesP1];
+    float* bufferP2 = new float[numberValuesP2];
+
+    // calculate number of bytes for each part
+    const float numberBytesP1 = numberValuesP1 * sizeof(float);
+    const float numberBytesP2 = numberValuesP2 * sizeof(float);
+
+    // read data
+    m_targetFile->readDataFromFile(bufferP1, m_headerSize,                 numberBytesP1);
+    m_targetFile->readDataFromFile(bufferP2, m_headerSize + numberBytesP1, numberBytesP2);
+
+    m_targetFile->closeFile();
+    const std::string filePathP1 = m_targetFile->m_filePath;
+
+    bool ret = false;
+    do {
+        // remove old file
+        Kitsunemimi::ErrorContainer error;
+        if(Kitsunemimi::deleteFileOrDir(filePathP1, error) == false) {
+            break;
+        }
+        delete m_targetFile;
+
+        // reinit file with correct size
+        m_targetFile = new Kitsunemimi::BinaryFile(filePathP1);
+        tableHeader.numberOfLines = numberLinesP1;
+        if(initNewFile() == false) {
+            break;
+        }
+
+        // write data to part1
+        if(addBlock(0, bufferP1, numberValuesP1) == false) {
+            break;
+        }
+
+        // write data to part 2
+        if(p2.addBlock(numberValuesP1, bufferP2, numberValuesP2) == false) {
+            break;
+        }
+
+        ret = true;
+    }
+    while(false);
+
+    // free memory
+    delete[] bufferP1;
+    delete[] bufferP2;
+
+    return ret;
 }

@@ -26,6 +26,8 @@
 #include <database/data_set_table.h>
 #include <core/data_set_files/data_set_file.h>
 
+#include <libKitsunemimiHanamiCommon/enums.h>
+
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/common_methods/file_methods.h>
 
@@ -55,9 +57,9 @@ SplitDataSet::SplitDataSet()
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("correctness",
-                        Sakura::SAKURA_FLOAT_TYPE,
-                        "Correctness of the values compared to the data-set.");
+    registerOutputField("new_uuid",
+                        Sakura::SAKURA_STRING_TYPE,
+                        "UUID of the split of part data-set.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -69,9 +71,39 @@ SplitDataSet::SplitDataSet()
  */
 bool
 SplitDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
-                      const Kitsunemimi::DataMap &context,
+                      const DataMap &context,
                       Sakura::BlossomStatus &status,
                       ErrorContainer &error)
 {
+    const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
 
+    const std::string userUuid = context.getStringByKey("uuid");
+    const std::string projectUuid = context.getStringByKey("projects");
+    const bool isAdmin = context.getBoolByKey("is_admin");
+
+    if(SagiriRoot::dataSetTable->getDataSet(blossomLeaf.output,
+                                            dataUuid,
+                                            userUuid,
+                                            projectUuid,
+                                            isAdmin,
+                                            error,
+                                            true) == false)
+    {
+        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    // get file information
+    const std::string location = blossomLeaf.output.get("location").getString();
+    DataSetFile* file = readDataSetFile(location);
+    if(file == nullptr)
+    {
+        error.addMeesage("Failed to read file '" + location + "'");
+        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+
+
+    return true;
 }

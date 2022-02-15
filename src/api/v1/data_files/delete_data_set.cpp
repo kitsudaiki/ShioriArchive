@@ -68,12 +68,12 @@ DeleteDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     // get location from database
     Kitsunemimi::Json::JsonItem result;
     if(SagiriRoot::dataSetTable->getDataSet(result,
-                                                dataUuid,
-                                                userUuid,
-                                                projectUuid,
-                                                isAdmin,
-                                                error,
-                                                true) == false)
+                                            dataUuid,
+                                            userUuid,
+                                            projectUuid,
+                                            isAdmin,
+                                            error,
+                                            true) == false)
     {
         status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

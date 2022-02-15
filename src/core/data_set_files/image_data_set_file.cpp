@@ -141,53 +141,39 @@ ImageDataSetFile::split(const std::string &newFilePath, const float ratio)
     m_targetFile->closeFile();
     const std::string filePathP1 = m_targetFile->m_filePath;
 
-    // remove old file
-    Kitsunemimi::ErrorContainer error;
-    if(Kitsunemimi::deleteFileOrDir(filePathP1, error) == false)
-    {
-        // free memory
-        delete[] bufferP1;
-        delete[] bufferP2;
+    bool ret = false;
+    do {
+        // remove old file
+        Kitsunemimi::ErrorContainer error;
+        if(Kitsunemimi::deleteFileOrDir(filePathP1, error) == false) {
+            break;
+        }
+        delete m_targetFile;
 
-        return false;
+        // reinit file with correct size
+        m_targetFile = new Kitsunemimi::BinaryFile(filePathP1);
+        imageHeader.numberOfImages = numberImagesP1;
+        if(initNewFile() == false) {
+            break;
+        }
+
+        // write data to part1
+        if(addBlock(0, bufferP1, numberValuesP1) == false) {
+            break;
+        }
+
+        // write data to part 2
+        if(p2.addBlock(numberValuesP1, bufferP2, numberValuesP2) == false) {
+            break;
+        }
+
+        ret = true;
     }
-    delete m_targetFile;
-
-    // reinit file with correct size
-    m_targetFile = new Kitsunemimi::BinaryFile(filePathP1);
-    imageHeader.numberOfImages = numberImagesP1;
-    if(initNewFile() == false)
-    {
-        // free memory
-        delete[] bufferP1;
-        delete[] bufferP2;
-
-        return false;
-    }
-
-    // write data to part1
-    if(addBlock(0, bufferP1, numberValuesP1) == false)
-    {
-        // free memory
-        delete[] bufferP1;
-        delete[] bufferP2;
-
-        return false;
-    }
-
-    // write data to part 2
-    if(p2.addBlock(numberValuesP1, bufferP2, numberValuesP2) == false)
-    {
-        // free memory
-        delete[] bufferP1;
-        delete[] bufferP2;
-
-        return false;
-    }
+    while(false);
 
     // free memory
     delete[] bufferP1;
     delete[] bufferP2;
 
-    return true;
+    return ret;
 }

@@ -50,6 +50,13 @@ public:
                     const bool isAdmin,
                     Kitsunemimi::ErrorContainer &error,
                     const bool showHiddenValues);
+    bool getDataSetByName(Kitsunemimi::Json::JsonItem &result,
+                          const std::string &name,
+                          const std::string &userUuid,
+                          const std::string &projectUuid,
+                          const bool isAdmin,
+                          Kitsunemimi::ErrorContainer &error,
+                          const bool showHiddenValues);
     bool getAllDataSet(Kitsunemimi::TableItem &result,
                        const std::string &userUuid,
                        const std::string &projectUuid,

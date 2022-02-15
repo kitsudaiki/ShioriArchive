@@ -232,7 +232,7 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
         for(uint32_t i = 0; i < pictureSize; i++)
         {
             const uint32_t pos = pic * pictureSize + i + dataOffset;
-            segment[segmentPos] = (static_cast<float>(dataBufferPtr[pos]) / 255.0f);
+            segment[segmentPos] = static_cast<float>(dataBufferPtr[pos]);
 
             // update values for metadata
             averageVal += segment[segmentPos];
@@ -251,7 +251,7 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
             segmentPos++;
         }
         const uint32_t label = labelBufferPtr[pic + labelOffset];
-        segment[(segmentPos - 10) + label] = maxVal;
+        segment[(segmentPos - 10) + label] = 1.0f;
 
         // write line to file, if segment is full
         if(segmentPos == segmentSize)
@@ -280,3 +280,145 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
     return true;
 }
 
+/**
+ * @brief convert mnist-data into generic format
+ *
+ * @param filePath path to the resulting file
+ * @param name data-set name
+ * @param inputBuffer buffer with input-data
+ * @param labelBuffer buffer with label-data
+ *
+ * @return true, if successfull, else false
+ */
+bool
+FinalizeMnistDataSet::convertMnistDataBatch(const std::string &filePath,
+                                            const std::string &name,
+                                            const Kitsunemimi::DataBuffer &inputBuffer,
+                                            const Kitsunemimi::DataBuffer &labelBuffer)
+{
+    ImageDataSetFile file(filePath);
+    file.type = DataSetFile::IMAGE_TYPE;
+    file.name = name;
+
+    // source-data
+    const uint64_t dataOffset = 16;
+    const uint64_t labelOffset = 8;
+    const uint8_t* dataBufferPtr = static_cast<uint8_t*>(inputBuffer.data);
+    const uint8_t* labelBufferPtr = static_cast<uint8_t*>(labelBuffer.data);
+
+    // get number of images
+    uint32_t numberOfImages = 0;
+    numberOfImages |= dataBufferPtr[7];
+    numberOfImages |= static_cast<uint32_t>(dataBufferPtr[6]) << 8;
+    numberOfImages |= static_cast<uint32_t>(dataBufferPtr[5]) << 16;
+    numberOfImages |= static_cast<uint32_t>(dataBufferPtr[4]) << 24;
+
+    // get number of rows
+    uint32_t numberOfRows = 0;
+    numberOfRows |= dataBufferPtr[11];
+    numberOfRows |= static_cast<uint32_t>(dataBufferPtr[10]) << 8;
+    numberOfRows |= static_cast<uint32_t>(dataBufferPtr[9]) << 16;
+    numberOfRows |= static_cast<uint32_t>(dataBufferPtr[8]) << 24;
+
+    // get number of columns
+    uint32_t numberOfColumns = 0;
+    numberOfColumns |= dataBufferPtr[15];
+    numberOfColumns |= static_cast<uint32_t>(dataBufferPtr[14]) << 8;
+    numberOfColumns |= static_cast<uint32_t>(dataBufferPtr[13]) << 16;
+    numberOfColumns |= static_cast<uint32_t>(dataBufferPtr[12]) << 24;
+
+    // set information in header
+    file.imageHeader.numberOfInputsX = numberOfColumns;
+    file.imageHeader.numberOfInputsY = numberOfRows;
+    // TODO: read number of labels from file
+    file.imageHeader.numberOfOutputs = 10;
+    file.imageHeader.numberOfImages = numberOfImages / 10;
+
+    // buffer for values to reduce write-access to file
+    const uint64_t lineSize = (numberOfColumns * numberOfRows) * 10;
+    const uint32_t segmentSize = lineSize * 1000;
+    std::vector<float> segment(segmentSize, 0.0f);
+    uint64_t segmentPos = 0;
+    uint64_t segmentCounter = 0;
+
+    // init file
+    if(file.initNewFile() == false) {
+        return false;
+    }
+
+    // get pictures
+    const uint32_t pictureSize = numberOfRows * numberOfColumns;
+    double averageVal = 0.0f;
+    uint64_t valueCounter = 0;
+    float maxVal = 0.0f;
+
+    float* bufferI = new float[pictureSize + 10];
+
+    // copy values of each pixel into the resulting file
+    for(uint32_t pic = 0; pic < numberOfImages / 10; pic++)
+    {
+        memset(bufferI, 0, pictureSize + 10);
+        uint64_t bufferIPos = 0;
+
+        for(uint32_t batchId = 0; batchId < 10; batchId++)
+        {
+            bufferIPos = 0;
+
+            // input
+            for(uint32_t i = 0; i < pictureSize; i++)
+            {
+                const uint32_t pos = (pic + batchId) * pictureSize + i + dataOffset;
+                bufferI[bufferIPos] += static_cast<float>(dataBufferPtr[pos]) / 255.0f;
+
+                // update values for metadata
+                averageVal += bufferI[bufferIPos];
+                valueCounter++;
+                if(maxVal < bufferI[bufferIPos]) {
+                    maxVal = bufferI[bufferIPos];
+                }
+
+                bufferIPos++;
+            }
+
+            // label
+            bufferIPos += 10;
+
+            const uint32_t label = labelBufferPtr[pic + batchId + labelOffset];
+            bufferI[(bufferIPos - 10) + label] += 1.0f;
+        }
+
+        for(uint32_t i = 0; i < pictureSize + 10; i++) {
+            bufferI[i] /= 10.0f;
+        }
+
+        memcpy(&segment[segmentPos], &bufferI[0], pictureSize + 10);
+        segmentPos += pictureSize + 10;
+
+        // write line to file, if segment is full
+        if(segmentPos == segmentSize)
+        {
+            file.addBlock(segmentCounter * segmentSize, &segment[0], segmentSize);
+            segmentPos = 0;
+            segmentCounter++;
+        }
+    }
+
+    // write last incomplete segment to file
+    if(segmentPos != 0) {
+        file.addBlock(segmentCounter * segmentSize, &segment[0], segmentPos);
+    }
+
+    delete[] bufferI;
+
+    // write additional information to header
+    file.imageHeader.avgValue = averageVal / static_cast<double>(valueCounter);
+    file.imageHeader.maxValue = maxVal;
+
+    // update header in file for the final number of lines for the case,
+    // that there were invalid lines
+    if(file.updateHeader() == false) {
+        return false;
+    }
+
+    return true;
+}

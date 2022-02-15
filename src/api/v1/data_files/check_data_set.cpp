@@ -24,7 +24,7 @@
 
 #include <sagiri_root.h>
 #include <database/data_set_table.h>
-#include <core/data_set_header.h>
+#include <core/data_set_files/data_set_file.h>
 
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/common_methods/file_methods.h>
@@ -121,8 +121,8 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const std::string location = blossomLeaf.output.get("location").getString();
 
     Kitsunemimi::DataBuffer buffer;
-    DataSetHeader dataSetHeader;
-    ImageTypeHeader imageTypeHeader;
+    DataSetFile::DataSetHeader dataSetHeader;
+    DataSetFile::ImageTypeHeader imageTypeHeader;
     Kitsunemimi::BinaryFile file(location);
 
     // read data-set-header
@@ -134,10 +134,12 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // prepare values
     uint64_t correctValues = 0;
-    uint64_t dataPos = sizeof(DataSetHeader) + sizeof(ImageTypeHeader);
+    uint64_t dataPos = sizeof(DataSetFile::DataSetHeader) + sizeof(DataSetFile::ImageTypeHeader);
     const uint8_t* u8Data = static_cast<const uint8_t*>(buffer.data);
-    memcpy(&dataSetHeader, buffer.data, sizeof(DataSetHeader));
-    memcpy(&imageTypeHeader, &u8Data[sizeof(DataSetHeader)], sizeof(ImageTypeHeader));
+    memcpy(&dataSetHeader, buffer.data, sizeof(DataSetFile::DataSetHeader));
+    memcpy(&imageTypeHeader,
+           &u8Data[sizeof(DataSetFile::DataSetHeader)],
+           sizeof(DataSetFile::ImageTypeHeader));
     const uint64_t lineOffset = imageTypeHeader.numberOfInputsX * imageTypeHeader.numberOfInputsY;
     const uint64_t lineSize = (imageTypeHeader.numberOfInputsX * imageTypeHeader.numberOfInputsY)
                               + imageTypeHeader.numberOfOutputs;

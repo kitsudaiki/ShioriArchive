@@ -33,8 +33,7 @@
 #include <libKitsunemimiSakuraNetwork/session.h>
 
 #include <core/temp_file_handler.h>
-#include <core/data_set_header.h>
-#include <core/data_set_file.h>
+#include <core/data_set_files/data_set_file.h>
 
 #include <sagiri_root.h>
 
@@ -101,15 +100,14 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
         }
 
         // init file
-        DataSetFile file(location);
-        if(file.readFromFile() == false) {
-            // TODO: error
+        DataSetFile* file = readDataSetFile(location);
+        if(file == nullptr) {
             return;
         }
 
         // get payload
         uint64_t payloadSize = 0;
-        float* payload = file.getPayload(payloadSize);
+        float* payload = file->getPayload(payloadSize);
         if(payload == nullptr) {
             // TODO: error
             return;

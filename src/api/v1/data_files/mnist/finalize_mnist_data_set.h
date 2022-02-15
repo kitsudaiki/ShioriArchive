@@ -25,8 +25,6 @@
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-#include <core/data_set_header.h>
-
 class FinalizeMnistDataSet
         : public Kitsunemimi::Sakura::Blossom
 {

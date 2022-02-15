@@ -1,5 +1,5 @@
 /**
- * @file        finalize_csv_data_set.h
+ * @file        image_data_set_file.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,27 +20,25 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_CSV_FINALIZE_DATA_SET_H
-#define SAGIRIARCHIVE_CSV_FINALIZE_DATA_SET_H
+#ifndef SAGIRIARCHIVE_IMAGEDATASETFILE_H
+#define SAGIRIARCHIVE_IMAGEDATASETFILE_H
 
-#include <libKitsunemimiSakuraLang/blossom.h>
+#include <core/data_set_files/data_set_file.h>
 
-class FinalizeCsvDataSet
-        : public Kitsunemimi::Sakura::Blossom
+class ImageDataSetFile
+        : public DataSetFile
 {
 public:
-    FinalizeCsvDataSet();
+    ImageDataSetFile(const std::string &filePath);
+    ImageDataSetFile(Kitsunemimi::BinaryFile* file);
+    ~ImageDataSetFile();
+    bool updateHeader();
+
+    ImageTypeHeader imageHeader;
 
 protected:
-    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
-                 const Kitsunemimi::DataMap &context,
-                 Kitsunemimi::Sakura::BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
-
-private:
-    bool convertCsvData(const std::string &filePath,
-                        const std::string &name,
-                        const Kitsunemimi::DataBuffer &inputBuffer);
+    void initHeader();
+    void readHeader(const uint8_t* u8buffer);
 };
 
-#endif // SAGIRIARCHIVE_CSV_FINALIZE_DATA_SET_H
+#endif // SAGIRIARCHIVE_IMAGEDATASETFILE_H

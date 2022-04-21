@@ -26,6 +26,7 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/files/text_file.h>
 #include <libKitsunemimiCommon/common_items/table_item.h>
+#include <libKitsunemimiCommon/common_methods/string_methods.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiCrypto/common.h>
@@ -42,15 +43,49 @@ void streamDataCallback(void*,
                         const void* data,
                         const uint64_t dataSize)
 {
+    if(dataSize <= 40) {
+        return;
+    }
+
     const uint8_t* ptr = static_cast<const uint8_t*>(data);
 
-    const std::string id(reinterpret_cast<const char*>(ptr), 36);
-    ptr += 36;
+    if(ptr[36] != static_cast<uint8_t>(','))
+    {
+        const std::string id(reinterpret_cast<const char*>(ptr), 36);
+        ptr += 36;
 
-    const uint64_t pos = *reinterpret_cast<const uint64_t*>(ptr);
-    ptr += 8;
+        const uint32_t pos = *reinterpret_cast<const uint32_t*>(ptr);
+        ptr += 4;
 
-    SagiriRoot::tempFileHandler->addDataToPos(id, pos, ptr, dataSize - 44);
+        SagiriRoot::tempFileHandler->addDataToPos(id, pos, ptr, dataSize - 40);
+    }
+    else
+    {
+        char messageBuffer[1024*1024];
+        memcpy(messageBuffer, ptr, dataSize);
+        std::string message(messageBuffer, dataSize);
+
+        std::vector<std::string> splitMessage;
+        Kitsunemimi::splitStringByDelimiter(splitMessage, message, ',');
+
+        if(splitMessage.size() != 3) {
+            return;
+        }
+
+        if(Kitsunemimi::Crypto::base64UrlToBase64(splitMessage[2]) == false) {
+            return;
+        }
+
+        Kitsunemimi::DataBuffer payload;
+        if(Kitsunemimi::Crypto::decodeBase64(payload, splitMessage[2]) == false) {
+            return;
+        }
+
+        SagiriRoot::tempFileHandler->addDataToPos(splitMessage.at(0),
+                                                  std::stoi(splitMessage.at(1)),
+                                                  payload.data,
+                                                  payload.usedBufferSize);
+    }
 }
 
 /**
@@ -110,6 +145,7 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
         float* payload = file->getPayload(payloadSize);
         if(payload == nullptr) {
             // TODO: error
+            delete file;
             return;
         }
 
@@ -118,6 +154,9 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
         if(session->sendResponse(payload, payloadSize, blockerId, error) == false) {
             LOG_ERROR(error);
         }
+
+        delete file;
+        delete payload;
 
         return;
     }

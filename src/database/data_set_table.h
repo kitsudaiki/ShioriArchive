@@ -60,6 +60,10 @@ public:
                        const std::string &projectUuid,
                        const bool isAdmin,
                        Kitsunemimi::ErrorContainer &error);
+
+    bool setUploadFinish(const std::string &uuid,
+                         const std::string &fileUuid,
+                         Kitsunemimi::ErrorContainer &error);
 };
 
 #endif // SAGIRIARCHIVE_DATA_SET_TABLE_H

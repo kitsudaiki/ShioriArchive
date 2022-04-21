@@ -86,7 +86,7 @@ TempFileHandler::initNewFile(const std::string &id, const uint64_t size)
 /**
  * @brief add data to the temporary file
  *
- * @param id id of the temporary file
+ * @param fileId id of the temporary file
  * @param pos position in the file where to add the data
  * @param data pointer to the data to add
  * @param size size of the data to add
@@ -94,13 +94,13 @@ TempFileHandler::initNewFile(const std::string &id, const uint64_t size)
  * @return false, if id not found, else true
  */
 bool
-TempFileHandler::addDataToPos(const std::string &id,
+TempFileHandler::addDataToPos(const std::string &fileId,
                               const uint64_t pos,
                               const void* data,
                               const uint64_t size)
 {
     std::map<std::string, Kitsunemimi::BinaryFile*>::const_iterator it;
-    it = m_tempFiles.find(id);
+    it = m_tempFiles.find(fileId);
     if(it != m_tempFiles.end())
     {
         Kitsunemimi::BinaryFile* ptr = it->second;

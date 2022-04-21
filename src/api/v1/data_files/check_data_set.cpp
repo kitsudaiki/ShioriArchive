@@ -151,8 +151,6 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     {
         const uint64_t actualPos = (i * lineSize) + lineOffset;
         const uint64_t checkVal = compareData->get(i)->toValue()->getInt();
-        std::cout<<"actualPos: "<<actualPos<<"    checkVal: "<<checkVal<<std::endl;
-        std::cout<<"        content[actualPos + checkVal]: "<<content[actualPos + checkVal]<<std::endl;
         if(content[actualPos + checkVal] > 0.0f) {
             correctValues++;
         }

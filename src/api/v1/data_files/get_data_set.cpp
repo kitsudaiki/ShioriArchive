@@ -128,6 +128,7 @@ GetDataSet::runTask(BlossomLeaf &blossomLeaf,
     blossomLeaf.output.remove("owner_uuid");
     blossomLeaf.output.remove("project_uuid");
     blossomLeaf.output.remove("visibility");
+    blossomLeaf.output.remove("temp_files");
 
     return true;
 }

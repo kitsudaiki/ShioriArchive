@@ -32,6 +32,7 @@
 #include <api/v1/data_files/get_data_set.h>
 #include <api/v1/data_files/delete_data_set.h>
 #include <api/v1/data_files/check_data_set.h>
+#include <api/v1/data_files/get_progress_data_set.h>
 
 #include <api/v1/data_files/mnist/create_mnist_data_set.h>
 #include <api/v1/data_files/mnist/finalize_mnist_data_set.h>
@@ -71,6 +72,13 @@ dataSetBlossoms()
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "check");
+
+    assert(interface->addBlossom(group, "progress", new GetProgressDataSet()));
+    endpoints->addEndpoint("v1/data_set/progress",
+                           Kitsunemimi::Hanami::GET_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "progress");
 
     assert(interface->addBlossom(group, "get", new GetDataSet()));
     endpoints->addEndpoint("v1/data_set",

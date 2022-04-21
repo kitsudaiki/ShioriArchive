@@ -35,6 +35,7 @@
 
 #include <core/temp_file_handler.h>
 #include <core/data_set_files/data_set_file.h>
+#include <database/data_set_table.h>
 
 #include <sagiri_root.h>
 
@@ -51,13 +52,27 @@ void streamDataCallback(void*,
 
     if(ptr[36] != static_cast<uint8_t>(','))
     {
-        const std::string id(reinterpret_cast<const char*>(ptr), 36);
+        const std::string datasetId(reinterpret_cast<const char*>(ptr), 36);
+        ptr += 36;
+
+        const std::string fileId(reinterpret_cast<const char*>(ptr), 36);
         ptr += 36;
 
         const uint32_t pos = *reinterpret_cast<const uint32_t*>(ptr);
         ptr += 4;
 
-        SagiriRoot::tempFileHandler->addDataToPos(id, pos, ptr, dataSize - 40);
+        SagiriRoot::tempFileHandler->addDataToPos(fileId, pos, ptr, dataSize - 76);
+
+        // TODO: better and more reliable condition to detect finish
+        if(dataSize - 76 < 96 * 1024)
+        {
+            Kitsunemimi::ErrorContainer error;
+            if(SagiriRoot::dataSetTable->setUploadFinish(datasetId, fileId, error) == false)
+            {
+                LOG_ERROR(error);
+                return;
+            }
+        }
     }
     else
     {
@@ -68,23 +83,36 @@ void streamDataCallback(void*,
         std::vector<std::string> splitMessage;
         Kitsunemimi::splitStringByDelimiter(splitMessage, message, ',');
 
-        if(splitMessage.size() != 3) {
+        if(splitMessage.size() != 4) {
             return;
         }
 
-        if(Kitsunemimi::Crypto::base64UrlToBase64(splitMessage[2]) == false) {
+        if(Kitsunemimi::Crypto::base64UrlToBase64(splitMessage[3]) == false) {
             return;
         }
 
         Kitsunemimi::DataBuffer payload;
-        if(Kitsunemimi::Crypto::decodeBase64(payload, splitMessage[2]) == false) {
+        if(Kitsunemimi::Crypto::decodeBase64(payload, splitMessage[3]) == false) {
             return;
         }
 
-        SagiriRoot::tempFileHandler->addDataToPos(splitMessage.at(0),
-                                                  std::stoi(splitMessage.at(1)),
+        SagiriRoot::tempFileHandler->addDataToPos(splitMessage.at(1),
+                                                  std::stoi(splitMessage.at(2)),
                                                   payload.data,
                                                   payload.usedBufferSize);
+
+        // TODO: better and more reliable condition to detect finish
+        if(payload.usedBufferSize < 96 * 1024)
+        {
+            const std::string datasetId = splitMessage.at(0);
+            const std::string fileId = splitMessage.at(1);
+            Kitsunemimi::ErrorContainer error;
+            if(SagiriRoot::dataSetTable->setUploadFinish(datasetId, fileId, error) == false)
+            {
+                LOG_ERROR(error);
+                return;
+            }
+        }
     }
 }
 

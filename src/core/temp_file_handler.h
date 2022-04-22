@@ -37,12 +37,14 @@ public:
     TempFileHandler();
     ~TempFileHandler();
 
-    bool initNewFile(const std::string &id, const uint64_t size);
-    bool addDataToPos(const std::string &id,
+    bool initNewFile(const std::string &id,
+                     const uint64_t size);
+    bool addDataToPos(const std::string &fileId,
                       const uint64_t pos,
                       const void* data,
                       const uint64_t size);
-    bool getData(Kitsunemimi::DataBuffer &result, const std::string &id);
+    bool getData(Kitsunemimi::DataBuffer &result,
+                 const std::string &id);
     bool removeData(const std::string &id);
 
 private:

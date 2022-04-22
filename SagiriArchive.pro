@@ -111,6 +111,7 @@ SOURCES += src/main.cpp \
     src/api/v1/data_files/csv/finalize_csv_data_set.cpp \
     src/api/v1/data_files/delete_data_set.cpp \
     src/api/v1/data_files/get_data_set.cpp \
+    src/api/v1/data_files/get_progress_data_set.cpp \
     src/api/v1/data_files/list_data_set.cpp \
     src/api/v1/data_files/mnist/create_mnist_data_set.cpp \
     src/api/v1/data_files/mnist/finalize_mnist_data_set.cpp \
@@ -130,6 +131,7 @@ HEADERS += \
     src/api/v1/data_files/csv/finalize_csv_data_set.h \
     src/api/v1/data_files/delete_data_set.h \
     src/api/v1/data_files/get_data_set.h \
+    src/api/v1/data_files/get_progress_data_set.h \
     src/api/v1/data_files/list_data_set.h \
     src/api/v1/data_files/mnist/create_mnist_data_set.h \
     src/api/v1/data_files/mnist/finalize_mnist_data_set.h \

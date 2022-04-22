@@ -51,7 +51,12 @@ DataSetTable::DataSetTable(Kitsunemimi::Sakura::SqlDatabase* db)
     DbHeaderEntry location;
     location.name = "location";
     location.hide = true;
-    m_tableHeader.push_back(location);
+    m_tableHeader.push_back(location);  
+
+    DbHeaderEntry tempFiles;
+    tempFiles.name = "temp_files";
+    tempFiles.hide = true;
+    m_tableHeader.push_back(tempFiles);
 }
 
 /**
@@ -71,9 +76,9 @@ DataSetTable::~DataSetTable() {}
  */
 bool
 DataSetTable::addDataSet(Kitsunemimi::Json::JsonItem &data,
-                             const std::string &userUuid,
-                             const std::string &projectUuid,
-                             Kitsunemimi::ErrorContainer &error)
+                         const std::string &userUuid,
+                         const std::string &projectUuid,
+                         Kitsunemimi::ErrorContainer &error)
 {
     return add(data, userUuid, projectUuid, error);
 }
@@ -93,18 +98,18 @@ DataSetTable::addDataSet(Kitsunemimi::Json::JsonItem &data,
  */
 bool
 DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
-                             const std::string &uuid,
-                             const std::string &userUuid,
-                             const std::string &projectUuid,
-                             const bool isAdmin,
-                             Kitsunemimi::ErrorContainer &error,
-                             const bool showHiddenValues)
+                         const std::string &uuid,
+                         const std::string &userUuid,
+                         const std::string &projectUuid,
+                         const bool isAdmin,
+                         Kitsunemimi::ErrorContainer &error,
+                         const bool showHiddenValues)
 {
     // get user from db
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);
 
-    // get user from db
+    // get dataset from db
     if(get(result, userUuid, projectUuid, isAdmin, conditions, error, showHiddenValues) == false)
     {
         LOG_ERROR(error);
@@ -156,4 +161,45 @@ DataSetTable::deleteDataSet(const std::string &uuid,
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);
     return del(conditions, userUuid, projectUuid, isAdmin, error);
+}
+
+/**
+ * @brief DataSetTable::setUploadFinish
+ * @param uuid
+ * @param file_uuid
+ * @return
+ */
+bool
+DataSetTable::setUploadFinish(const std::string &uuid,
+                              const std::string &fileUuid,
+                              Kitsunemimi::ErrorContainer &error)
+{
+    std::vector<RequestCondition> conditions;
+    conditions.emplace_back("uuid", uuid);
+    Kitsunemimi::Json::JsonItem result;
+
+    // get dataset from db
+    if(get(result, "", "", true, conditions, error, true) == false)
+    {
+        LOG_ERROR(error);
+        return false;
+    }
+
+    if(result.contains("temp_files") == false) {
+        // TODO: error-message
+        return false;
+    }
+
+    const std::string tempFilesStr = result.get("temp_files").toString();
+    Kitsunemimi::Json::JsonItem tempFiles;
+    if(tempFiles.parse(tempFilesStr, error) == false)
+    {
+        LOG_ERROR(error);
+        return false;
+    }
+    tempFiles.insert(fileUuid, Kitsunemimi::Json::JsonItem(1.0f), true);
+
+    Kitsunemimi::Json::JsonItem newValues;
+    newValues.insert("temp_files", Kitsunemimi::Json::JsonItem(tempFiles.toString()));
+    return update(newValues, "", "", true, conditions, error);
 }

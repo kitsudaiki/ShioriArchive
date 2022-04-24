@@ -105,7 +105,7 @@ TableDataSetFile::updateHeader()
     const uint64_t offset = sizeof(DataSetHeader) + sizeof(TableTypeHeader);
     for(uint64_t i = 0; i < tableColumns.size(); i++)
     {
-        if(m_targetFile->writeDataIntoFile(&tableHeader,
+        if(m_targetFile->writeDataIntoFile(&tableColumns[i],
                                            offset + (i * sizeof(TableHeaderEntry)),
                                            sizeof(TableHeaderEntry)) == false)
         {
@@ -114,4 +114,70 @@ TableDataSetFile::updateHeader()
     }
 
     return true;
+}
+
+/**
+ * @brief print-function for manually debugging only
+ */
+void
+TableDataSetFile::print()
+{
+    std::cout<<"======================================================="<<std::endl;
+    std::cout<<"====================    PRINT    ======================"<<std::endl;
+    std::cout<<"======================================================="<<std::endl;
+    std::cout<<std::endl;
+
+    Kitsunemimi::DataBuffer completeFile;
+    if(m_targetFile->readCompleteFile(completeFile) == false) {
+        std::cout<<"Failed to read file"<<std::endl;
+    }
+
+    // read data-set-header
+    DataSetHeader dataSetHeader;
+    memcpy(&dataSetHeader, completeFile.data, sizeof(DataSetHeader));
+    std::cout<<"name: "<<dataSetHeader.name<<std::endl;
+
+    // read table-header
+    const uint8_t* u8buffer = static_cast<uint8_t*>(completeFile.data);
+    uint32_t headerSize = sizeof(DataSetHeader) + sizeof(TableTypeHeader);
+    memcpy(&tableHeader, &u8buffer[sizeof(DataSetHeader)], sizeof(TableTypeHeader));
+
+    std::cout<<"number of columns: "<<tableHeader.numberOfColumns<<std::endl;
+    std::cout<<"number of lines: "<<tableHeader.numberOfLines<<std::endl;
+    std::cout<<std::endl;
+
+    // header header
+    for(uint64_t i = 0; i < tableHeader.numberOfColumns; i++)
+    {
+        std::cout<<"column:"<<std::endl;
+        TableHeaderEntry entry;
+        memcpy(&entry,
+               &u8buffer[headerSize + (i * sizeof(TableHeaderEntry))],
+               sizeof(TableHeaderEntry));
+        std::cout<<"    name: "<<entry.name<<std::endl;
+        std::cout<<"    avg: "<<entry.averageVal<<std::endl;
+        std::cout<<"    max: "<<entry.maxVal<<std::endl;
+        std::cout<<"    multi: "<<entry.multiplicator<<std::endl;
+        std::cout<<std::endl;
+    }
+    std::cout<<std::endl;
+
+    // get sizes
+    headerSize += tableHeader.numberOfColumns * sizeof(TableHeaderEntry);
+
+
+    std::cout<<"content:"<<std::endl;
+    const float* fbuffer = reinterpret_cast<const float*>(&u8buffer[headerSize]);
+
+    for(uint64_t line = 0; line < tableHeader.numberOfLines; line++)
+    {
+        for(uint64_t col = 0; col < tableHeader.numberOfColumns; col++)
+        {
+            std::cout<<fbuffer[line * tableHeader.numberOfColumns + col];
+            std::cout<<"   ";
+        }
+        std::cout<<"\n";
+    }
+
+    std::cout<<"======================================================="<<std::endl;
 }

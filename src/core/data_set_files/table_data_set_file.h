@@ -34,6 +34,8 @@ public:
     ~TableDataSetFile();
     bool updateHeader();
 
+    void print();
+
     TableTypeHeader tableHeader;
     std::vector<TableHeaderEntry> tableColumns;
 

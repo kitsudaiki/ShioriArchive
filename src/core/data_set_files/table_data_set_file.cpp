@@ -117,6 +117,39 @@ TableDataSetFile::updateHeader()
 }
 
 /**
+ * @brief get pointer to payload of a file
+ *
+ * @param payloadSize reference for size of the read payload
+ *
+ * @return pointer to the payload
+ */
+float*
+TableDataSetFile::getPayload(uint64_t &payloadSize,
+                             const std::string &columnName)
+{
+    float* payload = new float[(m_totalFileSize - m_headerSize) / sizeof(float)];
+    m_targetFile->readDataFromFile(payload, m_headerSize, m_totalFileSize - m_headerSize);
+
+    uint64_t columnPos = 0;
+    for(uint64_t i = 0; i < tableColumns.size(); i++)
+    {
+        if(tableColumns[i].name == columnName) {
+            columnPos = i;
+        }
+    }
+
+    payloadSize = tableHeader.numberOfLines * sizeof(float);
+    float* filteredData = new float[tableHeader.numberOfLines];
+    for(uint64_t line = 0; line < tableHeader.numberOfLines; line++) {
+        filteredData[line] = payload[line * tableHeader.numberOfColumns + columnPos];
+    }
+
+    delete[] payload;
+
+    return filteredData;
+}
+
+/**
  * @brief print-function for manually debugging only
  */
 void

@@ -168,9 +168,12 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
             return;
         }
 
+        // get column-name from message
+        const std::string columnName = message.get("column_name").getString();
+
         // get payload
         uint64_t payloadSize = 0;
-        float* payload = file->getPayload(payloadSize);
+        float* payload = file->getPayload(payloadSize, columnName);
         if(payload == nullptr) {
             // TODO: error
             delete file;

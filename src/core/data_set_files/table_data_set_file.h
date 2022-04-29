@@ -33,6 +33,8 @@ public:
     TableDataSetFile(Kitsunemimi::BinaryFile* file);
     ~TableDataSetFile();
     bool updateHeader();
+    float* getPayload(uint64_t &payloadSize,
+                      const std::string &columnName = "");
 
     void print();
 

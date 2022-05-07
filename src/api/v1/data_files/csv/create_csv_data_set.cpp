@@ -130,6 +130,11 @@ CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     blossomLeaf.output.insert("owner_uuid", userUuid);
     blossomLeaf.output.insert("visibility", 0);
 
+    // init placeholder for temp-file progress to database
+    Kitsunemimi::Json::JsonItem tempFiles;
+    tempFiles.insert(inputUuid, Kitsunemimi::Json::JsonItem(0.0f));
+    blossomLeaf.output.insert("temp_files", tempFiles);
+
     // add to database
     if(SagiriRoot::dataSetTable->addDataSet(blossomLeaf.output,
                                             userUuid,
@@ -148,6 +153,7 @@ CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     blossomLeaf.output.remove("project_uuid");
     blossomLeaf.output.remove("owner_uuid");
     blossomLeaf.output.remove("visibility");
+    blossomLeaf.output.remove("temp_files");
 
     return true;
 }

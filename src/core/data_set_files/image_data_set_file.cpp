@@ -92,3 +92,20 @@ ImageDataSetFile::updateHeader()
 
     return true;
 }
+
+/**
+ * @brief get pointer to payload of a file
+ *
+ * @param payloadSize reference for size of the read payload
+ *
+ * @return pointer to the payload
+ */
+float*
+ImageDataSetFile::getPayload(uint64_t &payloadSize,
+                             const std::string &)
+{
+    payloadSize = m_totalFileSize - m_headerSize;
+    float* payload = new float[payloadSize / sizeof(float)];
+    m_targetFile->readDataFromFile(payload, m_headerSize, payloadSize);
+    return payload;
+}

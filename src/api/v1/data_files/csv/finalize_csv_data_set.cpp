@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file        finalize_csv_data_set.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
@@ -123,7 +123,7 @@ FinalizeCsvDataSet::runTask(BlossomLeaf &blossomLeaf,
                       result.get("name").getString().c_str(),
                       inputBuffer) == false)
     {
-        status.statusCode =Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Kitsunemimi:: Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to convert csv-data");
         return false;
     }
@@ -189,6 +189,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
         if(isHeader)
         {
             file.tableHeader.numberOfColumns = numberOfColumns;
+            file.tableHeader.numberOfLines = lines.size();
 
             for(const std::string &col : lineContent)
             {
@@ -202,6 +203,10 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
             if(file.initNewFile() == false) {
                 return false;
             }
+
+            // this was the max value. While iterating over all lines, this value will be new
+            // calculated with the correct value
+            file.tableHeader.numberOfLines = 0;
         }
         else
         {
@@ -261,6 +266,9 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
     if(file.updateHeader() == false) {
         return false;
     }
+
+    // debug-output
+    //file.print();
 
     return true;
 }

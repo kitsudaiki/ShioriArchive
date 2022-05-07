@@ -97,7 +97,8 @@ public:
     bool addBlock(const uint64_t pos,
                   const float* data,
                   const u_int64_t numberOfValues);
-    float* getPayload(uint64_t &payloadSize);
+    virtual float* getPayload(uint64_t &payloadSize,
+                              const std::string &columnName = "") = 0;
     virtual bool updateHeader() = 0;
 
     DataSetType type = UNDEFINED_TYPE;

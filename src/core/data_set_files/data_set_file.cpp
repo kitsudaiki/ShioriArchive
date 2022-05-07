@@ -149,22 +149,6 @@ DataSetFile::addBlock(const uint64_t pos,
 }
 
 /**
- * @brief get pointer to payload of a file
- *
- * @param payloadSize reference for size of the read payload
- *
- * @return pointer to the payload
- */
-float*
-DataSetFile::getPayload(uint64_t &payloadSize)
-{
-    payloadSize = m_totalFileSize - m_headerSize;
-    float* payload = new float[payloadSize];
-    m_targetFile->readDataFromFile(payload, m_headerSize, payloadSize);
-    return payload;
-}
-
-/**
  * @brief read file as data-set
  *
  * @param filePath path to file

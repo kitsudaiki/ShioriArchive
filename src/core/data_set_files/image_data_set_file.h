@@ -33,6 +33,8 @@ public:
     ImageDataSetFile(Kitsunemimi::BinaryFile* file);
     ~ImageDataSetFile();
     bool updateHeader();
+    float* getPayload(uint64_t &payloadSize,
+                      const std::string &columnName = "");
 
     ImageTypeHeader imageHeader;
 

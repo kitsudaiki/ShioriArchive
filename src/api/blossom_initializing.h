@@ -37,6 +37,9 @@
 #include <api/v1/data_files/mnist/create_mnist_data_set.h>
 #include <api/v1/data_files/mnist/finalize_mnist_data_set.h>
 
+#include <api/v1/data_files/csv/create_csv_data_set.h>
+#include <api/v1/data_files/csv/finalize_csv_data_set.h>
+
 #include <api/v1/request_results/delete_request_result.h>
 #include <api/v1/request_results/get_request_result.h>
 
@@ -52,19 +55,33 @@ dataSetBlossoms()
     SakuraLangInterface* interface = SakuraLangInterface::getInstance();
     const std::string group = "data_set";
 
-    assert(interface->addBlossom(group, "create", new CreateMnistDataSet()));
+    assert(interface->addBlossom(group, "create_mnist", new CreateMnistDataSet()));
     endpoints->addEndpoint("v1/mnist/data_set",
                            Kitsunemimi::Hanami::POST_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
-                           "create");
+                           "create_mnist");
 
-    assert(interface->addBlossom(group, "finalize", new FinalizeMnistDataSet()));
+    assert(interface->addBlossom(group, "finalize_mnist", new FinalizeMnistDataSet()));
     endpoints->addEndpoint("v1/mnist/data_set",
                            Kitsunemimi::Hanami::PUT_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
-                           "finalize");
+                           "finalize_mnist");
+
+    assert(interface->addBlossom(group, "create_csv", new CreateCsvDataSet()));
+    endpoints->addEndpoint("v1/csv/data_set",
+                           Kitsunemimi::Hanami::POST_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "create_csv");
+
+    assert(interface->addBlossom(group, "finalize_csv", new FinalizeCsvDataSet()));
+    endpoints->addEndpoint("v1/csv/data_set",
+                           Kitsunemimi::Hanami::PUT_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "finalize_csv");
 
     assert(interface->addBlossom(group, "check", new CheckDataSet()));
     endpoints->addEndpoint("v1/data_set/check",

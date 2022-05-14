@@ -183,6 +183,8 @@ handleDataSetRequest(const Sagiri::DatasetRequest_Message &msg,
     if(payload == nullptr) {
         // TODO: error
         delete file;
+        delete payload;
+
         return;
     }
 

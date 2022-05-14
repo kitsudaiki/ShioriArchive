@@ -111,6 +111,10 @@ INCLUDEPATH += $$PWD \
                src
 
 SOURCES += src/main.cpp \
+    src/api/v1/cluster_snapshot/create_cluster_snapshot.cpp \
+    src/api/v1/cluster_snapshot/delete_cluster_snapshot.cpp \
+    src/api/v1/cluster_snapshot/get_cluster_snapshot.cpp \
+    src/api/v1/cluster_snapshot/list_cluster_snapshot.cpp \
     src/api/v1/data_files/check_data_set.cpp \
     src/api/v1/data_files/csv/create_csv_data_set.cpp \
     src/api/v1/data_files/csv/finalize_csv_data_set.cpp \
@@ -126,11 +130,16 @@ SOURCES += src/main.cpp \
     src/core/data_set_files/image_data_set_file.cpp \
     src/core/data_set_files/table_data_set_file.cpp \
     src/core/temp_file_handler.cpp \
+    src/database/cluster_snapshot_table.cpp \
     src/database/data_set_table.cpp \
     src/sagiri_root.cpp
 
 HEADERS += \
     src/api/blossom_initializing.h \
+    src/api/v1/cluster_snapshot/create_cluster_snapshot.h \
+    src/api/v1/cluster_snapshot/delete_cluster_snapshot.h \
+    src/api/v1/cluster_snapshot/get_cluster_snapshot.h \
+    src/api/v1/cluster_snapshot/list_cluster_snapshot.h \
     src/api/v1/data_files/check_data_set.h \
     src/api/v1/data_files/csv/create_csv_data_set.h \
     src/api/v1/data_files/csv/finalize_csv_data_set.h \
@@ -149,5 +158,6 @@ HEADERS += \
     src/core/data_set_files/image_data_set_file.h \
     src/core/data_set_files/table_data_set_file.h \
     src/core/temp_file_handler.h \
+    src/database/cluster_snapshot_table.h \
     src/database/data_set_table.h \
     src/sagiri_root.h

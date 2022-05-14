@@ -35,10 +35,11 @@ registerConfigs(Kitsunemimi::ErrorContainer &error)
 {
     Kitsunemimi::Hanami::registerBasicConfigs(error);
 
-    REGISTER_STRING_CONFIG("sagiri", "data_set_location", error, "", true);
-    REGISTER_STRING_CONFIG("sagiri", "result_location", error, "", true);
-    REGISTER_STRING_CONFIG("sagiri", "error_location", error, "", true);
-    REGISTER_STRING_CONFIG("sagiri", "audit_location", error, "", true);
+    REGISTER_STRING_CONFIG( "sagiri", "data_set_location",       error, "", true );
+    REGISTER_STRING_CONFIG( "sagiri", "result_location",         error, "", true );
+    REGISTER_STRING_CONFIG( "sagiri", "error_location",          error, "", true );
+    REGISTER_STRING_CONFIG( "sagiri", "audit_location",          error, "", true );
+    REGISTER_STRING_CONFIG( "sagiri", "cluster_snapshot_location", error, "", true );
 }
 
 #endif // SAGIRIARCHIVE_CONFIG_H

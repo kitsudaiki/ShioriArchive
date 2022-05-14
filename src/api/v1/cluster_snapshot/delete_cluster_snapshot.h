@@ -1,5 +1,5 @@
 /**
- * @file        sagiri_root.h
+ * @file        delete_cluster_snapshot.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,29 +20,22 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_SAGIRIROOT_H
-#define SAGIRIARCHIVE_SAGIRIROOT_H
+#ifndef DELETE_CLUSTER_SNAPSHOT_H
+#define DELETE_CLUSTER_SNAPSHOT_H
 
-namespace Kitsunemimi {
-namespace Sakura {
-class SqlDatabase;
-}
-}
-class DataSetTable;
-class ClusterSnapshotTable;
-class TempFileHandler;
+#include <libKitsunemimiSakuraLang/blossom.h>
 
-class SagiriRoot
+class DeleteClusterSnapshot
+        : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    SagiriRoot();
+    DeleteClusterSnapshot();
 
-    bool init();
-
-    static TempFileHandler* tempFileHandler;
-    static DataSetTable* dataSetTable;
-    static ClusterSnapshotTable* clusterSnapshotTable;
-    static Kitsunemimi::Sakura::SqlDatabase* database;
+protected:
+    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+                 const Kitsunemimi::DataMap &context,
+                 Kitsunemimi::Sakura::BlossomStatus &status,
+                 Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SAGIRIARCHIVE_SAGIRIROOT_H
+#endif // DELETE_CLUSTER_SNAPSHOT_H

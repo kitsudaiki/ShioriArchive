@@ -38,7 +38,7 @@ TempFileHandler::~TempFileHandler()
 {
     bool success = false;
     Kitsunemimi::ErrorContainer error;
-    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
+    const std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
 
     std::vector<std::string> result;
     std::map<std::string, Kitsunemimi::BinaryFile*>::iterator it;
@@ -65,7 +65,6 @@ TempFileHandler::~TempFileHandler()
 bool
 TempFileHandler::initNewFile(const std::string &id, const uint64_t size)
 {
-
     if(m_tempFiles.find(id) != m_tempFiles.end()) {
         return false;
     }

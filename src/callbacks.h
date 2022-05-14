@@ -33,10 +33,11 @@
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 
+#include <libSagiriArchive/sagiri_messages.h>
+
 #include <core/temp_file_handler.h>
 #include <core/data_set_files/data_set_file.h>
 #include <database/data_set_table.h>
-
 #include <sagiri_root.h>
 
 void streamDataCallback(void*,
@@ -143,195 +144,293 @@ getDatetime()
     return datatime;
 }
 
-void
-genericMessageCallback(Kitsunemimi::Sakura::Session* session,
-                       const Kitsunemimi::Json::JsonItem &message,
-                       const uint64_t blockerId)
+/**
+ * @brief handle cluster-snapshot-message
+ *
+ * @param msg message to process
+ * @param session pointer to the session, which received the message
+ * @param blockerId blocker-id for the response
+ */
+inline void
+handleClusterSnapshot(const Sagiri::ClusterSnapshot_Message &msg,
+                      Kitsunemimi::Sakura::Session* session,
+                      const uint64_t blockerId)
 {
-    const std::string messageType = message.get("message_type").getString();
 
-    if(messageType == "data_set_request")
-    {
-        // get location from message
-        const std::string location = message.get("location").getString();
-        if(location == "")
-        {
-            Kitsunemimi::ErrorContainer error;
-            session->sendResponse("-", 1, blockerId, error);
-            LOG_ERROR(error);
-            return;
-        }
+}
 
-        // init file
-        DataSetFile* file = readDataSetFile(location);
-        if(file == nullptr) {
-            return;
-        }
+/**
+ * @brief handle dataset-request-message
+ *
+ * @param msg message to process
+ * @param session pointer to the session, which received the message
+ * @param blockerId blocker-id for the response
+ */
+inline void
+handleDataSetRequest(const Sagiri::DatasetRequest_Message &msg,
+                     Kitsunemimi::Sakura::Session* session,
+                     const uint64_t blockerId)
+{
+    // init file
+    DataSetFile* file = readDataSetFile(msg.location);
+    if(file == nullptr) {
+        return;
+    }
 
-        // get column-name from message
-        const std::string columnName = message.get("column_name").getString();
-
-        // get payload
-        uint64_t payloadSize = 0;
-        float* payload = file->getPayload(payloadSize, columnName);
-        if(payload == nullptr) {
-            // TODO: error
-            delete file;
-            return;
-        }
-
-        // send data
-        Kitsunemimi::ErrorContainer error;
-        if(session->sendResponse(payload, payloadSize, blockerId, error) == false) {
-            LOG_ERROR(error);
-        }
-
+    // get payload
+    uint64_t payloadSize = 0;
+    float* payload = file->getPayload(payloadSize, msg.columnName);
+    if(payload == nullptr) {
+        // TODO: error
         delete file;
-        delete payload;
-
         return;
     }
-    else if(messageType == "result_push")
-    {
-        bool success = false;
-        Kitsunemimi::ErrorContainer error;
 
-        const std::string uuid = message.get("uuid").getString();
-        const std::string result = message.get("result").toString();
-
-        // TODO: handle result
-        const std::string resultLocation = GET_STRING_CONFIG("sagiri", "result_location", success);
-        if(writeFile(resultLocation + "/" + uuid, result, error) == false)
-        {
-            LOG_ERROR(error);
-
-            const std::string ret = "fail";
-            session->sendResponse(ret.c_str(), ret.size(), blockerId, error);
-            return;
-        }
-
-        const std::string ret = "success";
-        session->sendResponse(ret.c_str(), ret.size(), blockerId, error);
-        return;
+    // send data
+    Kitsunemimi::ErrorContainer error;
+    if(session->sendResponse(payload, payloadSize, blockerId, error) == false) {
+        LOG_ERROR(error);
     }
-    else if(messageType == "audit_log")
+
+    delete file;
+    delete payload;
+
+    return;
+}
+
+/**
+ * @brief handle result-push-message
+ *
+ * @param msg message to process
+ * @param session pointer to the session, which received the message
+ * @param blockerId blocker-id for the response
+ */
+inline void
+handleResultPush(const Sagiri::ResultPush_Message &msg,
+                 Kitsunemimi::Sakura::Session* session,
+                 const uint64_t blockerId)
+{
+    bool success = false;
+    Kitsunemimi::ErrorContainer error;
+
+    // TODO: handle result
+    const std::string resultLocation = GET_STRING_CONFIG("sagiri", "result_location", success);
+    if(writeFile(resultLocation + "/" + msg.uuid, msg.results, error) == false)
     {
-        bool success = false;
-        Kitsunemimi::ErrorContainer error;
-
-        const std::string userUuid = message.get("user_uuid").getString();
-        const std::string component = message.get("component").getString();
-        const std::string endpoint = message.get("endpoint").getString();
-        const std::string type = message.get("type").getString();
-
-        // TODO: handle result
-        const std::string resultLocation = GET_STRING_CONFIG("sagiri", "audit_location", success);
-        std::string filePath = resultLocation + "/";
-        if(userUuid == "") {
-            filePath += "generic";
-        } else {
-            filePath += userUuid;
-        }
-
-        // create an empty file, if no exist
-        if(std::filesystem::exists(filePath) == false)
-        {
-            // create new file and write content
-            std::ofstream outputFile;
-            outputFile.open(filePath);
-            outputFile.close();
-        }
-
-        // init table
-        Kitsunemimi::TableItem tableOutput;
-        tableOutput.addColumn("key");
-        tableOutput.addColumn("value");
-
-        // fill table
-        tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
-        tableOutput.addRow(std::vector<std::string>{"component", component});
-        tableOutput.addRow(std::vector<std::string>{"endpoint", endpoint});
-        tableOutput.addRow(std::vector<std::string>{"type", type});
-
-        // write to file
-        const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
-        if(appendText(filePath, finalMessage, error) == false) {
-            LOG_ERROR(error);
-        }
-
-        return;
-    }
-    else if(messageType == "error_log")
-    {
-        bool success = false;
-        Kitsunemimi::ErrorContainer error;
-
-        const std::string userUuid = message.get("user_uuid").getString();
-        const std::string component = message.get("component").getString();
-        const std::string base64Error = message.get("message").getString();
-        const std::string context = message.get("context").toString(true);
-        const std::string values = message.get("values").toString(true);
-
-        // decode message
-        std::string errorMessage;
-        if(Kitsunemimi::Crypto::decodeBase64(errorMessage, base64Error) == false)
-        {
-            error.addMeesage("failed to decode error-message");
-            LOG_ERROR(error);
-            return;
-        }
-
-        // TODO: handle result
-        const std::string resultLocation = GET_STRING_CONFIG("sagiri", "error_location", success);
-        std::string filePath = resultLocation + "/";
-        if(userUuid == "") {
-            filePath += "generic";
-        } else {
-            filePath += userUuid;
-        }
-
-        // create an empty file, if no exist
-        if(std::filesystem::exists(filePath) == false)
-        {
-            // create new file and write content
-            std::ofstream outputFile;
-            outputFile.open(filePath);
-            outputFile.close();
-        }
-
-        // init table
-        Kitsunemimi::TableItem tableOutput;
-        tableOutput.addColumn("key");
-        tableOutput.addColumn("value");
-
-        // fill table
-        tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
-        tableOutput.addRow(std::vector<std::string>{"component", component});
-        if(context != "") {
-            tableOutput.addRow(std::vector<std::string>{"context", context});
-        }
-        if(values != "") {
-            tableOutput.addRow(std::vector<std::string>{"values", values});
-        }
-        tableOutput.addRow(std::vector<std::string>{"error", errorMessage});
-
-        // write to file
-        const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
-        if(appendText(filePath, finalMessage, error) == false) {
-            LOG_ERROR(error);
-        }
-
-        return;
-    }
-    else
-    {
-        Kitsunemimi::ErrorContainer error;
-        error.addMeesage("unknown message-type '" + messageType + "'");
         LOG_ERROR(error);
 
-        const std::string ret = "-";
+        const std::string ret = "fail";
         session->sendResponse(ret.c_str(), ret.size(), blockerId, error);
         return;
+    }
+
+    const std::string ret = "success";
+    session->sendResponse(ret.c_str(), ret.size(), blockerId, error);
+}
+
+/**
+ * @brief handle error-log-message
+ *
+ * @param msg message to process
+ */
+inline void
+handleErrorLog(const Kitsunemimi::Hanami::ErrorLog_Message &msg)
+{
+    bool success = false;
+    Kitsunemimi::ErrorContainer error;
+
+    // TODO: handle result
+    const std::string resultLocation = GET_STRING_CONFIG("sagiri", "error_location", success);
+    std::string filePath = resultLocation + "/";
+    if(msg.userUuid == "") {
+        filePath += "generic";
+    } else {
+        filePath +=msg. userUuid;
+    }
+
+    // create an empty file, if no exist
+    if(std::filesystem::exists(filePath) == false)
+    {
+        // create new file and write content
+        std::ofstream outputFile;
+        outputFile.open(filePath);
+        outputFile.close();
+    }
+
+    // init table
+    Kitsunemimi::TableItem tableOutput;
+    tableOutput.addColumn("key");
+    tableOutput.addColumn("value");
+
+    // fill table
+    tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
+    tableOutput.addRow(std::vector<std::string>{"component", msg.component});
+    if(msg.context != "") {
+        tableOutput.addRow(std::vector<std::string>{"context", msg.context});
+    }
+    if(msg.values != "") {
+        tableOutput.addRow(std::vector<std::string>{"values", msg.values});
+    }
+    tableOutput.addRow(std::vector<std::string>{"error", msg.errorMsg});
+
+    // write to file
+    const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
+    if(appendText(filePath, finalMessage, error) == false) {
+        LOG_ERROR(error);
+    }
+}
+
+/**
+ * @brief handle audit-log-message
+ *
+ * @param msg message to process
+ */
+inline void
+handleAuditLog(const Sagiri::AuditLog_Message &msg)
+{
+    bool success = false;
+    Kitsunemimi::ErrorContainer error;
+
+    // TODO: handle result
+    const std::string resultLocation = GET_STRING_CONFIG("sagiri", "audit_location", success);
+    std::string filePath = resultLocation + "/";
+    if(msg.userUuid == "") {
+        filePath += "generic";
+    } else {
+        filePath += msg.userUuid;
+    }
+
+    // create an empty file, if no exist
+    if(std::filesystem::exists(filePath) == false)
+    {
+        // create new file and write content
+        std::ofstream outputFile;
+        outputFile.open(filePath);
+        outputFile.close();
+    }
+
+    // init table
+    Kitsunemimi::TableItem tableOutput;
+    tableOutput.addColumn("key");
+    tableOutput.addColumn("value");
+
+    // fill table
+    tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
+    tableOutput.addRow(std::vector<std::string>{"component", msg.component});
+    tableOutput.addRow(std::vector<std::string>{"endpoint", msg.endpoint});
+    tableOutput.addRow(std::vector<std::string>{"type", msg.type});
+
+    // write to file
+    const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
+    if(appendText(filePath, finalMessage, error) == false) {
+        LOG_ERROR(error);
+    }
+}
+
+/**
+ * @brief handle errors of message which to requires a response
+ *
+ * @param msg error-message
+ */
+inline void
+handleFail(const std::string &msg,
+           Kitsunemimi::Sakura::Session* session,
+           const uint64_t blockerId)
+{
+    Kitsunemimi::ErrorContainer error;
+    error.addMeesage(msg);
+    LOG_ERROR(error);
+
+    const std::string ret = "-";
+    session->sendResponse(ret.c_str(), ret.size(), blockerId, error);
+    return;
+}
+
+/**
+ * @brief handle generic message-content
+ *
+ * @param session pointer to the session, which received the message
+ * @param data received bytes
+ * @param dataSize number of bytes in the received message
+ * @param blockerId blocker-id for the response
+ */
+void
+genericMessageCallback(Kitsunemimi::Sakura::Session* session,
+                       const void* data,
+                       const uint64_t dataSize,
+                       const uint64_t blockerId)
+{
+    const u_int8_t* u8Data = static_cast<const uint8_t*>(data);
+
+    switch(u8Data[0])
+    {
+        case Sagiri::CLUSTER_SNAPSHOT_MESSAGE_TYPE:
+            {
+                Sagiri::ClusterSnapshot_Message msg;
+                if(msg.read(data, dataSize) == false)
+                {
+                    handleFail("Receive broken cluster-snapshot-message", session, blockerId);
+                    return;
+                }
+
+                handleClusterSnapshot(msg, session, blockerId);
+            }
+            break;
+        case Sagiri::DATASET_REQUEST_MESSAGE_TYPE:
+            {
+                Sagiri::DatasetRequest_Message msg;
+                if(msg.read(data, dataSize) == false)
+                {
+                    handleFail("Receive broken dataset-requests-message", session, blockerId);
+                    return;
+                }
+
+                handleDataSetRequest(msg, session, blockerId);
+            }
+            break;
+        case Sagiri::RESULT_PUSH_MESSAGE_TYPE:
+            {
+                Sagiri::ResultPush_Message msg;
+                if(msg.read(data, dataSize) == false)
+                {
+                    handleFail("Receive broken result-push-message", session, blockerId);
+                    return;
+                }
+
+                handleResultPush(msg, session, blockerId);
+            }
+            break;
+        case Sagiri::AUDIT_LOG_MESSAGE_TYPE:
+            {
+                Sagiri::AuditLog_Message msg;
+                if(msg.read(data, dataSize) == false)
+                {
+                    Kitsunemimi::ErrorContainer error;
+                    error.addMeesage("Receive broken audit-log-message");
+                    LOG_ERROR(error);
+                    return;
+                }
+
+                handleAuditLog(msg);
+            }
+            break;
+        case 255:
+            {
+                Kitsunemimi::Hanami::ErrorLog_Message msg;
+                if(msg.read(data, dataSize) == false)
+                {
+                    Kitsunemimi::ErrorContainer error;
+                    error.addMeesage("Receive broken error-log-message");
+                    LOG_ERROR(error);
+                    return;
+                }
+
+                handleErrorLog(msg);
+            }
+        break;
+        default:
+            handleFail("Received unknown generic message", session, blockerId);
+            break;
     }
 }
 

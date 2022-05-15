@@ -41,6 +41,9 @@ private:
     bool convertCsvData(const std::string &filePath,
                         const std::string &name,
                         const Kitsunemimi::DataBuffer &inputBuffer);
+    void convertField(float* segmentPos,
+                      const std::string &cell,
+                      const float lastVal);
 };
 
 #endif // SAGIRIARCHIVE_CSV_FINALIZE_DATA_SET_H

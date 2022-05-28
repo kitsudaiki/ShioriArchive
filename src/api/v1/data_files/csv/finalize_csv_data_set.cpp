@@ -44,6 +44,10 @@
 
 using namespace Kitsunemimi::Sakura;
 
+// prepare regex for value-identification
+const std::regex intVal("^-?([0-9]+)$");
+const std::regex floatVal("^-?([0-9]+)\\.([0-9]+)$");
+
 FinalizeCsvDataSet::FinalizeCsvDataSet()
     : Kitsunemimi::Sakura::Blossom("Finalize uploaded train-data by checking completeness of the "
                                    "uploaded and convert into generic format.")
@@ -137,6 +141,49 @@ FinalizeCsvDataSet::runTask(BlossomLeaf &blossomLeaf,
     return true;
 }
 
+void
+FinalizeCsvDataSet::convertField(float* segmentPos,
+                                 const std::string &cell,
+                                 const float lastVal)
+{
+    // true
+    if(cell == "Null"
+            || cell == "null"
+            || cell == "NULL")
+    {
+        *segmentPos = lastVal;
+    }
+    // true
+    else if(cell == "True"
+            || cell == "true"
+            || cell == "TRUE")
+    {
+        *segmentPos = 1.0f;
+    }
+    // false
+    else if(cell == "False"
+            || cell == "false"
+            || cell == "FALSE")
+    {
+        *segmentPos = 0.0f;
+    }
+    // int/long
+    else if(regex_match(cell, intVal))
+    {
+        *segmentPos = static_cast<float>(std::stoi(cell.c_str()));
+    }
+    // float/double
+    else if(regex_match(cell, floatVal))
+    {
+        *segmentPos = std::strtof(cell.c_str(), NULL);
+    }
+    else
+    {
+        // ignore other lines
+        *segmentPos = 0.0f;
+    }
+}
+
 /**
  * @brief convert csv-data into generic format
  *
@@ -162,29 +209,29 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
     // buffer for values to reduce write-access to file
     const uint32_t segmentSize = 10000000;
     std::vector<float> segment(segmentSize, 0.0f);
+    std::vector<float> lastLine;
     uint64_t segmentPos = 0;
     uint64_t segmentCounter = 0;
-
-    // prepare regex for value-identification
-    const std::regex intVal("^-?([0-9]+)$");
-    const std::regex floatVal("^-?([0-9]+)\\.([0-9]+)$");
 
     // split content
     std::vector<std::string> lines;
     Kitsunemimi::splitStringByDelimiter(lines, stringContent, '\n');
 
     bool isHeader = true;
-    for(const std::string &line : lines)
+
+    for(uint64_t lineNum = 0; lineNum < lines.size(); lineNum++)
     {
+        const std::string* line = &lines[lineNum];
+
         // check if the line is relevant to ignore broken lines
-        const uint64_t numberOfColumns = std::count(line.begin(), line.end(), ',') + 1;
+        const uint64_t numberOfColumns = std::count(line->begin(), line->end(), ',') + 1;
         if(numberOfColumns == 1) {
             continue;
         }
 
         // split line
         std::vector<std::string> lineContent;
-        Kitsunemimi::splitStringByDelimiter(lineContent, line, ',');
+        Kitsunemimi::splitStringByDelimiter(lineContent, *line, ',');
 
         if(isHeader)
         {
@@ -207,40 +254,24 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
             // this was the max value. While iterating over all lines, this value will be new
             // calculated with the correct value
             file.tableHeader.numberOfLines = 0;
+            lastLine = std::vector<float>(numberOfColumns, 0.0f);
         }
         else
         {
-            for(const std::string &col : lineContent)
+            for(uint64_t colNum = 0; colNum < lineContent.size(); colNum++)
             {
-                // true
-                if(col == "True"
-                        || col == "true"
-                        || col == "TRUE")
+                const std::string* cell = &lineContent[colNum];
+                if(lastLine.size() > 0)
                 {
-                    segment[segmentPos] = 1.0f;
-                }
-                // false
-                else if(col == "False"
-                        || col == "false"
-                        || col == "FALSE")
-                {
-                    segment[segmentPos] = 0.0f;
-                }
-                // int/long
-                else if(regex_match(col, intVal))
-                {
-                    segment[segmentPos] = static_cast<float>(std::stoi(col.c_str()));
-                }
-                // float/double
-                else if(regex_match(col, floatVal))
-                {
-                    segment[segmentPos] = std::strtof(col.c_str(), NULL);
+                    const float lastVal = lastLine[colNum];
+                    convertField(&segment[segmentPos], *cell, lastVal);
                 }
                 else
                 {
-                    // ignore other lines
-                    segment[segmentPos] = 0.0f;
+                    convertField(&segment[segmentPos], *cell, 0.0f);
                 }
+
+                lastLine[colNum] = segment[segmentPos];
 
                 // write next segment to file
                 segmentPos++;
@@ -249,7 +280,7 @@ FinalizeCsvDataSet::convertCsvData(const std::string &filePath,
                     file.addBlock(segmentCounter, &segment[0], segmentSize);
                     segmentPos = 0;
                     segmentCounter++;
-                }
+                }                
             }
 
             file.tableHeader.numberOfLines++;

@@ -152,7 +152,7 @@ getDatetime()
  * @param blockerId blocker-id for the response
  */
 inline void
-handleClusterSnapshot(const Sagiri::ClusterSnapshot_Message &msg,
+handleClusterSnapshot(const Sagiri::ClusterSnapshotPull_Message &msg,
                       Kitsunemimi::Sakura::Session* session,
                       const uint64_t blockerId)
 {
@@ -366,9 +366,9 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
 
     switch(u8Data[0])
     {
-        case Sagiri::CLUSTER_SNAPSHOT_MESSAGE_TYPE:
+        case Sagiri::CLUSTER_SNAPSHOT_PULL_MESSAGE_TYPE:
             {
-                Sagiri::ClusterSnapshot_Message msg;
+                Sagiri::ClusterSnapshotPull_Message msg;
                 if(msg.read(data, dataSize) == false)
                 {
                     handleFail("Receive broken cluster-snapshot-message", session, blockerId);

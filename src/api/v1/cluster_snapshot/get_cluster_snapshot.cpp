@@ -53,6 +53,12 @@ GetClusterSnapshot::GetClusterSnapshot()
     registerOutputField("name",
                         Sakura::SAKURA_STRING_TYPE,
                         "Name of the train-data-set.");
+    registerOutputField("location",
+                        Sakura::SAKURA_STRING_TYPE,
+                        "File path on local storage.");
+    registerOutputField("header",
+                        Sakura::SAKURA_MAP_TYPE,
+                        "Header-information of the snapshot-file.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -79,11 +85,20 @@ GetClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
                                                             projectUuid,
                                                             isAdmin,
                                                             error,
-                                                            false) == false)
+                                                            true) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
+
+    // prepare header-information for output
+    Kitsunemimi::Json::JsonItem parsedHeader;
+    if(parsedHeader.parse(blossomLeaf.output.get("header").getString(), error) == false)
+    {
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+    blossomLeaf.output.insert("header", parsedHeader.getItemContent()->copy(), true);
 
     // remove irrelevant fields
     blossomLeaf.output.remove("owner_uuid");

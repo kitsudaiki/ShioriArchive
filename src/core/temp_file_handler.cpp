@@ -156,6 +156,46 @@ TempFileHandler::removeData(const std::string &id)
         delete ptr;
         Kitsunemimi::deleteFileOrDir(targetFilePath + "/" + it->first, error);
         m_tempFiles.erase(it);
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * @brief TempFileHandler::moveData
+ * @param id
+ * @param targetLocation
+ * @return
+ */
+bool
+TempFileHandler::moveData(const std::string &id,
+                          const std::string &targetLocation)
+{
+    bool success = false;
+    Kitsunemimi::ErrorContainer error;
+    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
+
+    std::map<std::string, Kitsunemimi::BinaryFile*>::const_iterator it;
+    it = m_tempFiles.find(id);
+    if(it != m_tempFiles.end())
+    {
+        Kitsunemimi::BinaryFile* ptr = it->second;
+        ptr->closeFile();
+
+        if(Kitsunemimi::renameFileOrDir(targetFilePath + "/" + it->first,
+                                        targetLocation,
+                                        error) == false)
+        {
+            LOG_ERROR(error);
+            return false;
+        }
+
+        delete ptr;
+        m_tempFiles.erase(it);
+
+        return true;
     }
 
     return false;

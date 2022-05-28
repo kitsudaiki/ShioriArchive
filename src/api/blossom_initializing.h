@@ -33,12 +33,16 @@
 #include <api/v1/data_files/delete_data_set.h>
 #include <api/v1/data_files/check_data_set.h>
 #include <api/v1/data_files/get_progress_data_set.h>
-
 #include <api/v1/data_files/mnist/create_mnist_data_set.h>
 #include <api/v1/data_files/mnist/finalize_mnist_data_set.h>
-
 #include <api/v1/data_files/csv/create_csv_data_set.h>
 #include <api/v1/data_files/csv/finalize_csv_data_set.h>
+
+#include <api/v1/cluster_snapshot/create_cluster_snapshot.h>
+#include <api/v1/cluster_snapshot/delete_cluster_snapshot.h>
+#include <api/v1/cluster_snapshot/finish_cluster_snapshot.h>
+#include <api/v1/cluster_snapshot/get_cluster_snapshot.h>
+#include <api/v1/cluster_snapshot/list_cluster_snapshot.h>
 
 #include <api/v1/request_results/delete_request_result.h>
 #include <api/v1/request_results/get_request_result.h>
@@ -120,6 +124,52 @@ dataSetBlossoms()
 }
 
 /**
+ * @brief init cluster_snaptho blossoms
+ */
+void
+clusterSnapshotBlossoms()
+{
+    Kitsunemimi::Hanami::Endpoint* endpoints = Kitsunemimi::Hanami::Endpoint::getInstance();
+    SakuraLangInterface* interface = SakuraLangInterface::getInstance();
+    const std::string group = "cluster_snapshot";
+
+    assert(interface->addBlossom(group, "create", new CreateClusterSnapshot()));
+    endpoints->addEndpoint("v1/cluster_snapshot",
+                           Kitsunemimi::Hanami::POST_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "create");
+
+    assert(interface->addBlossom(group, "finalize", new FinalizeClusterSnapshot()));
+    endpoints->addEndpoint("v1/cluster_snapshot",
+                           Kitsunemimi::Hanami::PUT_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "finalize");
+
+    assert(interface->addBlossom(group, "get", new GetClusterSnapshot()));
+    endpoints->addEndpoint("v1/cluster_snapshot",
+                           Kitsunemimi::Hanami::GET_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "get");
+
+    assert(interface->addBlossom(group, "delete", new DeleteClusterSnapshot()));
+    endpoints->addEndpoint("v1/cluster_snapshot",
+                           Kitsunemimi::Hanami::DELETE_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "delete");
+
+    assert(interface->addBlossom(group, "list", new ListClusterSnapshot()));
+    endpoints->addEndpoint("v1/cluster_snapshot/all",
+                           Kitsunemimi::Hanami::GET_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "list");
+}
+
+/**
  * @brief init request_result blossoms
  */
 void
@@ -148,6 +198,7 @@ void
 initBlossoms()
 {
     dataSetBlossoms();
+    clusterSnapshotBlossoms();
     resultBlossoms();
 }
 

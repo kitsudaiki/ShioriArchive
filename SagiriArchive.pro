@@ -113,6 +113,7 @@ INCLUDEPATH += $$PWD \
 SOURCES += src/main.cpp \
     src/api/v1/cluster_snapshot/create_cluster_snapshot.cpp \
     src/api/v1/cluster_snapshot/delete_cluster_snapshot.cpp \
+    src/api/v1/cluster_snapshot/finish_cluster_snapshot.cpp \
     src/api/v1/cluster_snapshot/get_cluster_snapshot.cpp \
     src/api/v1/cluster_snapshot/list_cluster_snapshot.cpp \
     src/api/v1/data_files/check_data_set.cpp \
@@ -138,6 +139,7 @@ HEADERS += \
     src/api/blossom_initializing.h \
     src/api/v1/cluster_snapshot/create_cluster_snapshot.h \
     src/api/v1/cluster_snapshot/delete_cluster_snapshot.h \
+    src/api/v1/cluster_snapshot/finish_cluster_snapshot.h \
     src/api/v1/cluster_snapshot/get_cluster_snapshot.h \
     src/api/v1/cluster_snapshot/list_cluster_snapshot.h \
     src/api/v1/data_files/check_data_set.h \

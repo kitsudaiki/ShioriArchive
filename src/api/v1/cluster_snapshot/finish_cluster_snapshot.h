@@ -1,5 +1,5 @@
 /**
- * @file        create_cluster_snapshot.h
+ * @file        get_cluster_snapshot.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,22 @@
  *      limitations under the License.
  */
 
-#ifndef CREATE_CLUSTER_SNAPSHOT_H
-#define CREATE_CLUSTER_SNAPSHOT_H
+#ifndef FINISH_CLUSTER_SNAPSHOT_H
+#define FINISH_CLUSTER_SNAPSHOT_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-class CreateClusterSnapshot
+class FinalizeClusterSnapshot
         : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    CreateClusterSnapshot();
+    FinalizeClusterSnapshot();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
-                 const Kitsunemimi::DataMap &,
+                 const Kitsunemimi::DataMap &context,
                  Kitsunemimi::Sakura::BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // CREATE_CLUSTER_SNAPSHOT_H
+#endif // FINISH_CLUSTER_SNAPSHOT_H

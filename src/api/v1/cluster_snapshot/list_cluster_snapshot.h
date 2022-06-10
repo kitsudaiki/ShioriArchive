@@ -1,5 +1,5 @@
 /**
- * @file        finalize_csv_data_set.h
+ * @file        list_cluster_snapshot.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,30 +20,22 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_CSV_FINALIZE_DATA_SET_H
-#define SAGIRIARCHIVE_CSV_FINALIZE_DATA_SET_H
+#ifndef LIST_CLUSTER_SNAPSHOT_H
+#define LIST_CLUSTER_SNAPSHOT_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-class FinalizeCsvDataSet
+class ListClusterSnapshot
         : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    FinalizeCsvDataSet();
+    ListClusterSnapshot();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
-                 const Kitsunemimi::DataMap &context,
+                 const Kitsunemimi::DataMap &,
                  Kitsunemimi::Sakura::BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
-
-private:
-    bool convertCsvData(const std::string &filePath,
-                        const std::string &name,
-                        const Kitsunemimi::DataBuffer &inputBuffer);
-    void convertField(float* segmentPos,
-                      const std::string &cell,
-                      const float lastVal);
 };
 
-#endif // SAGIRIARCHIVE_CSV_FINALIZE_DATA_SET_H
+#endif // LIST_CLUSTER_SNAPSHOT_H

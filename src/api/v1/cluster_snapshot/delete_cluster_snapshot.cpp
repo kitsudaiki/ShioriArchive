@@ -1,5 +1,5 @@
 /**
- * @file        delete_data_set.cpp
+ * @file        delete_cluster_snapshot.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,20 +20,21 @@
  *      limitations under the License.
  */
 
-#include "delete_data_set.h"
+#include "delete_cluster_snapshot.h"
 
 #include <sagiri_root.h>
-#include <database/data_set_table.h>
+#include <database/cluster_snapshot_table.h>
 
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/common_methods/file_methods.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
+
 using namespace Kitsunemimi;
 
-DeleteDataSet::DeleteDataSet()
-    : Kitsunemimi::Sakura::Blossom("Delete a speific set of train-data.")
+DeleteClusterSnapshot::DeleteClusterSnapshot()
+    : Kitsunemimi::Sakura::Blossom("Delete a result-set from sagiri.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -42,9 +43,9 @@ DeleteDataSet::DeleteDataSet()
     registerInputField("uuid",
                        Sakura::SAKURA_STRING_TYPE,
                        true,
-                       "UUID of the data-set to delete.");
-    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                 "[a-fA-F0-9]{12}"));
+                       "UUID of the cluster-snapshot to delete.");
+    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+                                 "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
 
     //----------------------------------------------------------------------------------------------
     //
@@ -55,10 +56,10 @@ DeleteDataSet::DeleteDataSet()
  * @brief runTask
  */
 bool
-DeleteDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
-                         const Kitsunemimi::DataMap &context,
-                         Sakura::BlossomStatus &status,
-                         ErrorContainer &error)
+DeleteClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
+                               const Kitsunemimi::DataMap &context,
+                               Sakura::BlossomStatus &status,
+                               ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
     const std::string userUuid = context.getStringByKey("uuid");
@@ -67,13 +68,13 @@ DeleteDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::dataSetTable->getDataSet(result,
-                                                dataUuid,
-                                                userUuid,
-                                                projectUuid,
-                                                isAdmin,
-                                                error,
-                                                true) == false)
+    if(SagiriRoot::clusterSnapshotTable->getClusterSnapshot(result,
+                                                            dataUuid,
+                                                            userUuid,
+                                                            projectUuid,
+                                                            isAdmin,
+                                                            error,
+                                                            true) == false)
     {
         status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
@@ -83,11 +84,11 @@ DeleteDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const std::string location = result.get("location").getString();
 
     // delete entry from db
-    if(SagiriRoot::dataSetTable->deleteDataSet(dataUuid,
-                                                   userUuid,
-                                                   projectUuid,
-                                                   isAdmin,
-                                                   error) == false)
+    if(SagiriRoot::clusterSnapshotTable->deleteClusterSnapshot(dataUuid,
+                                                               userUuid,
+                                                               projectUuid,
+                                                               isAdmin,
+                                                               error) == false)
     {
         status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

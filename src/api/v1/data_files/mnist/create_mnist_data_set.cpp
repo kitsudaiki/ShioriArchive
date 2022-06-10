@@ -103,6 +103,7 @@ CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     const std::string name = blossomLeaf.input.get("name").getString();
     const long inputDataSize = blossomLeaf.input.get("input_data_size").getLong();
     const long labelDataSize = blossomLeaf.input.get("label_data_size").getLong();
+    const std::string uuid = Kitsunemimi::Hanami::generateUuid().toString();
 
     const std::string userUuid = context.getStringByKey("uuid");
     const std::string projectUuid = context.getStringByKey("projects");
@@ -139,9 +140,10 @@ CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     if(targetFilePath.at(targetFilePath.size() - 1) != '/') {
         targetFilePath.append("/");
     }
-    targetFilePath.append(name + "_mnist_" + userUuid);
+    targetFilePath.append(uuid + "_mnist_" + userUuid);
 
     // register in database
+    blossomLeaf.output.insert("uuid", uuid);
     blossomLeaf.output.insert("name", name);
     blossomLeaf.output.insert("type", "mnist");
     blossomLeaf.output.insert("location", targetFilePath);

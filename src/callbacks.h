@@ -23,6 +23,12 @@
 #ifndef SAGIRIARCHIVE_CALLBACKS_H
 #define SAGIRIARCHIVE_CALLBACKS_H
 
+#include <core/temp_file_handler.h>
+#include <core/data_set_files/data_set_file.h>
+#include <database/data_set_table.h>
+#include <database/cluster_snapshot_table.h>
+#include <sagiri_root.h>
+
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/files/text_file.h>
 #include <libKitsunemimiCommon/common_items/table_item.h>
@@ -35,10 +41,6 @@
 
 #include <libSagiriArchive/sagiri_messages.h>
 
-#include <core/temp_file_handler.h>
-#include <core/data_set_files/data_set_file.h>
-#include <database/data_set_table.h>
-#include <sagiri_root.h>
 
 void streamDataCallback(void*,
                         Kitsunemimi::Sakura::Session*,
@@ -59,20 +61,17 @@ void streamDataCallback(void*,
         const std::string fileId(reinterpret_cast<const char*>(ptr), 36);
         ptr += 36;
 
-        const uint32_t pos = *reinterpret_cast<const uint32_t*>(ptr);
-        ptr += 4;
+        const uint64_t pos = *reinterpret_cast<const uint64_t*>(ptr);
+        ptr += 8;
 
-        SagiriRoot::tempFileHandler->addDataToPos(fileId, pos, ptr, dataSize - 76);
+        SagiriRoot::tempFileHandler->addDataToPos(fileId, pos, ptr, dataSize - 80);
 
         // TODO: better and more reliable condition to detect finish
-        if(dataSize - 76 < 96 * 1024)
+        if(dataSize - 80 < 96 * 1024)
         {
             Kitsunemimi::ErrorContainer error;
-            if(SagiriRoot::dataSetTable->setUploadFinish(datasetId, fileId, error) == false)
-            {
-                LOG_ERROR(error);
-                return;
-            }
+            SagiriRoot::dataSetTable->setUploadFinish(datasetId, fileId, error);
+            SagiriRoot::clusterSnapshotTable->setUploadFinish(datasetId, fileId, error);
         }
     }
     else
@@ -152,11 +151,23 @@ getDatetime()
  * @param blockerId blocker-id for the response
  */
 inline void
-handleClusterSnapshot(const Sagiri::ClusterSnapshot_Message &msg,
-                      Kitsunemimi::Sakura::Session* session,
-                      const uint64_t blockerId)
+handleClusterSnapshotRequest(const Sagiri::ClusterSnapshotPull_Message &msg,
+                             Kitsunemimi::Sakura::Session* session,
+                             const uint64_t blockerId)
 {
+    // init file
+    Kitsunemimi::BinaryFile* targetFile = new Kitsunemimi::BinaryFile(msg.location);
+    DataSetFile::DataSetHeader header;
+    DataBuffer content;
+    targetFile->readCompleteFile(content);
 
+    // send data
+    Kitsunemimi::ErrorContainer error;
+    if(session->sendResponse(content.data, content.usedBufferSize, blockerId, error) == false) {
+        LOG_ERROR(error);
+    }
+
+    return;
 }
 
 /**
@@ -183,6 +194,8 @@ handleDataSetRequest(const Sagiri::DatasetRequest_Message &msg,
     if(payload == nullptr) {
         // TODO: error
         delete file;
+        delete payload;
+
         return;
     }
 
@@ -356,24 +369,24 @@ handleFail(const std::string &msg,
  */
 void
 genericMessageCallback(Kitsunemimi::Sakura::Session* session,
-                       const void* data,
+                       void* data,
                        const uint64_t dataSize,
                        const uint64_t blockerId)
 {
-    const u_int8_t* u8Data = static_cast<const uint8_t*>(data);
+    u_int8_t* u8Data = static_cast<uint8_t*>(data);
 
     switch(u8Data[0])
     {
-        case Sagiri::CLUSTER_SNAPSHOT_MESSAGE_TYPE:
+        case Sagiri::CLUSTER_SNAPSHOT_PULL_MESSAGE_TYPE:
             {
-                Sagiri::ClusterSnapshot_Message msg;
+                Sagiri::ClusterSnapshotPull_Message msg;
                 if(msg.read(data, dataSize) == false)
                 {
                     handleFail("Receive broken cluster-snapshot-message", session, blockerId);
                     return;
                 }
 
-                handleClusterSnapshot(msg, session, blockerId);
+                handleClusterSnapshotRequest(msg, session, blockerId);
             }
             break;
         case Sagiri::DATASET_REQUEST_MESSAGE_TYPE:

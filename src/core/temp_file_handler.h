@@ -46,6 +46,7 @@ public:
     bool getData(Kitsunemimi::DataBuffer &result,
                  const std::string &id);
     bool removeData(const std::string &id);
+    bool moveData(const std::string &id, const std::string &targetLocation);
 
 private:
     std::map<std::string, Kitsunemimi::BinaryFile*> m_tempFiles;

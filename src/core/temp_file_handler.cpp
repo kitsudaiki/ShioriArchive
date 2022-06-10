@@ -38,7 +38,7 @@ TempFileHandler::~TempFileHandler()
 {
     bool success = false;
     Kitsunemimi::ErrorContainer error;
-    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
+    const std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
 
     std::vector<std::string> result;
     std::map<std::string, Kitsunemimi::BinaryFile*>::iterator it;
@@ -65,7 +65,6 @@ TempFileHandler::~TempFileHandler()
 bool
 TempFileHandler::initNewFile(const std::string &id, const uint64_t size)
 {
-
     if(m_tempFiles.find(id) != m_tempFiles.end()) {
         return false;
     }
@@ -157,6 +156,46 @@ TempFileHandler::removeData(const std::string &id)
         delete ptr;
         Kitsunemimi::deleteFileOrDir(targetFilePath + "/" + it->first, error);
         m_tempFiles.erase(it);
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * @brief TempFileHandler::moveData
+ * @param id
+ * @param targetLocation
+ * @return
+ */
+bool
+TempFileHandler::moveData(const std::string &id,
+                          const std::string &targetLocation)
+{
+    bool success = false;
+    Kitsunemimi::ErrorContainer error;
+    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
+
+    std::map<std::string, Kitsunemimi::BinaryFile*>::const_iterator it;
+    it = m_tempFiles.find(id);
+    if(it != m_tempFiles.end())
+    {
+        Kitsunemimi::BinaryFile* ptr = it->second;
+        ptr->closeFile();
+
+        if(Kitsunemimi::renameFileOrDir(targetFilePath + "/" + it->first,
+                                        targetLocation,
+                                        error) == false)
+        {
+            LOG_ERROR(error);
+            return false;
+        }
+
+        delete ptr;
+        m_tempFiles.erase(it);
+
+        return true;
     }
 
     return false;

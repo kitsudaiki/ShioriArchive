@@ -1,5 +1,5 @@
 /**
- * @file        list_data_set.cpp
+ * @file        list_cluster_snapshot.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,28 +20,28 @@
  *      limitations under the License.
  */
 
-#include "list_data_set.h"
+#include "list_cluster_snapshot.h"
 
 #include <sagiri_root.h>
-#include <database/data_set_table.h>
+#include <database/cluster_snapshot_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi;
 
-ListDataSet::ListDataSet()
-    : Kitsunemimi::Sakura::Blossom("Get information of all uploaded sets fo train-data as table.")
+ListClusterSnapshot::ListClusterSnapshot()
+    : Kitsunemimi::Sakura::Blossom("List snapshots of all cluster.")
 {
     //----------------------------------------------------------------------------------------------
-    // output
+    // input
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("header",
-                        SAKURA_ARRAY_TYPE,
+                        Sakura::SAKURA_ARRAY_TYPE,
                         "Array with the namings all columns of the table.");
 
     registerOutputField("body",
-                        SAKURA_ARRAY_TYPE,
+                        Sakura::SAKURA_ARRAY_TYPE,
                         "Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
@@ -53,10 +53,10 @@ ListDataSet::ListDataSet()
  * @brief runTask
  */
 bool
-ListDataSet::runTask(BlossomLeaf &blossomLeaf,
-                       const Kitsunemimi::DataMap &context,
-                       BlossomStatus &status,
-                       Kitsunemimi::ErrorContainer &error)
+ListClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
+                             const Kitsunemimi::DataMap &context,
+                             Sakura::BlossomStatus &status,
+                             ErrorContainer &error)
 {
     const std::string userUuid = context.getStringByKey("uuid");
     const std::string projectUuid = context.getStringByKey("projects");
@@ -64,11 +64,11 @@ ListDataSet::runTask(BlossomLeaf &blossomLeaf,
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(SagiriRoot::dataSetTable->getAllDataSet(table,
-                                               userUuid,
-                                               projectUuid,
-                                               isAdmin,
-                                               error) == false)
+    if(SagiriRoot::clusterSnapshotTable->getAllClusterSnapshot(table,
+                                                               userUuid,
+                                                               projectUuid,
+                                                               isAdmin,
+                                                               error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

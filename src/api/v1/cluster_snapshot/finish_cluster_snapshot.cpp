@@ -123,7 +123,7 @@ FinalizeClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
 
     // move temp-file to target-location
     const std::string targetLocation = result.get("location").getString();
-    if(SagiriRoot::tempFileHandler->moveData(inputUuid, targetLocation) == false)
+    if(SagiriRoot::tempFileHandler->moveData(inputUuid, targetLocation, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

@@ -45,7 +45,7 @@ GetProgressDataSet::GetProgressDataSet()
     registerInputField("uuid",
                        SAKURA_STRING_TYPE,
                        true,
-                       "UUID of the train-data set to delete.");
+                       "UUID of the dataset set to delete.");
     assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
                                  "[a-fA-F0-9]{12}"));
 
@@ -55,7 +55,7 @@ GetProgressDataSet::GetProgressDataSet()
 
     registerOutputField("uuid",
                         SAKURA_STRING_TYPE,
-                        "UUID of the train-data-set.");
+                        "UUID of the data-set.");
     registerOutputField("temp_files",
                         SAKURA_MAP_TYPE,
                         "Map with the uuids of the temporary files and it's upload progress");

@@ -65,7 +65,7 @@ ClusterSnapshotTable::ClusterSnapshotTable(Kitsunemimi::Sakura::SqlDatabase* db)
 ClusterSnapshotTable::~ClusterSnapshotTable() {}
 
 /**
- * @brief add new metadata of a train-data-set into the database
+ * @brief add new metadata of a dataset into the database
  *
  * @param userData json-item with all information of the data to add to database
  * @param userUuid user-uuid to filter
@@ -80,11 +80,17 @@ ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::Json::JsonItem &data,
                                          const std::string &projectUuid,
                                          Kitsunemimi::ErrorContainer &error)
 {
-    return add(data, userUuid, projectUuid, error);
+    if(add(data, userUuid, projectUuid, error) == false)
+    {
+        error.addMeesage("Failed to add snapshot to database");
+        return false;
+    }
+
+    return true;
 }
 
 /**
- * @brief get a metadata-entry for a specific train-data-set from the database
+ * @brief get a metadata-entry for a specific dataset from the database
  *
  * @param result reference for the result-output
  * @param uuid uuid of the data
@@ -98,7 +104,7 @@ ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::Json::JsonItem &data,
  */
 bool
 ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::Json::JsonItem &result,
-                                         const std::string &uuid,
+                                         const std::string &snapshotUuid,
                                          const std::string &userUuid,
                                          const std::string &projectUuid,
                                          const bool isAdmin,
@@ -107,11 +113,14 @@ ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::Json::JsonItem &result,
 {
     // get user from db
     std::vector<RequestCondition> conditions;
-    conditions.emplace_back("uuid", uuid);
+    conditions.emplace_back("uuid", snapshotUuid);
 
     // get dataset from db
     if(get(result, userUuid, projectUuid, isAdmin, conditions, error, showHiddenValues) == false)
     {
+        error.addMeesage("Failed to get snapshot with UUID '"
+                         + snapshotUuid
+                         + "' from database");
         LOG_ERROR(error);
         return false;
     }
@@ -120,7 +129,7 @@ ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::Json::JsonItem &result,
 }
 
 /**
- * @brief get metadata of all train-data-sets from the database
+ * @brief get metadata of all datasets from the database
  *
  * @param result reference for the result-output
  * @param userUuid user-uuid to filter
@@ -137,13 +146,19 @@ ClusterSnapshotTable::getAllClusterSnapshot(Kitsunemimi::TableItem &result,
                                             const bool isAdmin,
                                             Kitsunemimi::ErrorContainer &error)
 {
-    return getAll(result, userUuid, projectUuid, isAdmin, error);
+    if(getAll(result, userUuid, projectUuid, isAdmin, error) == false)
+    {
+        error.addMeesage("Failed to get all snapshots from database");
+        return false;
+    }
+
+    return true;
 }
 
 /**
- * @brief delete metadata of a train-data-set from the database
+ * @brief delete metadata of a dataset from the database
  *
- * @param uuid uuid of the data
+ * @param snapshotUuid uuid of the data
  * @param userUuid user-uuid to filter
  * @param projectUuid project-uuid to filter
  * @param isAdmin true, if use who makes request is admin
@@ -152,22 +167,33 @@ ClusterSnapshotTable::getAllClusterSnapshot(Kitsunemimi::TableItem &result,
  * @return true, if successful, else false
  */
 bool
-ClusterSnapshotTable::deleteClusterSnapshot(const std::string &uuid,
+ClusterSnapshotTable::deleteClusterSnapshot(const std::string &snapshotUuid,
                                             const std::string &userUuid,
                                             const std::string &projectUuid,
                                             const bool isAdmin,
                                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
-    conditions.emplace_back("uuid", uuid);
-    return del(conditions, userUuid, projectUuid, isAdmin, error);
+    conditions.emplace_back("uuid", snapshotUuid);
+    if(del(conditions, userUuid, projectUuid, isAdmin, error) == false)
+    {
+        error.addMeesage("Failed to delete snapshot with UUID '"
+                         + snapshotUuid
+                         + "' from database");
+        return false;
+    }
+
+    return true;
 }
 
 /**
- * @brief DataSetTable::setUploadFinish
- * @param uuid
- * @param file_uuid
- * @return
+ * @brief update snapshot in database to fully uploaded
+ *
+ * @param uuid uuid of the snapshot
+ * @param fileUuid uuid of the temporary file
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 ClusterSnapshotTable::setUploadFinish(const std::string &uuid,
@@ -178,28 +204,44 @@ ClusterSnapshotTable::setUploadFinish(const std::string &uuid,
     conditions.emplace_back("uuid", uuid);
     Kitsunemimi::Json::JsonItem result;
 
-    // get dataset from db
+    // get snapshot from db
     if(get(result, "", "", true, conditions, error, true) == false)
     {
+        error.addMeesage("Failed to get snapshot with UUID '" + uuid + "' from database");
         LOG_ERROR(error);
         return false;
     }
 
-    if(result.contains("temp_files") == false) {
-        // TODO: error-message
+    // check response from database
+    if(result.contains("temp_files") == false)
+    {
+        error.addMeesage("Entry get for the snaphost with UUID '" + uuid + "' is broken");
+        LOG_ERROR(error);
         return false;
     }
 
+    // update temp-files entry to 100%
     const std::string tempFilesStr = result.get("temp_files").toString();
     Kitsunemimi::Json::JsonItem tempFiles;
     if(tempFiles.parse(tempFilesStr, error) == false)
     {
+        error.addMeesage("Failed to parse temp_files entry of snapshot with UUID '"
+                         + uuid
+                         + "' from database");
         LOG_ERROR(error);
         return false;
     }
     tempFiles.insert(fileUuid, Kitsunemimi::Json::JsonItem(1.0f), true);
 
+    // update new entry within the database
     Kitsunemimi::Json::JsonItem newValues;
     newValues.insert("temp_files", Kitsunemimi::Json::JsonItem(tempFiles.toString()));
-    return update(newValues, "", "", true, conditions, error);
+    if(update(newValues, "", "", true, conditions, error) == false)
+    {
+        error.addMeesage("Failed to update entry of snapshot with UUID '" + uuid + "' in database");
+        LOG_ERROR(error);
+        return false;
+    }
+
+    return true;
 }

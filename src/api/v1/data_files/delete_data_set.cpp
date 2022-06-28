@@ -33,7 +33,7 @@
 using namespace Kitsunemimi;
 
 DeleteDataSet::DeleteDataSet()
-    : Kitsunemimi::Sakura::Blossom("Delete a speific set of train-data.")
+    : Kitsunemimi::Sakura::Blossom("Delete a speific set of dataset.")
 {
     //----------------------------------------------------------------------------------------------
     // input

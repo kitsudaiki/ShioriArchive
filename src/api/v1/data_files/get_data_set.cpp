@@ -36,7 +36,7 @@
 using namespace Kitsunemimi::Sakura;
 
 GetDataSet::GetDataSet()
-    : Blossom("Get information of a specific set of train-data.")
+    : Blossom("Get information of a specific set of dataset.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -45,7 +45,7 @@ GetDataSet::GetDataSet()
     registerInputField("uuid",
                        SAKURA_STRING_TYPE,
                        true,
-                       "UUID of the train-data set to delete.");
+                       "UUID of the dataset set to delete.");
     assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
                                  "[a-fA-F0-9]{12}"));
 
@@ -55,10 +55,10 @@ GetDataSet::GetDataSet()
 
     registerOutputField("uuid",
                         SAKURA_STRING_TYPE,
-                        "UUID of the train-data-set.");
+                        "UUID of the data-set.");
     registerOutputField("name",
                         SAKURA_STRING_TYPE,
-                        "Name of the train-data-set.");
+                        "Name of the data-set.");
     registerOutputField("type",
                         SAKURA_STRING_TYPE,
                         "Type of the new set (For example: CSV)");

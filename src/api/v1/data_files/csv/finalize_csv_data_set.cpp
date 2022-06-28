@@ -49,7 +49,7 @@ const std::regex intVal("^-?([0-9]+)$");
 const std::regex floatVal("^-?([0-9]+)\\.([0-9]+)$");
 
 FinalizeCsvDataSet::FinalizeCsvDataSet()
-    : Kitsunemimi::Sakura::Blossom("Finalize uploaded train-data by checking completeness of the "
+    : Kitsunemimi::Sakura::Blossom("Finalize uploaded dataset by checking completeness of the "
                                    "uploaded and convert into generic format.")
 {
     //----------------------------------------------------------------------------------------------

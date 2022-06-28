@@ -41,7 +41,7 @@
 using namespace Kitsunemimi::Sakura;
 
 CreateCsvDataSet::CreateCsvDataSet()
-    : Kitsunemimi::Sakura::Blossom("Init new set of train-data.")
+    : Kitsunemimi::Sakura::Blossom("Init new dataset.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -103,7 +103,7 @@ CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     if(success == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("file-location to store train-data is missing in the config");
+        error.addMeesage("file-location to store dataset is missing in the config");
         return false;
     }
 

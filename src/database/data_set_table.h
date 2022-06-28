@@ -44,7 +44,7 @@ public:
                     const std::string &projectUuid,
                     Kitsunemimi::ErrorContainer &error);
     bool getDataSet(Kitsunemimi::Json::JsonItem &result,
-                    const std::string &uuid,
+                    const std::string &datasetUuid,
                     const std::string &userUuid,
                     const std::string &projectUuid,
                     const bool isAdmin,

@@ -44,7 +44,7 @@ public:
                             const std::string &projectUuid,
                             Kitsunemimi::ErrorContainer &error);
     bool getClusterSnapshot(Kitsunemimi::Json::JsonItem &result,
-                            const std::string &uuid,
+                            const std::string &snapshotUuid,
                             const std::string &userUuid,
                             const std::string &projectUuid,
                             const bool isAdmin,
@@ -55,7 +55,7 @@ public:
                                const std::string &projectUuid,
                                const bool isAdmin,
                                Kitsunemimi::ErrorContainer &error);
-    bool deleteClusterSnapshot(const std::string &uuid,
+    bool deleteClusterSnapshot(const std::string &snapshotUuid,
                                const std::string &userUuid,
                                const std::string &projectUuid,
                                const bool isAdmin,

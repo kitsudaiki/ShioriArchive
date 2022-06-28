@@ -85,7 +85,7 @@ TempFileHandler::initNewFile(const std::string &id, const uint64_t size)
 /**
  * @brief add data to the temporary file
  *
- * @param fileId id of the temporary file
+ * @param uuid uuid of the temporary file
  * @param pos position in the file where to add the data
  * @param data pointer to the data to add
  * @param size size of the data to add
@@ -93,13 +93,13 @@ TempFileHandler::initNewFile(const std::string &id, const uint64_t size)
  * @return false, if id not found, else true
  */
 bool
-TempFileHandler::addDataToPos(const std::string &fileId,
+TempFileHandler::addDataToPos(const std::string &uuid,
                               const uint64_t pos,
                               const void* data,
                               const uint64_t size)
 {
     std::map<std::string, Kitsunemimi::BinaryFile*>::const_iterator it;
-    it = m_tempFiles.find(fileId);
+    it = m_tempFiles.find(uuid);
     if(it != m_tempFiles.end())
     {
         Kitsunemimi::BinaryFile* ptr = it->second;
@@ -115,15 +115,15 @@ TempFileHandler::addDataToPos(const std::string &fileId,
  * @brief get data from the temporary file
  *
  * @param result data-buffer for the resulting data of the file
- * @param id id of the temporary file
+ * @param uuid uuid of the temporary file
  *
  * @return false, if id not found, else true
  */
 bool
-TempFileHandler::getData(Kitsunemimi::DataBuffer &result, const std::string &id)
+TempFileHandler::getData(Kitsunemimi::DataBuffer &result, const std::string &uuid)
 {
     std::map<std::string, Kitsunemimi::BinaryFile*>::const_iterator it;
-    it = m_tempFiles.find(id);
+    it = m_tempFiles.find(uuid);
     if(it != m_tempFiles.end())
     {
         Kitsunemimi::BinaryFile* ptr = it->second;
@@ -164,21 +164,24 @@ TempFileHandler::removeData(const std::string &id)
 }
 
 /**
- * @brief TempFileHandler::moveData
- * @param id
- * @param targetLocation
- * @return
+ * @brief move tempfile to its target-location after tempfile was finished
+ *
+ * @param uuid uuid of the tempfile, which should be moved
+ * @param targetLocation target-location on the local direct, where to move the file to
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
-TempFileHandler::moveData(const std::string &id,
-                          const std::string &targetLocation)
+TempFileHandler::moveData(const std::string &uuid,
+                          const std::string &targetLocation,
+                          Kitsunemimi::ErrorContainer &error)
 {
     bool success = false;
-    Kitsunemimi::ErrorContainer error;
     std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
 
     std::map<std::string, Kitsunemimi::BinaryFile*>::const_iterator it;
-    it = m_tempFiles.find(id);
+    it = m_tempFiles.find(uuid);
     if(it != m_tempFiles.end())
     {
         Kitsunemimi::BinaryFile* ptr = it->second;
@@ -188,6 +191,11 @@ TempFileHandler::moveData(const std::string &id,
                                         targetLocation,
                                         error) == false)
         {
+            error.addMeesage("Failed to move temp-file with uuid '"
+                             + uuid
+                             + "' to target-locateion '"
+                             + targetLocation
+                             + "'");
             LOG_ERROR(error);
             return false;
         }
@@ -197,6 +205,11 @@ TempFileHandler::moveData(const std::string &id,
 
         return true;
     }
+
+    error.addMeesage("Failed to move temp-file with uuid '"
+                     + uuid
+                     + ", because it can not be found.");
+    LOG_ERROR(error);
 
     return false;
 }

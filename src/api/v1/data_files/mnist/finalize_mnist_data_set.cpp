@@ -43,7 +43,7 @@
 using namespace Kitsunemimi::Sakura;
 
 FinalizeMnistDataSet::FinalizeMnistDataSet()
-    : Kitsunemimi::Sakura::Blossom("Finalize uploaded train-data by checking completeness of the "
+    : Kitsunemimi::Sakura::Blossom("Finalize uploaded dataset by checking completeness of the "
                                    "uploaded and convert into generic format.")
 {
     //----------------------------------------------------------------------------------------------
@@ -241,6 +241,10 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
                 maxVal = segment[segmentPos];
             }
 
+            if(pic == 0) {
+                std::cout<<"inputValues["<<i<<"] = "<<segment[segmentPos]<<";"<<std::endl;
+            }
+
             segmentPos++;
         }
 
@@ -251,6 +255,9 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
             segmentPos++;
         }
         const uint32_t label = labelBufferPtr[pic + labelOffset];
+        if(pic == 0) {
+            std::cout<<"label: "<<label<<std::endl;
+        }
         segment[(segmentPos - 10) + label] = maxVal;
 
         // write line to file, if segment is full

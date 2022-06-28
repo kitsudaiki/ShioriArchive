@@ -30,7 +30,7 @@
 using namespace Kitsunemimi::Sakura;
 
 ListDataSet::ListDataSet()
-    : Kitsunemimi::Sakura::Blossom("Get information of all uploaded sets fo train-data as table.")
+    : Kitsunemimi::Sakura::Blossom("Get information of all uploaded sets fo dataset as table.")
 {
     //----------------------------------------------------------------------------------------------
     // output

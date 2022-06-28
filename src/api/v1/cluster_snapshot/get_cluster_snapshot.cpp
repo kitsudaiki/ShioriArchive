@@ -49,10 +49,10 @@ GetClusterSnapshot::GetClusterSnapshot()
 
     registerOutputField("uuid",
                         Sakura::SAKURA_STRING_TYPE,
-                        "UUID of the train-data-set.");
+                        "UUID of the data-set.");
     registerOutputField("name",
                         Sakura::SAKURA_STRING_TYPE,
-                        "Name of the train-data-set.");
+                        "Name of the data-set.");
     registerOutputField("location",
                         Sakura::SAKURA_STRING_TYPE,
                         "File path on local storage.");

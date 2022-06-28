@@ -25,6 +25,7 @@
 
 #include <string>
 #include <map>
+#include <libKitsunemimiCommon/logger.h>
 
 namespace Kitsunemimi {
 class BinaryFile;
@@ -39,14 +40,16 @@ public:
 
     bool initNewFile(const std::string &id,
                      const uint64_t size);
-    bool addDataToPos(const std::string &fileId,
+    bool addDataToPos(const std::string &uuid,
                       const uint64_t pos,
                       const void* data,
                       const uint64_t size);
     bool getData(Kitsunemimi::DataBuffer &result,
-                 const std::string &id);
+                 const std::string &uuid);
     bool removeData(const std::string &id);
-    bool moveData(const std::string &id, const std::string &targetLocation);
+    bool moveData(const std::string &uuid,
+                  const std::string &targetLocation,
+                  Kitsunemimi::ErrorContainer &error);
 
 private:
     std::map<std::string, Kitsunemimi::BinaryFile*> m_tempFiles;

@@ -65,7 +65,7 @@ DataSetTable::DataSetTable(Kitsunemimi::Sakura::SqlDatabase* db)
 DataSetTable::~DataSetTable() {}
 
 /**
- * @brief add new metadata of a train-data-set into the database
+ * @brief add new metadata of a dataset into the database
  *
  * @param userData json-item with all information of the data to add to database
  * @param userUuid user-uuid to filter
@@ -80,14 +80,20 @@ DataSetTable::addDataSet(Kitsunemimi::Json::JsonItem &data,
                          const std::string &projectUuid,
                          Kitsunemimi::ErrorContainer &error)
 {
-    return add(data, userUuid, projectUuid, error);
+    if(add(data, userUuid, projectUuid, error) == false)
+    {
+        error.addMeesage("Failed to add snapshot to database");
+        return false;
+    }
+
+    return true;
 }
 
 /**
- * @brief get a metadata-entry for a specific train-data-set from the database
+ * @brief get a metadata-entry for a specific dataset from the database
  *
  * @param result reference for the result-output
- * @param uuid uuid of the data
+ * @param datasetUuid uuid of the data
  * @param userUuid user-uuid to filter
  * @param projectUuid project-uuid to filter
  * @param isAdmin true, if use who makes request is admin
@@ -98,7 +104,7 @@ DataSetTable::addDataSet(Kitsunemimi::Json::JsonItem &data,
  */
 bool
 DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
-                         const std::string &uuid,
+                         const std::string &datasetUuid,
                          const std::string &userUuid,
                          const std::string &projectUuid,
                          const bool isAdmin,
@@ -107,11 +113,14 @@ DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
 {
     // get user from db
     std::vector<RequestCondition> conditions;
-    conditions.emplace_back("uuid", uuid);
+    conditions.emplace_back("uuid", datasetUuid);
 
     // get dataset from db
     if(get(result, userUuid, projectUuid, isAdmin, conditions, error, showHiddenValues) == false)
     {
+        error.addMeesage("Failed to get dataset with UUID '"
+                         + datasetUuid
+                         + "' from database");
         LOG_ERROR(error);
         return false;
     }
@@ -120,7 +129,7 @@ DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
 }
 
 /**
- * @brief get metadata of all train-data-sets from the database
+ * @brief get metadata of all datasets from the database
  *
  * @param result reference for the result-output
  * @param userUuid user-uuid to filter
@@ -137,13 +146,19 @@ DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
                                 const bool isAdmin,
                                 Kitsunemimi::ErrorContainer &error)
 {
-    return getAll(result, userUuid, projectUuid, isAdmin, error);
+    if(getAll(result, userUuid, projectUuid, isAdmin, error) == false)
+    {
+        error.addMeesage("Failed to get all datasets from database");
+        return false;
+    }
+
+    return true;
 }
 
 /**
- * @brief delete metadata of a train-data-set from the database
+ * @brief delete metadata of a datasett from the database
  *
- * @param uuid uuid of the data
+ * @param datasetUuid uuid of the data
  * @param userUuid user-uuid to filter
  * @param projectUuid project-uuid to filter
  * @param isAdmin true, if use who makes request is admin
@@ -152,22 +167,33 @@ DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
  * @return true, if successful, else false
  */
 bool
-DataSetTable::deleteDataSet(const std::string &uuid,
-                                const std::string &userUuid,
-                                const std::string &projectUuid,
-                                const bool isAdmin,
-                                Kitsunemimi::ErrorContainer &error)
+DataSetTable::deleteDataSet(const std::string &datasetUuid,
+                            const std::string &userUuid,
+                            const std::string &projectUuid,
+                            const bool isAdmin,
+                            Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
-    conditions.emplace_back("uuid", uuid);
-    return del(conditions, userUuid, projectUuid, isAdmin, error);
+    conditions.emplace_back("uuid", datasetUuid);
+    if(del(conditions, userUuid, projectUuid, isAdmin, error) == false)
+    {
+        error.addMeesage("Failed to delete dataset with UUID '"
+                         + datasetUuid
+                         + "' from database");
+        return false;
+    }
+
+    return true;
 }
 
 /**
- * @brief DataSetTable::setUploadFinish
- * @param uuid
- * @param file_uuid
- * @return
+ * @brief update dataset in database to fully uploaded
+ *
+ * @param uuid uuid of the dataset
+ * @param fileUuid uuid of the temporary file
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 DataSetTable::setUploadFinish(const std::string &uuid,
@@ -181,25 +207,41 @@ DataSetTable::setUploadFinish(const std::string &uuid,
     // get dataset from db
     if(get(result, "", "", true, conditions, error, true) == false)
     {
+        error.addMeesage("Failed to get dataset with UUID '" + uuid + "' from database");
         LOG_ERROR(error);
         return false;
     }
 
-    if(result.contains("temp_files") == false) {
-        // TODO: error-message
+    // check response from database
+    if(result.contains("temp_files") == false)
+    {
+        error.addMeesage("Entry get for the dataset with UUID '" + uuid + "' is broken");
+        LOG_ERROR(error);
         return false;
     }
 
+    // update temp-files entry to 100%
     const std::string tempFilesStr = result.get("temp_files").toString();
     Kitsunemimi::Json::JsonItem tempFiles;
     if(tempFiles.parse(tempFilesStr, error) == false)
     {
+        error.addMeesage("Failed to parse temp_files entry of dataset with UUID '"
+                         + uuid
+                         + "' from database");
         LOG_ERROR(error);
         return false;
     }
     tempFiles.insert(fileUuid, Kitsunemimi::Json::JsonItem(1.0f), true);
 
+    // update new entry within the database
     Kitsunemimi::Json::JsonItem newValues;
     newValues.insert("temp_files", Kitsunemimi::Json::JsonItem(tempFiles.toString()));
-    return update(newValues, "", "", true, conditions, error);
+    if(update(newValues, "", "", true, conditions, error) == false)
+    {
+        error.addMeesage("Failed to update entry of dataset with UUID '" + uuid + "' in database");
+        LOG_ERROR(error);
+        return false;
+    }
+
+    return true;
 }

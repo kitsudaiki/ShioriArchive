@@ -160,7 +160,6 @@ CreateClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
     tempFiles.insert(inputUuid, Kitsunemimi::Json::JsonItem(0.0f));
     blossomLeaf.output.insert("temp_files", tempFiles);
 
-    std::cout<<"##########################################\n"<<blossomLeaf.output.toString(true)<<std::endl;
     // add to database
     if(SagiriRoot::clusterSnapshotTable->addClusterSnapshot(blossomLeaf.output,
                                                             userUuid,

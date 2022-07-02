@@ -67,6 +67,7 @@ DataSetFile::initNewFile()
 
     // allocate storage
     if(m_targetFile->allocateStorage(m_totalFileSize, 1) == false) {
+        // TODO: error-message
         return false;
     }
 
@@ -81,7 +82,9 @@ DataSetFile::initNewFile()
     dataSetHeader.name[nameSize] = '\0';
 
     // write dataset-header to file
-    if(m_targetFile->writeDataIntoFile(&dataSetHeader, 0, sizeof(DataSetHeader)) == false) {
+    if(m_targetFile->writeDataIntoFile(&dataSetHeader, 0, sizeof(DataSetHeader)) == false)
+    {
+        // TODO: error-message
         return false;
     }
 
@@ -99,7 +102,9 @@ DataSetFile::readFromFile()
 {
     // create complete file
     Kitsunemimi::DataBuffer buffer;
-    if(m_targetFile->readCompleteFile(buffer) == false) {
+    if(m_targetFile->readCompleteFile(buffer) == false)
+    {
+        // TODO: error-message
         return false;
     }
 
@@ -133,7 +138,9 @@ DataSetFile::addBlock(const uint64_t pos,
                       const u_int64_t numberOfValues)
 {
     // check size to not write over the end of the file
-    if(m_headerSize + ((pos + numberOfValues) * sizeof(float)) > m_totalFileSize) {
+    if(m_headerSize + ((pos + numberOfValues) * sizeof(float)) > m_totalFileSize)
+    {
+        // TODO: error-message
         return false;
     }
 
@@ -142,6 +149,7 @@ DataSetFile::addBlock(const uint64_t pos,
                                        m_headerSize + pos * sizeof(float),
                                        numberOfValues * sizeof(float)) == false)
     {
+        // TODO: error-message
         return false;
     }
 

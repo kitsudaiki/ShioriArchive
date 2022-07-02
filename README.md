@@ -32,7 +32,7 @@ sqlite3 library | libsqlite3-dev | >= 3.0 | handling of sqlite databases
 
 Repository-Name | Version-Tag | Download-Path
 --- | --- | ---
-libKitsunemimiCommon | v0.26.0 |  https://github.com/kitsudaiki/libKitsunemimiCommon.git
+libKitsunemimiCommon | v0.26.1 |  https://github.com/kitsudaiki/libKitsunemimiCommon.git
 libKitsunemimiJson | v0.11.3 |  https://github.com/kitsudaiki/libKitsunemimiJson.git
 libKitsunemimiJinja2 | v0.9.1 |  https://github.com/kitsudaiki/libKitsunemimiJinja2.git
 libKitsunemimiIni | v0.5.1 |  https://github.com/kitsudaiki/libKitsunemimiIni.git
@@ -48,8 +48,8 @@ libKitsunemimiSakuraDatabase | v0.5.0 |  -
 libKitsunemimiHanamiCommon | v0.2.0 |  -
 libKitsunemimiHanamiEndpoints | v0.1.0 |  -
 libKitsunemimiHanamiDatabase | v0.3.0 |  -
-libKitsunemimiHanamiMessaging | v0.4.0 |  -
-libAzukiHeart | v0.1.0 | -
+libKitsunemimiHanamiMessaging | v0.4.1 |  -
+libAzukiHeart | v0.2.0 | -
 libMisakaGuard | v0.1.0 | -
 ibSagiriArchive | v0.2.0 |  -
 

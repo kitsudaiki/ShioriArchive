@@ -375,7 +375,7 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
 {
     u_int8_t* u8Data = static_cast<uint8_t*>(data);
 
-    switch(u8Data[0])
+    switch(u8Data[6])
     {
         case Sagiri::CLUSTER_SNAPSHOT_PULL_MESSAGE_TYPE:
             {

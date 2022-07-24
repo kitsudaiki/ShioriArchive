@@ -32,10 +32,10 @@
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 
 #include <libAzukiHeart/azuki_input.h>
-#include <libMisakaGuard/misaka_input.h>
+#include <libMisakiGuard/misaki_input.h>
 
 #include <libAzukiHeart/azuki_input.h>
-#include <libMisakaGuard/misaka_input.h>
+#include <libMisakiGuard/misaki_input.h>
 
 using Kitsunemimi::Hanami::HanamiMessaging;
 using Kitsunemimi::Hanami::initMain;
@@ -51,10 +51,10 @@ int main(int argc, char *argv[])
 
     // init included components
     Azuki::initAzukiBlossoms();
-    Misaka::initMisakaBlossoms();
+    Misaki::initMisakiBlossoms();
 
     // initialize server and connections based on the config-file
-    const std::vector<std::string> groupNames = {"misaka"};
+    const std::vector<std::string> groupNames = {"misaki"};
     if(HanamiMessaging::getInstance()->initialize("sagiri",
                                                   groupNames,
                                                   nullptr,
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
     // init included components
     Azuki::initAzukiBlossoms();
-    Misaka::initMisakaBlossoms();
+    Misaki::initMisakiBlossoms();
 
     SagiriRoot rootObj;
     if(rootObj.init() == false) {

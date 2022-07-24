@@ -15,10 +15,10 @@ LIBS += -L../libAzukiHeart/src/debug -lAzukiHeart
 LIBS += -L../libAzukiHeart/src/release -lAzukiHeart
 INCLUDEPATH += ../libAzukiHeart/include
 
-LIBS += -L../libMisakaGuard/src -lMisakaGuard
-LIBS += -L../libMisakaGuard/src/debug -lMisakaGuard
-LIBS += -L../libMisakaGuard/src/release -lMisakaGuard
-INCLUDEPATH += ../libMisakaGuard/include
+LIBS += -L../libMisakiGuard/src -lMisakiGuard
+LIBS += -L../libMisakiGuard/src/debug -lMisakiGuard
+LIBS += -L../libMisakiGuard/src/release -lMisakiGuard
+INCLUDEPATH += ../libMisakiGuard/include
 
 LIBS += -L../libKitsunemimiHanamiMessaging/src -lKitsunemimiHanamiMessaging
 LIBS += -L../libKitsunemimiHanamiMessaging/src/debug -lKitsunemimiHanamiMessaging

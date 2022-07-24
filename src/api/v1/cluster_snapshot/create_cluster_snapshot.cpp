@@ -153,7 +153,7 @@ CreateClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
     blossomLeaf.output.insert("header", header);
     blossomLeaf.output.insert("project_uuid", projectUuid);
     blossomLeaf.output.insert("owner_uuid", userUuid);
-    blossomLeaf.output.insert("visibility", 0);
+    blossomLeaf.output.insert("visibility", "private");
 
     // init placeholder for temp-file progress to database
     Kitsunemimi::Json::JsonItem tempFiles;

@@ -146,7 +146,8 @@ DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
                                 const bool isAdmin,
                                 Kitsunemimi::ErrorContainer &error)
 {
-    if(getAll(result, userUuid, projectUuid, isAdmin, error) == false)
+    std::vector<RequestCondition> conditions;
+    if(getAll(result, userUuid, projectUuid, isAdmin, conditions, error) == false)
     {
         error.addMeesage("Failed to get all datasets from database");
         return false;

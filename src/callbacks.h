@@ -31,8 +31,9 @@
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/files/text_file.h>
-#include <libKitsunemimiCommon/common_items/table_item.h>
-#include <libKitsunemimiCommon/common_methods/string_methods.h>
+#include <libKitsunemimiCommon/files/binary_file.h>
+#include <libKitsunemimiCommon/items/table_item.h>
+#include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiCrypto/common.h>
@@ -40,6 +41,8 @@
 #include <libKitsunemimiSakuraNetwork/session.h>
 
 #include <libSagiriArchive/sagiri_messages.h>
+
+#include <../libKitsunemimiHanamiProtobuffers/sagiri_messages.proto3.pb.h>
 
 
 void streamDataCallback(void*,
@@ -51,67 +54,49 @@ void streamDataCallback(void*,
         return;
     }
 
-    const uint8_t* ptr = static_cast<const uint8_t*>(data);
-
-    if(ptr[36] != static_cast<uint8_t>(','))
+    FileUpload_Message msg;
+    if(msg.ParseFromArray(data, dataSize) == false)
     {
-        const std::string datasetId(reinterpret_cast<const char*>(ptr), 36);
-        ptr += 36;
+        Kitsunemimi::ErrorContainer error;
+        error.addMeesage("Got invalid FileUpload-Message");
+        LOG_ERROR(error);
+        return;
+    }
 
-        const std::string fileId(reinterpret_cast<const char*>(ptr), 36);
-        ptr += 36;
+    if(SagiriRoot::tempFileHandler->addDataToPos(msg.fileuuid(),
+                                                 msg.position(),
+                                                 msg.data().c_str(),
+                                                 msg.data().size()) == false)
+    {
+        // TODO: error-handling
+        return;
+    }
 
-        const uint64_t pos = *reinterpret_cast<const uint64_t*>(ptr);
-        ptr += 8;
+    if(msg.islast() == false) {
+        return;
+    }
 
-        SagiriRoot::tempFileHandler->addDataToPos(fileId, pos, ptr, dataSize - 80);
+    Kitsunemimi::ErrorContainer error;
 
-        // TODO: better and more reliable condition to detect finish
-        if(dataSize - 80 < 96 * 1024)
+    if(msg.type() == UploadDataType::DATASET_TYPE)
+    {
+        if(SagiriRoot::dataSetTable->setUploadFinish(msg.datasetuuid(),
+                                                     msg.fileuuid(),
+                                                     error) == false)
         {
-            Kitsunemimi::ErrorContainer error;
-            SagiriRoot::dataSetTable->setUploadFinish(datasetId, fileId, error);
-            SagiriRoot::clusterSnapshotTable->setUploadFinish(datasetId, fileId, error);
+            // TODO: error-handling
+            return;
         }
     }
-    else
+
+    if(msg.type() == UploadDataType::CLUSTER_SNAPSHOT_TYPE)
     {
-        char messageBuffer[1024*1024];
-        memcpy(messageBuffer, ptr, dataSize);
-        std::string message(messageBuffer, dataSize);
-
-        std::vector<std::string> splitMessage;
-        Kitsunemimi::splitStringByDelimiter(splitMessage, message, ',');
-
-        if(splitMessage.size() != 4) {
-            return;
-        }
-
-        if(Kitsunemimi::Crypto::base64UrlToBase64(splitMessage[3]) == false) {
-            return;
-        }
-
-        Kitsunemimi::DataBuffer payload;
-        if(Kitsunemimi::Crypto::decodeBase64(payload, splitMessage[3]) == false) {
-            return;
-        }
-
-        SagiriRoot::tempFileHandler->addDataToPos(splitMessage.at(1),
-                                                  std::stoi(splitMessage.at(2)),
-                                                  payload.data,
-                                                  payload.usedBufferSize);
-
-        // TODO: better and more reliable condition to detect finish
-        if(payload.usedBufferSize < 96 * 1024)
+        if(SagiriRoot::clusterSnapshotTable->setUploadFinish(msg.datasetuuid(),
+                                                             msg.fileuuid(),
+                                                             error) == false)
         {
-            const std::string datasetId = splitMessage.at(0);
-            const std::string fileId = splitMessage.at(1);
-            Kitsunemimi::ErrorContainer error;
-            if(SagiriRoot::dataSetTable->setUploadFinish(datasetId, fileId, error) == false)
-            {
-                LOG_ERROR(error);
-                return;
-            }
+            // TODO: error-handling
+            return;
         }
     }
 }
@@ -155,15 +140,24 @@ handleClusterSnapshotRequest(const Sagiri::ClusterSnapshotPull_Message &msg,
                              Kitsunemimi::Sakura::Session* session,
                              const uint64_t blockerId)
 {
+    Kitsunemimi::ErrorContainer error;
+
     // init file
     Kitsunemimi::BinaryFile* targetFile = new Kitsunemimi::BinaryFile(msg.location);
     DataSetFile::DataSetHeader header;
     DataBuffer content;
-    targetFile->readCompleteFile(content);
+    if(targetFile->readCompleteFile(content, error) == false)
+    {
+        //TODO: handle error
+        LOG_ERROR(error);
+    }
 
     // send data
-    Kitsunemimi::ErrorContainer error;
-    if(session->sendResponse(content.data, content.usedBufferSize, blockerId, error) == false) {
+    if(session->sendResponse(content.data,
+                             content.usedBufferSize,
+                             blockerId,
+                             error) == false)
+    {
         LOG_ERROR(error);
     }
 

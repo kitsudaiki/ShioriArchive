@@ -24,6 +24,7 @@
 #define SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
+#include <libKitsunemimiCommon/buffer/data_buffer.h>
 
 class FinalizeMnistDataSet
         : public Kitsunemimi::Sakura::Blossom

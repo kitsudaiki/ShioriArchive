@@ -62,11 +62,14 @@ bool
 DataSetFile::initNewFile()
 {
     // TODO: check if header are set
+    Kitsunemimi::ErrorContainer error;
 
     initHeader();
 
     // allocate storage
-    if(m_targetFile->allocateStorage(m_totalFileSize, 1) == false) {
+    if(m_targetFile->allocateStorage(m_totalFileSize, error) == false)
+    {
+        LOG_ERROR(error);
         // TODO: error-message
         return false;
     }
@@ -82,8 +85,9 @@ DataSetFile::initNewFile()
     dataSetHeader.name[nameSize] = '\0';
 
     // write dataset-header to file
-    if(m_targetFile->writeDataIntoFile(&dataSetHeader, 0, sizeof(DataSetHeader)) == false)
+    if(m_targetFile->writeDataIntoFile(&dataSetHeader, 0, sizeof(DataSetHeader), error) == false)
     {
+        LOG_ERROR(error);
         // TODO: error-message
         return false;
     }
@@ -100,16 +104,18 @@ DataSetFile::initNewFile()
 bool
 DataSetFile::readFromFile()
 {
+    Kitsunemimi::ErrorContainer error;
+
     // create complete file
     Kitsunemimi::DataBuffer buffer;
-    if(m_targetFile->readCompleteFile(buffer) == false)
+    if(m_targetFile->readCompleteFile(buffer, error) == false)
     {
+        LOG_ERROR(error);
         // TODO: error-message
         return false;
     }
 
     // prepare
-    Kitsunemimi::ErrorContainer error;
     const uint8_t* u8buffer = static_cast<const uint8_t*>(buffer.data);
 
     // read data-set-header
@@ -137,6 +143,8 @@ DataSetFile::addBlock(const uint64_t pos,
                       const float* data,
                       const u_int64_t numberOfValues)
 {
+    Kitsunemimi::ErrorContainer error;
+
     // check size to not write over the end of the file
     if(m_headerSize + ((pos + numberOfValues) * sizeof(float)) > m_totalFileSize)
     {
@@ -147,8 +155,10 @@ DataSetFile::addBlock(const uint64_t pos,
     // add add data to file
     if(m_targetFile->writeDataIntoFile(data,
                                        m_headerSize + pos * sizeof(float),
-                                       numberOfValues * sizeof(float)) == false)
+                                       numberOfValues * sizeof(float),
+                                       error) == false)
     {
+        LOG_ERROR(error);
         // TODO: error-message
         return false;
     }
@@ -166,10 +176,16 @@ DataSetFile::addBlock(const uint64_t pos,
 DataSetFile*
 readDataSetFile(const std::string &filePath)
 {
+    Kitsunemimi::ErrorContainer error;
+
     // read header of file to identify type
     Kitsunemimi::BinaryFile* targetFile = new Kitsunemimi::BinaryFile(filePath);
     DataSetFile::DataSetHeader header;
-    targetFile->readDataFromFile(&header, 0 , sizeof(DataSetFile::DataSetHeader));
+    if(targetFile->readDataFromFile(&header, 0 , sizeof(DataSetFile::DataSetHeader), error) == false)
+    {
+        //TODO: handle error
+        LOG_ERROR(error);
+    }
 
     // create file-handling object based on the type from the header
     DataSetFile* file = nullptr;

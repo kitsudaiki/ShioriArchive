@@ -22,8 +22,8 @@
 
 #include <database/cluster_snapshot_table.h>
 
-#include <libKitsunemimiCommon/common_items/table_item.h>
-#include <libKitsunemimiCommon/common_methods/string_methods.h>
+#include <libKitsunemimiCommon/items/table_item.h>
+#include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiJson/json_item.h>
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>

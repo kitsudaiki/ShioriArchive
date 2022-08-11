@@ -23,7 +23,7 @@
 #include "delete_request_result.h"
 
 #include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiCommon/common_methods/file_methods.h>
+#include <libKitsunemimiCommon/methods/file_methods.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 

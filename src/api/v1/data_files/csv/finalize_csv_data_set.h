@@ -24,6 +24,7 @@
 #define SAGIRIARCHIVE_CSV_FINALIZE_DATA_SET_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
+#include <libKitsunemimiCommon/buffer/data_buffer.h>
 
 class FinalizeCsvDataSet
         : public Kitsunemimi::Sakura::Blossom

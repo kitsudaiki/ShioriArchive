@@ -22,6 +22,8 @@
 
 #include "table_data_set_file.h"
 
+#include <libKitsunemimiCommon/files/binary_file.h>
+
 /**
  * @brief constructor
  *
@@ -94,10 +96,13 @@ bool
 TableDataSetFile::updateHeader()
 {
     // write table-header to file
+    Kitsunemimi::ErrorContainer error;
     if(m_targetFile->writeDataIntoFile(&tableHeader,
                                        sizeof(DataSetHeader),
-                                       sizeof(TableTypeHeader)) == false)
+                                       sizeof(TableTypeHeader),
+                                       error) == false)
     {
+        LOG_ERROR(error);
         return false;
     }
 
@@ -107,8 +112,10 @@ TableDataSetFile::updateHeader()
     {
         if(m_targetFile->writeDataIntoFile(&tableColumns[i],
                                            offset + (i * sizeof(TableHeaderEntry)),
-                                           sizeof(TableHeaderEntry)) == false)
+                                           sizeof(TableHeaderEntry),
+                                           error) == false)
         {
+            LOG_ERROR(error);
             return false;
         }
     }
@@ -127,8 +134,18 @@ float*
 TableDataSetFile::getPayload(uint64_t &payloadSize,
                              const std::string &columnName)
 {
+    Kitsunemimi::ErrorContainer error;
+
     float* payload = new float[(m_totalFileSize - m_headerSize) / sizeof(float)];
-    m_targetFile->readDataFromFile(payload, m_headerSize, m_totalFileSize - m_headerSize);
+    if(m_targetFile->readDataFromFile(payload,
+                                      m_headerSize,
+                                      m_totalFileSize - m_headerSize,
+                                      error) == false)
+    {
+        //TODO: handle error
+        LOG_ERROR(error);
+        return payload;
+    }
 
     uint64_t columnPos = 0;
     for(uint64_t i = 0; i < tableColumns.size(); i++)
@@ -160,9 +177,13 @@ TableDataSetFile::print()
     std::cout<<"======================================================="<<std::endl;
     std::cout<<std::endl;
 
+    Kitsunemimi::ErrorContainer error;
+
     Kitsunemimi::DataBuffer completeFile;
-    if(m_targetFile->readCompleteFile(completeFile) == false) {
-        std::cout<<"Failed to read file"<<std::endl;
+    if(m_targetFile->readCompleteFile(completeFile, error) == false)
+    {
+        error.addMeesage("Failed to read file");
+        LOG_ERROR(error);
     }
 
     // read data-set-header

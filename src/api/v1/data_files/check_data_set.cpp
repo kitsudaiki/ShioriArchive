@@ -27,8 +27,10 @@
 #include <core/data_set_files/data_set_file.h>
 
 #include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/common_methods/file_methods.h>
+#include <libKitsunemimiCommon/methods/file_methods.h>
+#include <libKitsunemimiCommon/buffer/data_buffer.h>
 #include <libKitsunemimiCommon/files/text_file.h>
+#include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiConfig/config_handler.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -126,7 +128,7 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     Kitsunemimi::BinaryFile file(location);
 
     // read data-set-header
-    if(file.readCompleteFile(buffer) == false)
+    if(file.readCompleteFile(buffer, error) == false)
     {
         error.addMeesage("Failed to read data-set-header from file '" + location + "'");
         return false;

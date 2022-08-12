@@ -38,9 +38,9 @@
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
-#include <libKitsunemimiCommon/common_methods/file_methods.h>
-#include <libKitsunemimiCommon/common_methods/string_methods.h>
-#include <libKitsunemimiCommon/common_methods/vector_methods.h>
+#include <libKitsunemimiCommon/methods/file_methods.h>
+#include <libKitsunemimiCommon/methods/string_methods.h>
+#include <libKitsunemimiCommon/methods/vector_methods.h>
 
 using namespace Kitsunemimi::Sakura;
 

@@ -22,6 +22,8 @@
 
 #include "image_data_set_file.h"
 
+#include <libKitsunemimiCommon/files/binary_file.h>
+
 /**
  * @brief constructor
  *
@@ -83,10 +85,13 @@ bool
 ImageDataSetFile::updateHeader()
 {
     // write image-header to file
+    Kitsunemimi::ErrorContainer error;
     if(m_targetFile->writeDataIntoFile(&imageHeader,
                                        sizeof(DataSetHeader),
-                                       sizeof(ImageTypeHeader)) == false)
+                                       sizeof(ImageTypeHeader),
+                                       error) == false)
     {
+        LOG_ERROR(error);
         return false;
     }
 
@@ -106,6 +111,10 @@ ImageDataSetFile::getPayload(uint64_t &payloadSize,
 {
     payloadSize = m_totalFileSize - m_headerSize;
     float* payload = new float[payloadSize / sizeof(float)];
-    m_targetFile->readDataFromFile(payload, m_headerSize, payloadSize);
+    Kitsunemimi::ErrorContainer error;
+    if(m_targetFile->readDataFromFile(payload, m_headerSize, payloadSize, error) == false) {
+        LOG_ERROR(error);
+        // TODO: handle error
+    }
     return payload;
 }

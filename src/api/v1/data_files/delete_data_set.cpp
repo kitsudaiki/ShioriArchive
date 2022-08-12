@@ -26,7 +26,7 @@
 #include <database/data_set_table.h>
 
 #include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCommon/common_methods/file_methods.h>
+#include <libKitsunemimiCommon/methods/file_methods.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 

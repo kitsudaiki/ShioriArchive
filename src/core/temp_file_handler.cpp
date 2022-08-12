@@ -119,6 +119,8 @@ TempFileHandler::addDataToPos(const std::string &uuid,
         return true;
     }
 
+    LOG_ERROR(error);
+
     return false;
 }
 

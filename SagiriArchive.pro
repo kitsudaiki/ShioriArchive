@@ -162,9 +162,10 @@ HEADERS += \
     src/core/temp_file_handler.h \
     src/database/cluster_snapshot_table.h \
     src/database/data_set_table.h \
-    src/sagiri_root.h
+    src/sagiri_root.h \
+    ../libKitsunemimiHanamiMessages/hanami_messages/sagiri_messages.h
 
-SAGIRI_PROTO_BUFFER = ../libKitsunemimiHanamiProtobuffers/sagiri_messages.proto3
+SAGIRI_PROTO_BUFFER = ../libKitsunemimiHanamiMessages/protobuffers/sagiri_messages.proto3
 
 OTHER_FILES += $$SAGIRI_PROTO_BUFFER
 

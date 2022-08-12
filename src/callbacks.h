@@ -42,25 +42,20 @@
 
 #include <libSagiriArchive/sagiri_messages.h>
 
-#include <../libKitsunemimiHanamiProtobuffers/sagiri_messages.proto3.pb.h>
+#include <../libKitsunemimiHanamiMessages/protobuffers/sagiri_messages.proto3.pb.h>
+#include <../libKitsunemimiHanamiMessages/hanami_messages/sagiri_messages.h>
 
-
-void streamDataCallback(void*,
-                        Kitsunemimi::Sakura::Session*,
-                        const void* data,
-                        const uint64_t dataSize)
+bool
+handleProtobufFileUpload(const void* data,
+                         const uint64_t dataSize)
 {
-    if(dataSize <= 40) {
-        return;
-    }
-
     FileUpload_Message msg;
     if(msg.ParseFromArray(data, dataSize) == false)
     {
         Kitsunemimi::ErrorContainer error;
         error.addMeesage("Got invalid FileUpload-Message");
         LOG_ERROR(error);
-        return;
+        return false;
     }
 
     if(SagiriRoot::tempFileHandler->addDataToPos(msg.fileuuid(),
@@ -69,11 +64,11 @@ void streamDataCallback(void*,
                                                  msg.data().size()) == false)
     {
         // TODO: error-handling
-        return;
+        return false;
     }
 
     if(msg.islast() == false) {
-        return;
+        return false;
     }
 
     Kitsunemimi::ErrorContainer error;
@@ -85,7 +80,7 @@ void streamDataCallback(void*,
                                                      error) == false)
         {
             // TODO: error-handling
-            return;
+            return false;
         }
     }
 
@@ -96,8 +91,79 @@ void streamDataCallback(void*,
                                                              error) == false)
         {
             // TODO: error-handling
-            return;
+            return false;
         }
+    }
+
+    return true;
+}
+
+bool
+handleHanamiFileUpload(const void* data,
+                       const uint64_t dataSize)
+{
+    Kitsunemimi::Hanami::FileUpload_Message msg;
+    if(msg.read(const_cast<void*>(data), dataSize) == false)
+    {
+        Kitsunemimi::ErrorContainer error;
+        error.addMeesage("Got invalid FileUpload-Message");
+        LOG_ERROR(error);
+        return false;
+    }
+
+    if(SagiriRoot::tempFileHandler->addDataToPos(msg.fileUuid,
+                                                 msg.position,
+                                                 msg.payload,
+                                                 msg.numberOfBytes) == false)
+    {
+        // TODO: error-handling
+        return false;
+    }
+
+    if(msg.isLast == false) {
+        return false;
+    }
+
+    Kitsunemimi::ErrorContainer error;
+
+    if(msg.type == UploadDataType::DATASET_TYPE)
+    {
+        if(SagiriRoot::dataSetTable->setUploadFinish(msg.datasetUuid,
+                                                     msg.fileUuid,
+                                                     error) == false)
+        {
+            // TODO: error-handling
+            return false;
+        }
+    }
+
+    if(msg.type == UploadDataType::CLUSTER_SNAPSHOT_TYPE)
+    {
+        if(SagiriRoot::clusterSnapshotTable->setUploadFinish(msg.datasetUuid,
+                                                             msg.fileUuid,
+                                                             error) == false)
+        {
+            // TODO: error-handling
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void streamDataCallback(void*,
+                        Kitsunemimi::Sakura::Session*,
+                        const void* data,
+                        const uint64_t dataSize)
+{
+    if(dataSize <= 40) {
+        return;
+    }
+
+    if(Kitsunemimi::Hanami::isHanamiProtocol(data, dataSize)) {
+        handleHanamiFileUpload(data, dataSize);
+    } else {
+        handleProtobufFileUpload(data, dataSize);
     }
 }
 

@@ -68,7 +68,10 @@ function download_private_repo_github () {
 
     # clone repo
     git clone https://kitsudaiki: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@github.com/kitsudaiki/$REPO_NAME.git "$BUILD_DIR/$REPO_NAME"
+    git clone https://kitsudaiki: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@github.com/kitsudaiki/$REPO_NAME.git "$PARENT_DIR/$REPO_NAME"
     cd "$BUILD_DIR/$REPO_NAME"
+    git checkout $TAG_OR_BRANCH
+    cd "$PARENT_DIR/$REPO_NAME"
     git checkout $TAG_OR_BRANCH
 }
 
@@ -102,7 +105,7 @@ get_required_private_repo_github "libKitsunemimiHanamiCommon" "develop" 8
 get_required_private_repo_github "libKitsunemimiHanamiEndpoints" "develop" 1
 get_required_private_repo_github "libKitsunemimiHanamiDatabase" "develop" 8
 get_required_private_repo_github "libKitsunemimiHanamiMessaging" "develop" 8
-download_private_repo_github "libKitsunemimiHanamiProtobuffers" "develop"
+download_private_repo_github "libKitsunemimiHanamiMessages" "develop"
 echo ""
 echo "###########################################################################################################"
 echo ""

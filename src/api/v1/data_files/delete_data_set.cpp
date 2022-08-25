@@ -61,16 +61,16 @@ DeleteDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
                          ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
-    const std::string userUuid = context.getStringByKey("uuid");
-    const std::string projectUuid = context.getStringByKey("projects");
+    const std::string userId = context.getStringByKey("uuid");
+    const std::string projectId = context.getStringByKey("projects");
     const bool isAdmin = context.getBoolByKey("is_admin");
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
     if(SagiriRoot::dataSetTable->getDataSet(result,
                                                 dataUuid,
-                                                userUuid,
-                                                projectUuid,
+                                                userId,
+                                                projectId,
                                                 isAdmin,
                                                 error,
                                                 true) == false)
@@ -84,8 +84,8 @@ DeleteDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // delete entry from db
     if(SagiriRoot::dataSetTable->deleteDataSet(dataUuid,
-                                                   userUuid,
-                                                   projectUuid,
+                                                   userId,
+                                                   projectId,
                                                    isAdmin,
                                                    error) == false)
     {

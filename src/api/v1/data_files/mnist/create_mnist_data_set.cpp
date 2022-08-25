@@ -76,7 +76,7 @@ CreateMnistDataSet::CreateMnistDataSet()
     registerOutputField("name",
                         SAKURA_STRING_TYPE,
                         "Name of the new set.");
-    registerOutputField("user_uuid",
+    registerOutputField("user_id",
                         SAKURA_STRING_TYPE,
                         "UUID of the user who uploaded the data.");
     registerOutputField("type",
@@ -105,8 +105,8 @@ CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     const long labelDataSize = blossomLeaf.input.get("label_data_size").getLong();
     const std::string uuid = Kitsunemimi::Hanami::generateUuid().toString();
 
-    const std::string userUuid = context.getStringByKey("uuid");
-    const std::string projectUuid = context.getStringByKey("projects");
+    const std::string userId = context.getStringByKey("uuid");
+    const std::string projectId = context.getStringByKey("projects");
 
     // get directory to store data from config
     bool success = false;
@@ -140,15 +140,15 @@ CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     if(targetFilePath.at(targetFilePath.size() - 1) != '/') {
         targetFilePath.append("/");
     }
-    targetFilePath.append(uuid + "_mnist_" + userUuid);
+    targetFilePath.append(uuid + "_mnist_" + userId);
 
     // register in database
     blossomLeaf.output.insert("uuid", uuid);
     blossomLeaf.output.insert("name", name);
     blossomLeaf.output.insert("type", "mnist");
     blossomLeaf.output.insert("location", targetFilePath);
-    blossomLeaf.output.insert("project_uuid", projectUuid);
-    blossomLeaf.output.insert("owner_uuid", userUuid);
+    blossomLeaf.output.insert("project_id", projectId);
+    blossomLeaf.output.insert("owner_id", userId);
     blossomLeaf.output.insert("visibility", "private");
 
     // init placeholder for temp-file progress to database
@@ -159,8 +159,8 @@ CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
 
     // add to database
     if(SagiriRoot::dataSetTable->addDataSet(blossomLeaf.output,
-                                            userUuid,
-                                            projectUuid,
+                                            userId,
+                                            projectId,
                                             error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
@@ -173,8 +173,8 @@ CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
 
     // remove blocked values from output
     blossomLeaf.output.remove("location");
-    blossomLeaf.output.remove("project_uuid");
-    blossomLeaf.output.remove("owner_uuid");
+    blossomLeaf.output.remove("project_id");
+    blossomLeaf.output.remove("owner_id");
     blossomLeaf.output.remove("visibility");
     blossomLeaf.output.remove("temp_files");
 

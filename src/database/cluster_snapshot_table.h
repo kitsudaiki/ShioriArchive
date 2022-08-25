@@ -40,24 +40,24 @@ public:
     ~ClusterSnapshotTable();
 
     bool addClusterSnapshot(Kitsunemimi::Json::JsonItem &data,
-                            const std::string &userUuid,
-                            const std::string &projectUuid,
+                            const std::string &userId,
+                            const std::string &projectId,
                             Kitsunemimi::ErrorContainer &error);
     bool getClusterSnapshot(Kitsunemimi::Json::JsonItem &result,
                             const std::string &snapshotUuid,
-                            const std::string &userUuid,
-                            const std::string &projectUuid,
+                            const std::string &userId,
+                            const std::string &projectId,
                             const bool isAdmin,
                             Kitsunemimi::ErrorContainer &error,
                             const bool showHiddenValues);
     bool getAllClusterSnapshot(Kitsunemimi::TableItem &result,
-                               const std::string &userUuid,
-                               const std::string &projectUuid,
+                               const std::string &userId,
+                               const std::string &projectId,
                                const bool isAdmin,
                                Kitsunemimi::ErrorContainer &error);
     bool deleteClusterSnapshot(const std::string &snapshotUuid,
-                               const std::string &userUuid,
-                               const std::string &projectUuid,
+                               const std::string &userId,
+                               const std::string &projectId,
                                const bool isAdmin,
                                Kitsunemimi::ErrorContainer &error);
     bool setUploadFinish(const std::string &uuid,

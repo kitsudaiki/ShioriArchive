@@ -60,19 +60,19 @@ CreateClusterSnapshot::CreateClusterSnapshot()
     assert(addFieldBorder("name", 4, 256));
     assert(addFieldRegex("name", "[a-zA-Z][a-zA-Z_0-9]*"));
 
-    registerInputField("user_uuid",
+    registerInputField("user_id",
                        SAKURA_STRING_TYPE,
                        true,
-                       "Name of the new set.");
-    assert(addFieldRegex("user_uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                      "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+                       "ID of the user, who belongs to the snapshot.");
+    assert(addFieldBorder("user_id", 4, 256));
+    assert(addFieldRegex("user_id", "[a-zA-Z][a-zA-Z_0-9]*"));
 
-    registerInputField("project_uuid",
+    registerInputField("project_id",
                        SAKURA_STRING_TYPE,
                        true,
                        "Name of the new set.");
     // TODO: issue Hanami-Meta#17
-    //assert(addFieldRegex("project_uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+    //assert(addFieldRegex("project_id", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
     //                                     "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
 
     registerInputField("header",
@@ -116,8 +116,8 @@ CreateClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
 {
     const std::string uuid = blossomLeaf.input.get("uuid").getString();
     const std::string name = blossomLeaf.input.get("name").getString();
-    const std::string userUuid = blossomLeaf.input.get("user_uuid").getString();
-    const std::string projectUuid = blossomLeaf.input.get("project_uuid").getString();
+    const std::string userId = blossomLeaf.input.get("id").getString();
+    const std::string projectId = blossomLeaf.input.get("project_id").getString();
     const long inputDataSize = blossomLeaf.input.get("input_data_size").getLong();
     const std::string header = blossomLeaf.input.get("header").toString();
 
@@ -144,15 +144,15 @@ CreateClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
     if(targetFilePath.at(targetFilePath.size() - 1) != '/') {
         targetFilePath.append("/");
     }
-    targetFilePath.append(uuid + "_snapshot_" + userUuid);
+    targetFilePath.append(uuid + "_snapshot_" + userId);
 
     // register in database
     blossomLeaf.output.insert("uuid", uuid);
     blossomLeaf.output.insert("name", name);
     blossomLeaf.output.insert("location", targetFilePath);
     blossomLeaf.output.insert("header", header);
-    blossomLeaf.output.insert("project_uuid", projectUuid);
-    blossomLeaf.output.insert("owner_uuid", userUuid);
+    blossomLeaf.output.insert("project_id", projectId);
+    blossomLeaf.output.insert("owner_id", userId);
     blossomLeaf.output.insert("visibility", "private");
 
     // init placeholder for temp-file progress to database
@@ -162,8 +162,8 @@ CreateClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // add to database
     if(SagiriRoot::clusterSnapshotTable->addClusterSnapshot(blossomLeaf.output,
-                                                            userUuid,
-                                                            projectUuid,
+                                                            userId,
+                                                            projectId,
                                                             error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
@@ -176,8 +176,8 @@ CreateClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
     // remove blocked values from output
     blossomLeaf.output.remove("location");
     blossomLeaf.output.remove("header");
-    blossomLeaf.output.remove("project_uuid");
-    blossomLeaf.output.remove("owner_uuid");
+    blossomLeaf.output.remove("project_id");
+    blossomLeaf.output.remove("owner_id");
     blossomLeaf.output.remove("visibility");
     blossomLeaf.output.remove("temp_files");
 

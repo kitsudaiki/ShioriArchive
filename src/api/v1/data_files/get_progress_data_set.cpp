@@ -78,15 +78,15 @@ GetProgressDataSet::runTask(BlossomLeaf &blossomLeaf,
                             Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
-    const std::string userUuid = context.getStringByKey("uuid");
-    const std::string projectUuid = context.getStringByKey("projects");
+    const std::string userId = context.getStringByKey("uuid");
+    const std::string projectId = context.getStringByKey("projects");
     const bool isAdmin = context.getBoolByKey("is_admin");
 
     Kitsunemimi::Json::JsonItem databaseOutput;
     if(SagiriRoot::dataSetTable->getDataSet(databaseOutput,
                                             dataUuid,
-                                            userUuid,
-                                            projectUuid,
+                                            userId,
+                                            projectId,
                                             isAdmin,
                                             error,
                                             true) == false)

@@ -46,19 +46,19 @@ FinalizeClusterSnapshot::FinalizeClusterSnapshot()
     assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
                                  "[a-fA-F0-9]{12}"));
 
-    registerInputField("user_uuid",
+    registerInputField("user_id",
                        SAKURA_STRING_TYPE,
                        true,
-                       "Name of the new set.");
-    assert(addFieldRegex("user_uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                      "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+                       "ID of the user, who belongs to the snapshot.");
+    assert(addFieldBorder("user_id", 4, 256));
+    assert(addFieldRegex("user_id", "[a-zA-Z][a-zA-Z_0-9]*"));
 
-    registerInputField("project_uuid",
+    registerInputField("project_id",
                        SAKURA_STRING_TYPE,
                        true,
                        "Name of the new set.");
     // TODO: issue Hanami-Meta#17
-    //assert(addFieldRegex("project_uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
+    //assert(addFieldRegex("project_id", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
     //                                     "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
 
     registerInputField("uuid_input_file",
@@ -92,8 +92,8 @@ FinalizeClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
 {
     const std::string uuid = blossomLeaf.input.get("uuid").getString();
     const std::string inputUuid = blossomLeaf.input.get("uuid_input_file").getString();
-    const std::string userUuid = blossomLeaf.input.get("user_uuid").getString();
-    const std::string projectUuid = blossomLeaf.input.get("project_uuid").getString();
+    const std::string userId = blossomLeaf.input.get("id").getString();
+    const std::string projectId = blossomLeaf.input.get("project_id").getString();
 
     const bool isAdmin = context.getBoolByKey("is_admin");
 
@@ -101,8 +101,8 @@ FinalizeClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
     Kitsunemimi::Json::JsonItem result;
     if(SagiriRoot::clusterSnapshotTable->getClusterSnapshot(result,
                                                             uuid,
-                                                            userUuid,
-                                                            projectUuid,
+                                                            userId,
+                                                            projectId,
                                                             isAdmin,
                                                             error,
                                                             true) == false)

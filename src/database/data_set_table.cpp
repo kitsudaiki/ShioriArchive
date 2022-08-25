@@ -68,19 +68,19 @@ DataSetTable::~DataSetTable() {}
  * @brief add new metadata of a dataset into the database
  *
  * @param userData json-item with all information of the data to add to database
- * @param userUuid user-uuid to filter
- * @param projectUuid project-uuid to filter
+ * @param userId user-id to filter
+ * @param projectId project-id to filter
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
 DataSetTable::addDataSet(Kitsunemimi::Json::JsonItem &data,
-                         const std::string &userUuid,
-                         const std::string &projectUuid,
+                         const std::string &userId,
+                         const std::string &projectId,
                          Kitsunemimi::ErrorContainer &error)
 {
-    if(add(data, userUuid, projectUuid, error) == false)
+    if(add(data, userId, projectId, error) == false)
     {
         error.addMeesage("Failed to add snapshot to database");
         return false;
@@ -94,8 +94,8 @@ DataSetTable::addDataSet(Kitsunemimi::Json::JsonItem &data,
  *
  * @param result reference for the result-output
  * @param datasetUuid uuid of the data
- * @param userUuid user-uuid to filter
- * @param projectUuid project-uuid to filter
+ * @param userId user-id to filter
+ * @param projectId project-id to filter
  * @param isAdmin true, if use who makes request is admin
  * @param error reference for error-output
  * @param showHiddenValues set to true to also show as hidden marked fields
@@ -105,8 +105,8 @@ DataSetTable::addDataSet(Kitsunemimi::Json::JsonItem &data,
 bool
 DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
                          const std::string &datasetUuid,
-                         const std::string &userUuid,
-                         const std::string &projectUuid,
+                         const std::string &userId,
+                         const std::string &projectId,
                          const bool isAdmin,
                          Kitsunemimi::ErrorContainer &error,
                          const bool showHiddenValues)
@@ -116,7 +116,7 @@ DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
     conditions.emplace_back("uuid", datasetUuid);
 
     // get dataset from db
-    if(get(result, userUuid, projectUuid, isAdmin, conditions, error, showHiddenValues) == false)
+    if(get(result, userId, projectId, isAdmin, conditions, error, showHiddenValues) == false)
     {
         error.addMeesage("Failed to get dataset with UUID '"
                          + datasetUuid
@@ -132,8 +132,8 @@ DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
  * @brief get metadata of all datasets from the database
  *
  * @param result reference for the result-output
- * @param userUuid user-uuid to filter
- * @param projectUuid project-uuid to filter
+ * @param userId user-id to filter
+ * @param projectId project-id to filter
  * @param isAdmin true, if use who makes request is admin
  * @param error reference for error-output
  *
@@ -141,13 +141,13 @@ DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
  */
 bool
 DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
-                                const std::string &userUuid,
-                                const std::string &projectUuid,
+                                const std::string &userId,
+                                const std::string &projectId,
                                 const bool isAdmin,
                                 Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
-    if(getAll(result, userUuid, projectUuid, isAdmin, conditions, error) == false)
+    if(getAll(result, userId, projectId, isAdmin, conditions, error) == false)
     {
         error.addMeesage("Failed to get all datasets from database");
         return false;
@@ -160,8 +160,8 @@ DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
  * @brief delete metadata of a datasett from the database
  *
  * @param datasetUuid uuid of the data
- * @param userUuid user-uuid to filter
- * @param projectUuid project-uuid to filter
+ * @param userId user-id to filter
+ * @param projectId project-id to filter
  * @param isAdmin true, if use who makes request is admin
  * @param error reference for error-output
  *
@@ -169,14 +169,14 @@ DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
  */
 bool
 DataSetTable::deleteDataSet(const std::string &datasetUuid,
-                            const std::string &userUuid,
-                            const std::string &projectUuid,
+                            const std::string &userId,
+                            const std::string &projectId,
                             const bool isAdmin,
                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", datasetUuid);
-    if(del(conditions, userUuid, projectUuid, isAdmin, error) == false)
+    if(del(conditions, userId, projectId, isAdmin, error) == false)
     {
         error.addMeesage("Failed to delete dataset with UUID '"
                          + datasetUuid

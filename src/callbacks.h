@@ -315,10 +315,10 @@ handleErrorLog(const Kitsunemimi::Hanami::ErrorLog_Message &msg)
     // TODO: handle result
     const std::string resultLocation = GET_STRING_CONFIG("sagiri", "error_location", success);
     std::string filePath = resultLocation + "/";
-    if(msg.userUuid == "") {
+    if(msg.userId == "") {
         filePath += "generic";
     } else {
-        filePath +=msg. userUuid;
+        filePath += msg. userId;
     }
 
     // create an empty file, if no exist
@@ -367,10 +367,10 @@ handleAuditLog(const Sagiri::AuditLog_Message &msg)
     // TODO: handle result
     const std::string resultLocation = GET_STRING_CONFIG("sagiri", "audit_location", success);
     std::string filePath = resultLocation + "/";
-    if(msg.userUuid == "") {
+    if(msg.userId == "") {
         filePath += "generic";
     } else {
-        filePath += msg.userUuid;
+        filePath += msg.userId;
     }
 
     // create an empty file, if no exist

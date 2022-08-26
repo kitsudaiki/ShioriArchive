@@ -95,16 +95,16 @@ FinalizeMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
     const std::string inputUuid = blossomLeaf.input.get("uuid_input_file").getString();
     const std::string labelUuid = blossomLeaf.input.get("uuid_label_file").getString();
 
-    const std::string userUuid = context.getStringByKey("uuid");
-    const std::string projectUuid = context.getStringByKey("projects");
+    const std::string userId = context.getStringByKey("uuid");
+    const std::string projectId = context.getStringByKey("projects");
     const bool isAdmin = context.getBoolByKey("is_admin");
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
     if(SagiriRoot::dataSetTable->getDataSet(result,
                                             uuid,
-                                            userUuid,
-                                            projectUuid,
+                                            userId,
+                                            projectId,
                                             isAdmin,
                                             error,
                                             true) == false)
@@ -239,10 +239,6 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
             valueCounter++;
             if(maxVal < segment[segmentPos]) {
                 maxVal = segment[segmentPos];
-            }
-
-            if(pic == 0) {
-                std::cout<<"inputValues["<<i<<"] = "<<segment[segmentPos]<<";"<<std::endl;
             }
 
             segmentPos++;

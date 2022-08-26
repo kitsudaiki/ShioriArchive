@@ -62,7 +62,7 @@ GetDataSet::GetDataSet()
     registerOutputField("type",
                         SAKURA_STRING_TYPE,
                         "Type of the new set (For example: CSV)");
-    registerOutputField("user_uuid",
+    registerOutputField("user_id",
                         SAKURA_STRING_TYPE,
                         "UUID of the user who uploaded the data.");
     registerOutputField("location",
@@ -99,14 +99,14 @@ GetDataSet::runTask(BlossomLeaf &blossomLeaf,
                       Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
-    const std::string userUuid = context.getStringByKey("uuid");
-    const std::string projectUuid = context.getStringByKey("projects");
+    const std::string userId = context.getStringByKey("uuid");
+    const std::string projectId = context.getStringByKey("projects");
     const bool isAdmin = context.getBoolByKey("is_admin");
 
     if(SagiriRoot::dataSetTable->getDataSet(blossomLeaf.output,
                                             dataUuid,
-                                            userUuid,
-                                            projectUuid,
+                                            userId,
+                                            projectId,
                                             isAdmin,
                                             error,
                                             true) == false)
@@ -125,8 +125,8 @@ GetDataSet::runTask(BlossomLeaf &blossomLeaf,
     }
 
     // remove irrelevant fields
-    blossomLeaf.output.remove("owner_uuid");
-    blossomLeaf.output.remove("project_uuid");
+    blossomLeaf.output.remove("owner_id");
+    blossomLeaf.output.remove("project_id");
     blossomLeaf.output.remove("visibility");
     blossomLeaf.output.remove("temp_files");
 

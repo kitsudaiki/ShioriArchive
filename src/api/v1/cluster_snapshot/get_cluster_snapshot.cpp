@@ -75,14 +75,14 @@ GetClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
                             ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
-    const std::string userUuid = context.getStringByKey("uuid");
-    const std::string projectUuid = context.getStringByKey("projects");
+    const std::string userId = context.getStringByKey("uuid");
+    const std::string projectId = context.getStringByKey("projects");
     const bool isAdmin = context.getBoolByKey("is_admin");
 
     if(SagiriRoot::clusterSnapshotTable->getClusterSnapshot(blossomLeaf.output,
                                                             dataUuid,
-                                                            userUuid,
-                                                            projectUuid,
+                                                            userId,
+                                                            projectId,
                                                             isAdmin,
                                                             error,
                                                             true) == false)
@@ -101,8 +101,8 @@ GetClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
     blossomLeaf.output.insert("header", parsedHeader.getItemContent()->copy(), true);
 
     // remove irrelevant fields
-    blossomLeaf.output.remove("owner_uuid");
-    blossomLeaf.output.remove("project_uuid");
+    blossomLeaf.output.remove("owner_id");
+    blossomLeaf.output.remove("project_id");
     blossomLeaf.output.remove("visibility");
     blossomLeaf.output.remove("temp_files");
 

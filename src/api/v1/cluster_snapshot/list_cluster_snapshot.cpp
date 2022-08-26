@@ -33,13 +33,13 @@ ListClusterSnapshot::ListClusterSnapshot()
     : Kitsunemimi::Sakura::Blossom("List snapshots of all cluster.")
 {
     //----------------------------------------------------------------------------------------------
-    // input
+    // output
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("header",
                         Sakura::SAKURA_ARRAY_TYPE,
                         "Array with the namings all columns of the table.");
-
+    // TODO: regex for header
     registerOutputField("body",
                         Sakura::SAKURA_ARRAY_TYPE,
                         "Array with all rows of the table, which array arrays too.");
@@ -58,15 +58,15 @@ ListClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
                              Sakura::BlossomStatus &status,
                              ErrorContainer &error)
 {
-    const std::string userUuid = context.getStringByKey("uuid");
-    const std::string projectUuid = context.getStringByKey("projects");
+    const std::string userId = context.getStringByKey("uuid");
+    const std::string projectId = context.getStringByKey("projects");
     const bool isAdmin = context.getBoolByKey("is_admin");
 
     // get data from table
     Kitsunemimi::TableItem table;
     if(SagiriRoot::clusterSnapshotTable->getAllClusterSnapshot(table,
-                                                               userUuid,
-                                                               projectUuid,
+                                                               userId,
+                                                               projectId,
                                                                isAdmin,
                                                                error) == false)
     {

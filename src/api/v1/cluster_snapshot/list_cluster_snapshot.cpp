@@ -58,19 +58,11 @@ ListClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
                              Sakura::BlossomStatus &status,
                              ErrorContainer &error)
 {
-    const std::string userId = context.getStringByKey("id");
-    const std::string projectId = context.getStringByKey("project_id");
-    const bool isAdmin = context.getBoolByKey("is_admin");
-    const bool isProjectAdmin = context.getBoolByKey("is_project_admin");
+    const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(SagiriRoot::clusterSnapshotTable->getAllClusterSnapshot(table,
-                                                               userId,
-                                                               isAdmin,
-                                                               projectId,
-                                                               isProjectAdmin,
-                                                               error) == false)
+    if(SagiriRoot::clusterSnapshotTable->getAllClusterSnapshot(table, userContext, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

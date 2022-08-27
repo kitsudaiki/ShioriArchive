@@ -61,19 +61,13 @@ DeleteDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
                          ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
-    const std::string userId = context.getStringByKey("id");
-    const std::string projectId = context.getStringByKey("project_id");
-    const bool isAdmin = context.getBoolByKey("is_admin");
-    const bool isProjectAdmin = context.getBoolByKey("is_project_admin");
+    const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
     if(SagiriRoot::dataSetTable->getDataSet(result,
                                             dataUuid,
-                                            userId,
-                                            isAdmin,
-                                            projectId,
-                                            isProjectAdmin,
+                                            userContext,
                                             error,
                                             true) == false)
     {
@@ -85,12 +79,7 @@ DeleteDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const std::string location = result.get("location").getString();
 
     // delete entry from db
-    if(SagiriRoot::dataSetTable->deleteDataSet(dataUuid,
-                                               userId,
-                                               isAdmin,
-                                               projectId,
-                                               isProjectAdmin,
-                                                error) == false)
+    if(SagiriRoot::dataSetTable->deleteDataSet(dataUuid, userContext, error) == false)
     {
         status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

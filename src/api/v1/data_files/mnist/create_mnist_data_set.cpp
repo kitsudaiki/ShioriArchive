@@ -104,11 +104,7 @@ CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     const long inputDataSize = blossomLeaf.input.get("input_data_size").getLong();
     const long labelDataSize = blossomLeaf.input.get("label_data_size").getLong();
     const std::string uuid = Kitsunemimi::Hanami::generateUuid().toString();
-
-    const std::string userId = context.getStringByKey("id");
-    const std::string projectId = context.getStringByKey("project_id");
-    const bool isAdmin = context.getBoolByKey("is_admin");
-    const bool isProjectAdmin = context.getBoolByKey("is_project_admin");
+    const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get directory to store data from config
     bool success = false;
@@ -142,15 +138,15 @@ CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     if(targetFilePath.at(targetFilePath.size() - 1) != '/') {
         targetFilePath.append("/");
     }
-    targetFilePath.append(uuid + "_mnist_" + userId);
+    targetFilePath.append(uuid + "_mnist_" + userContext.userId);
 
     // register in database
     blossomLeaf.output.insert("uuid", uuid);
     blossomLeaf.output.insert("name", name);
     blossomLeaf.output.insert("type", "mnist");
     blossomLeaf.output.insert("location", targetFilePath);
-    blossomLeaf.output.insert("project_id", projectId);
-    blossomLeaf.output.insert("owner_id", userId);
+    blossomLeaf.output.insert("project_id", userContext.projectId);
+    blossomLeaf.output.insert("owner_id", userContext.userId);
     blossomLeaf.output.insert("visibility", "private");
 
     // init placeholder for temp-file progress to database
@@ -160,10 +156,7 @@ CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     blossomLeaf.output.insert("temp_files", tempFiles);
 
     // add to database
-    if(SagiriRoot::dataSetTable->addDataSet(blossomLeaf.output,
-                                            userId,
-                                            projectId,
-                                            error) == false)
+    if(SagiriRoot::dataSetTable->addDataSet(blossomLeaf.output, userContext, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

@@ -68,19 +68,17 @@ DataSetTable::~DataSetTable() {}
  * @brief add new metadata of a dataset into the database
  *
  * @param userData json-item with all information of the data to add to database
- * @param userId user-id to filter
- * @param projectId project-id to filter
+ * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
 DataSetTable::addDataSet(Kitsunemimi::Json::JsonItem &data,
-                         const std::string &userId,
-                         const std::string &projectId,
+                         const Kitsunemimi::Hanami::UserContext &userContext,
                          Kitsunemimi::ErrorContainer &error)
 {
-    if(add(data, userId, projectId, error) == false)
+    if(add(data, userContext, error) == false)
     {
         error.addMeesage("Failed to add snapshot to database");
         return false;
@@ -94,9 +92,7 @@ DataSetTable::addDataSet(Kitsunemimi::Json::JsonItem &data,
  *
  * @param result reference for the result-output
  * @param datasetUuid uuid of the data
- * @param userId user-id to filter
- * @param projectId project-id to filter
- * @param isAdmin true, if use who makes request is admin
+ * @param userContext context-object with all user specific information
  * @param error reference for error-output
  * @param showHiddenValues set to true to also show as hidden marked fields
  *
@@ -105,10 +101,7 @@ DataSetTable::addDataSet(Kitsunemimi::Json::JsonItem &data,
 bool
 DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
                          const std::string &datasetUuid,
-                         const std::string &userId,
-                         const bool isAdmin,
-                         const std::string &projectId,
-                         const bool isProjectAdmin,
+                         const Kitsunemimi::Hanami::UserContext &userContext,
                          Kitsunemimi::ErrorContainer &error,
                          const bool showHiddenValues)
 {
@@ -117,14 +110,7 @@ DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
     conditions.emplace_back("uuid", datasetUuid);
 
     // get dataset from db
-    if(get(result,
-           userId,
-           isAdmin,
-           projectId,
-           isProjectAdmin,
-           conditions,
-           error,
-           showHiddenValues) == false)
+    if(get(result, userContext, conditions, error, showHiddenValues) == false)
     {
         error.addMeesage("Failed to get dataset with UUID '"
                          + datasetUuid
@@ -140,23 +126,18 @@ DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
  * @brief get metadata of all datasets from the database
  *
  * @param result reference for the result-output
- * @param userId user-id to filter
- * @param projectId project-id to filter
- * @param isAdmin true, if use who makes request is admin
+ * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
 DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
-                            const std::string &userId,
-                            const bool isAdmin,
-                            const std::string &projectId,
-                            const bool isProjectAdmin,
+                            const Kitsunemimi::Hanami::UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
-    if(getAll(result, userId, isAdmin, projectId, isProjectAdmin, conditions, error) == false)
+    if(getAll(result, userContext, conditions, error) == false)
     {
         error.addMeesage("Failed to get all datasets from database");
         return false;
@@ -169,24 +150,19 @@ DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
  * @brief delete metadata of a datasett from the database
  *
  * @param datasetUuid uuid of the data
- * @param userId user-id to filter
- * @param projectId project-id to filter
- * @param isAdmin true, if use who makes request is admin
+ * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
 DataSetTable::deleteDataSet(const std::string &datasetUuid,
-                            const std::string &userId,
-                            const bool isAdmin,
-                            const std::string &projectId,
-                            const bool isProjectAdmin,
+                            const Kitsunemimi::Hanami::UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", datasetUuid);
-    if(del(conditions, userId, isAdmin, projectId, isProjectAdmin, error) == false)
+    if(del(conditions, userContext, error) == false)
     {
         error.addMeesage("Failed to delete dataset with UUID '"
                          + datasetUuid
@@ -215,8 +191,11 @@ DataSetTable::setUploadFinish(const std::string &uuid,
     conditions.emplace_back("uuid", uuid);
     Kitsunemimi::Json::JsonItem result;
 
+    Kitsunemimi::Hanami::UserContext userContext;
+    userContext.isAdmin = true;
+
     // get dataset from db
-    if(get(result, "", true, "", true, conditions, error, true) == false)
+    if(get(result, userContext, conditions, error, true) == false)
     {
         error.addMeesage("Failed to get dataset with UUID '" + uuid + "' from database");
         LOG_ERROR(error);
@@ -247,7 +226,7 @@ DataSetTable::setUploadFinish(const std::string &uuid,
     // update new entry within the database
     Kitsunemimi::Json::JsonItem newValues;
     newValues.insert("temp_files", Kitsunemimi::Json::JsonItem(tempFiles.toString()));
-    if(update(newValues, "", true, "", true, conditions, error) == false)
+    if(update(newValues, userContext, conditions, error) == false)
     {
         error.addMeesage("Failed to update entry of dataset with UUID '" + uuid + "' in database");
         LOG_ERROR(error);

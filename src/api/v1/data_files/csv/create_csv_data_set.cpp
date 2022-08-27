@@ -94,8 +94,10 @@ CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     const std::string name = blossomLeaf.input.get("name").getString();
     const long inputDataSize = blossomLeaf.input.get("input_data_size").getLong();
 
-    const std::string userId = context.getStringByKey("uuid");
-    const std::string projectId = context.getStringByKey("projects");
+    const std::string userId = context.getStringByKey("id");
+    const std::string projectId = context.getStringByKey("project_id");
+    const bool isAdmin = context.getBoolByKey("is_admin");
+    const bool isProjectAdmin = context.getBoolByKey("is_project_admin");
 
     // get directory to store data from config
     bool success = false;

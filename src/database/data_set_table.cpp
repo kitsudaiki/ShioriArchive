@@ -106,8 +106,9 @@ bool
 DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
                          const std::string &datasetUuid,
                          const std::string &userId,
-                         const std::string &projectId,
                          const bool isAdmin,
+                         const std::string &projectId,
+                         const bool isProjectAdmin,
                          Kitsunemimi::ErrorContainer &error,
                          const bool showHiddenValues)
 {
@@ -116,7 +117,14 @@ DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
     conditions.emplace_back("uuid", datasetUuid);
 
     // get dataset from db
-    if(get(result, userId, projectId, isAdmin, conditions, error, showHiddenValues) == false)
+    if(get(result,
+           userId,
+           isAdmin,
+           projectId,
+           isProjectAdmin,
+           conditions,
+           error,
+           showHiddenValues) == false)
     {
         error.addMeesage("Failed to get dataset with UUID '"
                          + datasetUuid
@@ -141,13 +149,14 @@ DataSetTable::getDataSet(Kitsunemimi::Json::JsonItem &result,
  */
 bool
 DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
-                                const std::string &userId,
-                                const std::string &projectId,
-                                const bool isAdmin,
-                                Kitsunemimi::ErrorContainer &error)
+                            const std::string &userId,
+                            const bool isAdmin,
+                            const std::string &projectId,
+                            const bool isProjectAdmin,
+                            Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
-    if(getAll(result, userId, projectId, isAdmin, conditions, error) == false)
+    if(getAll(result, userId, isAdmin, projectId, isProjectAdmin, conditions, error) == false)
     {
         error.addMeesage("Failed to get all datasets from database");
         return false;
@@ -170,13 +179,14 @@ DataSetTable::getAllDataSet(Kitsunemimi::TableItem &result,
 bool
 DataSetTable::deleteDataSet(const std::string &datasetUuid,
                             const std::string &userId,
-                            const std::string &projectId,
                             const bool isAdmin,
+                            const std::string &projectId,
+                            const bool isProjectAdmin,
                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", datasetUuid);
-    if(del(conditions, userId, projectId, isAdmin, error) == false)
+    if(del(conditions, userId, isAdmin, projectId, isProjectAdmin, error) == false)
     {
         error.addMeesage("Failed to delete dataset with UUID '"
                          + datasetUuid
@@ -206,7 +216,7 @@ DataSetTable::setUploadFinish(const std::string &uuid,
     Kitsunemimi::Json::JsonItem result;
 
     // get dataset from db
-    if(get(result, "", "", true, conditions, error, true) == false)
+    if(get(result, "", true, "", true, conditions, error, true) == false)
     {
         error.addMeesage("Failed to get dataset with UUID '" + uuid + "' from database");
         LOG_ERROR(error);
@@ -237,7 +247,7 @@ DataSetTable::setUploadFinish(const std::string &uuid,
     // update new entry within the database
     Kitsunemimi::Json::JsonItem newValues;
     newValues.insert("temp_files", Kitsunemimi::Json::JsonItem(tempFiles.toString()));
-    if(update(newValues, "", "", true, conditions, error) == false)
+    if(update(newValues, "", true, "", true, conditions, error) == false)
     {
         error.addMeesage("Failed to update entry of dataset with UUID '" + uuid + "' in database");
         LOG_ERROR(error);

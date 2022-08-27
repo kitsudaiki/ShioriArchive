@@ -46,19 +46,22 @@ public:
     bool getDataSet(Kitsunemimi::Json::JsonItem &result,
                     const std::string &datasetUuid,
                     const std::string &userId,
-                    const std::string &projectId,
                     const bool isAdmin,
+                    const std::string &projectId,
+                    const bool isProjectAdmin,
                     Kitsunemimi::ErrorContainer &error,
                     const bool showHiddenValues);
     bool getAllDataSet(Kitsunemimi::TableItem &result,
                        const std::string &userId,
-                       const std::string &projectId,
                        const bool isAdmin,
+                       const std::string &projectId,
+                       const bool isProjectAdmin,
                        Kitsunemimi::ErrorContainer &error);
     bool deleteDataSet(const std::string &uuid,
                        const std::string &userId,
-                       const std::string &projectId,
                        const bool isAdmin,
+                       const std::string &projectId,
+                       const bool isProjectAdmin,
                        Kitsunemimi::ErrorContainer &error);
 
     bool setUploadFinish(const std::string &uuid,

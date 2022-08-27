@@ -62,17 +62,19 @@ DeleteClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
                                ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
-    const std::string userId = context.getStringByKey("uuid");
-    const std::string projectId = context.getStringByKey("projects");
+    const std::string userId = context.getStringByKey("id");
+    const std::string projectId = context.getStringByKey("project_id");
     const bool isAdmin = context.getBoolByKey("is_admin");
+    const bool isProjectAdmin = context.getBoolByKey("is_project_admin");
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
     if(SagiriRoot::clusterSnapshotTable->getClusterSnapshot(result,
                                                             dataUuid,
                                                             userId,
-                                                            projectId,
                                                             isAdmin,
+                                                            projectId,
+                                                            isProjectAdmin,
                                                             error,
                                                             true) == false)
     {
@@ -86,8 +88,9 @@ DeleteClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
     // delete entry from db
     if(SagiriRoot::clusterSnapshotTable->deleteClusterSnapshot(dataUuid,
                                                                userId,
-                                                               projectId,
                                                                isAdmin,
+                                                               projectId,
+                                                               isProjectAdmin,
                                                                error) == false)
     {
         status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;

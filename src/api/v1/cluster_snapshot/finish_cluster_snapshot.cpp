@@ -92,18 +92,19 @@ FinalizeClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
 {
     const std::string uuid = blossomLeaf.input.get("uuid").getString();
     const std::string inputUuid = blossomLeaf.input.get("uuid_input_file").getString();
-    const std::string userId = blossomLeaf.input.get("id").getString();
-    const std::string projectId = blossomLeaf.input.get("project_id").getString();
-
+    const std::string userId = context.getStringByKey("id");
+    const std::string projectId = context.getStringByKey("project_id");
     const bool isAdmin = context.getBoolByKey("is_admin");
+    const bool isProjectAdmin = context.getBoolByKey("is_project_admin");
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
     if(SagiriRoot::clusterSnapshotTable->getClusterSnapshot(result,
                                                             uuid,
                                                             userId,
-                                                            projectId,
                                                             isAdmin,
+                                                            projectId,
+                                                            isProjectAdmin,
                                                             error,
                                                             true) == false)
     {

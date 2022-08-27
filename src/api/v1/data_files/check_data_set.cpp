@@ -83,9 +83,10 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const std::string resultUuid = blossomLeaf.input.get("result_uuid").getString();
     const std::string dataUuid = blossomLeaf.input.get("data_set_uuid").getString();
 
-    const std::string userId = context.getStringByKey("uuid");
-    const std::string projectId = context.getStringByKey("projects");
+    const std::string userId = context.getStringByKey("id");
+    const std::string projectId = context.getStringByKey("project_id");
     const bool isAdmin = context.getBoolByKey("is_admin");
+    const bool isProjectAdmin = context.getBoolByKey("is_project_admin");
 
     // get result
     bool success = false;
@@ -110,8 +111,9 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     if(SagiriRoot::dataSetTable->getDataSet(blossomLeaf.output,
                                             dataUuid,
                                             userId,
-                                            projectId,
                                             isAdmin,
+                                            projectId,
+                                            isProjectAdmin,
                                             error,
                                             true) == false)
     {

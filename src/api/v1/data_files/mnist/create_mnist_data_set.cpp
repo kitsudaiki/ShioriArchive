@@ -105,8 +105,10 @@ CreateMnistDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     const long labelDataSize = blossomLeaf.input.get("label_data_size").getLong();
     const std::string uuid = Kitsunemimi::Hanami::generateUuid().toString();
 
-    const std::string userId = context.getStringByKey("uuid");
-    const std::string projectId = context.getStringByKey("projects");
+    const std::string userId = context.getStringByKey("id");
+    const std::string projectId = context.getStringByKey("project_id");
+    const bool isAdmin = context.getBoolByKey("is_admin");
+    const bool isProjectAdmin = context.getBoolByKey("is_project_admin");
 
     // get directory to store data from config
     bool success = false;

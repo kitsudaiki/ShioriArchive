@@ -99,15 +99,17 @@ GetDataSet::runTask(BlossomLeaf &blossomLeaf,
                       Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
-    const std::string userId = context.getStringByKey("uuid");
-    const std::string projectId = context.getStringByKey("projects");
+    const std::string userId = context.getStringByKey("id");
+    const std::string projectId = context.getStringByKey("project_id");
     const bool isAdmin = context.getBoolByKey("is_admin");
+    const bool isProjectAdmin = context.getBoolByKey("is_project_admin");
 
     if(SagiriRoot::dataSetTable->getDataSet(blossomLeaf.output,
                                             dataUuid,
                                             userId,
-                                            projectId,
                                             isAdmin,
+                                            projectId,
+                                            isProjectAdmin,
                                             error,
                                             true) == false)
     {

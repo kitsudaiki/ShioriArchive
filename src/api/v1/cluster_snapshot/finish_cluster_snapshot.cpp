@@ -86,24 +86,26 @@ FinalizeClusterSnapshot::FinalizeClusterSnapshot()
  */
 bool
 FinalizeClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
-                               const Kitsunemimi::DataMap &context,
-                               BlossomStatus &status,
-                               Kitsunemimi::ErrorContainer &error)
+                                 const Kitsunemimi::DataMap &,
+                                 BlossomStatus &status,
+                                 Kitsunemimi::ErrorContainer &error)
 {
     const std::string uuid = blossomLeaf.input.get("uuid").getString();
     const std::string inputUuid = blossomLeaf.input.get("uuid_input_file").getString();
     const std::string userId = blossomLeaf.input.get("id").getString();
     const std::string projectId = blossomLeaf.input.get("project_id").getString();
 
-    const bool isAdmin = context.getBoolByKey("is_admin");
+    // snapshots are created by another internal process, which gives the id's not in the context
+    // object, but as normal values
+    Kitsunemimi::Hanami::UserContext userContext;
+    userContext.userId = userId;
+    userContext.projectId = projectId;
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
     if(SagiriRoot::clusterSnapshotTable->getClusterSnapshot(result,
                                                             uuid,
-                                                            userId,
-                                                            projectId,
-                                                            isAdmin,
+                                                            userContext,
                                                             error,
                                                             true) == false)
     {

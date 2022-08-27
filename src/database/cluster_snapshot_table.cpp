@@ -68,19 +68,17 @@ ClusterSnapshotTable::~ClusterSnapshotTable() {}
  * @brief add new metadata of a dataset into the database
  *
  * @param userData json-item with all information of the data to add to database
- * @param userId user-id to filter
- * @param projectId project-id to filter
+ * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
 ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::Json::JsonItem &data,
-                                         const std::string &userId,
-                                         const std::string &projectId,
+                                         const Kitsunemimi::Hanami::UserContext &userContext,
                                          Kitsunemimi::ErrorContainer &error)
 {
-    if(add(data, userId, projectId, error) == false)
+    if(add(data, userContext, error) == false)
     {
         error.addMeesage("Failed to add snapshot to database");
         return false;
@@ -93,10 +91,8 @@ ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::Json::JsonItem &data,
  * @brief get a metadata-entry for a specific dataset from the database
  *
  * @param result reference for the result-output
- * @param uuid uuid of the data
- * @param userId user-id to filter
- * @param projectId project-id to filter
- * @param isAdmin true, if use who makes request is admin
+ * @param snapshotUuid uuid of the data
+ * @param userContext context-object with all user specific information
  * @param error reference for error-output
  * @param showHiddenValues set to true to also show as hidden marked fields
  *
@@ -105,9 +101,7 @@ ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::Json::JsonItem &data,
 bool
 ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::Json::JsonItem &result,
                                          const std::string &snapshotUuid,
-                                         const std::string &userId,
-                                         const std::string &projectId,
-                                         const bool isAdmin,
+                                         const Kitsunemimi::Hanami::UserContext &userContext,
                                          Kitsunemimi::ErrorContainer &error,
                                          const bool showHiddenValues)
 {
@@ -116,7 +110,7 @@ ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::Json::JsonItem &result,
     conditions.emplace_back("uuid", snapshotUuid);
 
     // get dataset from db
-    if(get(result, userId, projectId, isAdmin, conditions, error, showHiddenValues) == false)
+    if(get(result, userContext, conditions, error, showHiddenValues) == false)
     {
         error.addMeesage("Failed to get snapshot with UUID '"
                          + snapshotUuid
@@ -132,22 +126,18 @@ ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::Json::JsonItem &result,
  * @brief get metadata of all datasets from the database
  *
  * @param result reference for the result-output
- * @param userId user-id to filter
- * @param projectId project-id to filter
- * @param isAdmin true, if use who makes request is admin
+ * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
 ClusterSnapshotTable::getAllClusterSnapshot(Kitsunemimi::TableItem &result,
-                                            const std::string &userId,
-                                            const std::string &projectId,
-                                            const bool isAdmin,
+                                            const Kitsunemimi::Hanami::UserContext &userContext,
                                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
-    if(getAll(result, userId, projectId, isAdmin, conditions, error) == false)
+    if(getAll(result, userContext, conditions, error) == false)
     {
         error.addMeesage("Failed to get all snapshots from database");
         return false;
@@ -160,23 +150,19 @@ ClusterSnapshotTable::getAllClusterSnapshot(Kitsunemimi::TableItem &result,
  * @brief delete metadata of a dataset from the database
  *
  * @param snapshotUuid uuid of the data
- * @param userId user-id to filter
- * @param projectId project-id to filter
- * @param isAdmin true, if use who makes request is admin
+ * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
 ClusterSnapshotTable::deleteClusterSnapshot(const std::string &snapshotUuid,
-                                            const std::string &userId,
-                                            const std::string &projectId,
-                                            const bool isAdmin,
+                                            const Kitsunemimi::Hanami::UserContext &userContext,
                                             Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", snapshotUuid);
-    if(del(conditions, userId, projectId, isAdmin, error) == false)
+    if(del(conditions, userContext, error) == false)
     {
         error.addMeesage("Failed to delete snapshot with UUID '"
                          + snapshotUuid
@@ -205,8 +191,11 @@ ClusterSnapshotTable::setUploadFinish(const std::string &uuid,
     conditions.emplace_back("uuid", uuid);
     Kitsunemimi::Json::JsonItem result;
 
+    Kitsunemimi::Hanami::UserContext userContext;
+    userContext.isAdmin = true;
+
     // get snapshot from db
-    if(get(result, "", "", true, conditions, error, true) == false)
+    if(get(result, userContext, conditions, error, true) == false)
     {
         error.addMeesage("Failed to get snapshot with UUID '" + uuid + "' from database");
         LOG_ERROR(error);
@@ -237,7 +226,7 @@ ClusterSnapshotTable::setUploadFinish(const std::string &uuid,
     // update new entry within the database
     Kitsunemimi::Json::JsonItem newValues;
     newValues.insert("temp_files", Kitsunemimi::Json::JsonItem(tempFiles.toString()));
-    if(update(newValues, "", "", true, conditions, error) == false)
+    if(update(newValues, userContext, conditions, error) == false)
     {
         error.addMeesage("Failed to update entry of snapshot with UUID '" + uuid + "' in database");
         LOG_ERROR(error);

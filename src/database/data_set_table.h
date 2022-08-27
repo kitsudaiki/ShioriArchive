@@ -40,25 +40,18 @@ public:
     ~DataSetTable();
 
     bool addDataSet(Kitsunemimi::Json::JsonItem &data,
-                    const std::string &userId,
-                    const std::string &projectId,
+                    const Kitsunemimi::Hanami::UserContext &userContext,
                     Kitsunemimi::ErrorContainer &error);
     bool getDataSet(Kitsunemimi::Json::JsonItem &result,
                     const std::string &datasetUuid,
-                    const std::string &userId,
-                    const std::string &projectId,
-                    const bool isAdmin,
+                    const Kitsunemimi::Hanami::UserContext &userContext,
                     Kitsunemimi::ErrorContainer &error,
                     const bool showHiddenValues);
     bool getAllDataSet(Kitsunemimi::TableItem &result,
-                       const std::string &userId,
-                       const std::string &projectId,
-                       const bool isAdmin,
+                       const Kitsunemimi::Hanami::UserContext &userContext,
                        Kitsunemimi::ErrorContainer &error);
     bool deleteDataSet(const std::string &uuid,
-                       const std::string &userId,
-                       const std::string &projectId,
-                       const bool isAdmin,
+                       const Kitsunemimi::Hanami::UserContext &userContext,
                        Kitsunemimi::ErrorContainer &error);
 
     bool setUploadFinish(const std::string &uuid,

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file        create_cluster_snapshot.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
@@ -121,6 +121,12 @@ CreateClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const long inputDataSize = blossomLeaf.input.get("input_data_size").getLong();
     const std::string header = blossomLeaf.input.get("header").toString();
 
+    // snapshots are created by another internal process, which gives the id's not in the context
+    // object, but as normal values
+    Kitsunemimi::Hanami::UserContext userContext;
+    userContext.userId = userId;
+    userContext.projectId = projectId;
+
     // get directory to store data from config
     bool success = false;
     std::string targetFilePath = GET_STRING_CONFIG("sagiri", "cluster_snapshot_location", success);
@@ -162,8 +168,7 @@ CreateClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // add to database
     if(SagiriRoot::clusterSnapshotTable->addClusterSnapshot(blossomLeaf.output,
-                                                            userId,
-                                                            projectId,
+                                                            userContext,
                                                             error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;

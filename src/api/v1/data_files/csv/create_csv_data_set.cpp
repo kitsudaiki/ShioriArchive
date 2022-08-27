@@ -93,9 +93,7 @@ CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
 {
     const std::string name = blossomLeaf.input.get("name").getString();
     const long inputDataSize = blossomLeaf.input.get("input_data_size").getLong();
-
-    const std::string userId = context.getStringByKey("uuid");
-    const std::string projectId = context.getStringByKey("projects");
+    const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get directory to store data from config
     bool success = false;
@@ -120,14 +118,14 @@ CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     if(targetFilePath.at(targetFilePath.size() - 1) != '/') {
         targetFilePath.append("/");
     }
-    targetFilePath.append(name + "_csv_" + userId);
+    targetFilePath.append(name + "_csv_" +userContext. userId);
 
     // register in database
     blossomLeaf.output.insert("name", name);
     blossomLeaf.output.insert("type", "csv");
     blossomLeaf.output.insert("location", targetFilePath);
-    blossomLeaf.output.insert("project_id", projectId);
-    blossomLeaf.output.insert("owner_id", userId);
+    blossomLeaf.output.insert("project_id", userContext.projectId);
+    blossomLeaf.output.insert("owner_id", userContext.userId);
     blossomLeaf.output.insert("visibility", "private");
 
     // init placeholder for temp-file progress to database
@@ -136,10 +134,7 @@ CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     blossomLeaf.output.insert("temp_files", tempFiles);
 
     // add to database
-    if(SagiriRoot::dataSetTable->addDataSet(blossomLeaf.output,
-                                            userId,
-                                            projectId,
-                                            error) == false)
+    if(SagiriRoot::dataSetTable->addDataSet(blossomLeaf.output, userContext, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

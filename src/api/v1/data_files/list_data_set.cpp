@@ -58,17 +58,11 @@ ListDataSet::runTask(BlossomLeaf &blossomLeaf,
                        BlossomStatus &status,
                        Kitsunemimi::ErrorContainer &error)
 {
-    const std::string userId = context.getStringByKey("uuid");
-    const std::string projectId = context.getStringByKey("projects");
-    const bool isAdmin = context.getBoolByKey("is_admin");
+    const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(SagiriRoot::dataSetTable->getAllDataSet(table,
-                                               userId,
-                                               projectId,
-                                               isAdmin,
-                                               error) == false)
+    if(SagiriRoot::dataSetTable->getAllDataSet(table, userContext, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

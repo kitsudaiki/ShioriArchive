@@ -64,6 +64,7 @@ handleProtobufFileUpload(const void* data,
                                                  msg.data().size()) == false)
     {
         // TODO: error-handling
+        std::cout<<"failed to write data"<<std::endl;
         return false;
     }
 

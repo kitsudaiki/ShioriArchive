@@ -27,7 +27,7 @@
 #include <core/temp_file_handler.h>
 
 #include <libKitsunemimiHanamiCommon/uuid.h>
-#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
+#include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 
 #include <libKitsunemimiSakuraLang/structs.h>
 

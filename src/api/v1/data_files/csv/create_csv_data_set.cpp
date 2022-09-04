@@ -29,7 +29,7 @@
 #include <libKitsunemimiHanamiCommon/uuid.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
-#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
+#include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 
 #include <libKitsunemimiSakuraLang/structs.h>
 

@@ -55,7 +55,7 @@ function get_required_private_repo_github () {
     NUMBER_OF_THREADS=$3
 
     # clone repo
-    git clone https://kitsudaiki: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@github.com/kitsudaiki/$REPO_NAME.git "$PARENT_DIR/$REPO_NAME"
+    git clone https://kitsudaiki:$CLONE_TOKEN@github.com/kitsudaiki/$REPO_NAME.git "$PARENT_DIR/$REPO_NAME"
     cd "$PARENT_DIR/$REPO_NAME"
     git checkout $TAG_OR_BRANCH
 
@@ -67,8 +67,8 @@ function download_private_repo_github () {
     TAG_OR_BRANCH=$2
 
     # clone repo
-    git clone https://kitsudaiki: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@github.com/kitsudaiki/$REPO_NAME.git "$BUILD_DIR/$REPO_NAME"
-    git clone https://kitsudaiki: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@github.com/kitsudaiki/$REPO_NAME.git "$PARENT_DIR/$REPO_NAME"
+    git clone https://kitsudaiki:$CLONE_TOKEN@github.com/kitsudaiki/$REPO_NAME.git "$BUILD_DIR/$REPO_NAME"
+    git clone https://kitsudaiki:$CLONE_TOKEN@github.com/kitsudaiki/$REPO_NAME.git "$PARENT_DIR/$REPO_NAME"
     cd "$BUILD_DIR/$REPO_NAME"
     git checkout $TAG_OR_BRANCH
     cd "$PARENT_DIR/$REPO_NAME"
@@ -117,7 +117,7 @@ echo "##########################################################################
 
 #-----------------------------------------------------------------------------------------------------------------
 
-# create build directory for KyoukoMind and go into this directory
+# create build directory for SagiriArchive and go into this directory
 LIB_KITSUNE_SAKURA_TREE_DIR="$BUILD_DIR/SagiriArchive"
 mkdir -p $LIB_KITSUNE_SAKURA_TREE_DIR
 cd $LIB_KITSUNE_SAKURA_TREE_DIR

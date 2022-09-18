@@ -1,5 +1,5 @@
 /**
- * @file        delete_request_result.h
+ * @file        list_request_result.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,22 +20,22 @@
  *      limitations under the License.
  */
 
-#ifndef DELETEREQUESTRESULT_H
-#define DELETEREQUESTRESULT_H
+#ifndef LISTREQUESTRESULT_H
+#define LISTREQUESTRESULT_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-class DeleteRequestResult
+class ListRequestResult
         : public Kitsunemimi::Sakura::Blossom
 {
 public:
-    DeleteRequestResult();
+    ListRequestResult();
 
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
-                 const Kitsunemimi::DataMap &context,
+                 const Kitsunemimi::DataMap &,
                  Kitsunemimi::Sakura::BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // DELETEREQUESTRESULT_H
+#endif // LISTREQUESTRESULT_H

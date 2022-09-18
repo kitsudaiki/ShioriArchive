@@ -67,7 +67,7 @@ DataSetTable::~DataSetTable() {}
 /**
  * @brief add new metadata of a dataset into the database
  *
- * @param userData json-item with all information of the data to add to database
+ * @param data json-item with all information of the data to add to database
  * @param userContext context-object with all user specific information
  * @param error reference for error-output
  *

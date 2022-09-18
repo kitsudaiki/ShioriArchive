@@ -22,8 +22,8 @@
 
 #include "get_request_result.h"
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiCommon/files/text_file.h>
+#include <sagiri_root.h>
+#include <database/request_result_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
@@ -48,7 +48,13 @@ GetRequestResult::GetRequestResult()
     // output
     //----------------------------------------------------------------------------------------------
 
-    registerOutputField("result",
+    registerOutputField("uuid",
+                        Sakura::SAKURA_STRING_TYPE,
+                        "UUID of the data-set.");
+    registerOutputField("name",
+                        Sakura::SAKURA_STRING_TYPE,
+                        "Name of the data-set.");
+    registerOutputField("data",
                         Sakura::SAKURA_ARRAY_TYPE,
                         "Result of the request-task.");
 
@@ -62,25 +68,38 @@ GetRequestResult::GetRequestResult()
  */
 bool
 GetRequestResult::runTask(Sakura::BlossomLeaf &blossomLeaf,
-                          const Kitsunemimi::DataMap &,
+                          const Kitsunemimi::DataMap &context,
                           Sakura::BlossomStatus &status,
                           ErrorContainer &error)
 {
     const std::string uuid = blossomLeaf.input.get("uuid").getString();
+    const Kitsunemimi::Hanami::UserContext userContext(context);
 
-    bool success = false;
-    const std::string resultLocation = GET_STRING_CONFIG("sagiri", "result_location", success);
-    const std::string filePath = resultLocation + "/" + uuid;
-
-    // TODO: precheck if file exist
-    std::string content = "";
-    if(readFile(content, filePath, error) == false)
+    // check if request-result exist within the table
+    if(SagiriRoot::requestResultTable->getRequestResult(blossomLeaf.output,
+                                                        uuid,
+                                                        userContext,
+                                                        error,
+                                                        true) == false)
     {
-        status.statusCode = Hanami::NOT_FOUND_RTYPE;
+        status.errorMessage = "Request-result with UUID '" + uuid + "' not found.";
+        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
 
-    blossomLeaf.output.insert("result", content);
+    // parse data to array
+    Kitsunemimi::Json::JsonItem parsedData;
+    if(parsedData.parse(blossomLeaf.output.get("data").getString(), error) == false)
+    {
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        return false;
+    }
+
+    blossomLeaf.output.insert("data", parsedData.getItemContent()->copy(), true);
+    blossomLeaf.output.remove("owner_id");
+    blossomLeaf.output.remove("project_id");
+    blossomLeaf.output.remove("visibility");
 
     return true;
 }

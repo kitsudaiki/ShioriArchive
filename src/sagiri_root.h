@@ -30,6 +30,7 @@ class SqlDatabase;
 }
 class DataSetTable;
 class ClusterSnapshotTable;
+class RequestResultTable;
 class TempFileHandler;
 
 class SagiriRoot
@@ -42,6 +43,7 @@ public:
     static TempFileHandler* tempFileHandler;
     static DataSetTable* dataSetTable;
     static ClusterSnapshotTable* clusterSnapshotTable;
+    static RequestResultTable* requestResultTable;
     static Kitsunemimi::Sakura::SqlDatabase* database;
 };
 

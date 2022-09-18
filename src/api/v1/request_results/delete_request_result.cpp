@@ -22,8 +22,8 @@
 
 #include "delete_request_result.h"
 
-#include <libKitsunemimiConfig/config_handler.h>
-#include <libKitsunemimiCommon/methods/file_methods.h>
+#include <sagiri_root.h>
+#include <database/request_result_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
@@ -53,20 +53,31 @@ DeleteRequestResult::DeleteRequestResult()
  */
 bool
 DeleteRequestResult::runTask(Sakura::BlossomLeaf &blossomLeaf,
-                             const Kitsunemimi::DataMap &,
+                             const Kitsunemimi::DataMap &context,
                              Sakura::BlossomStatus &status,
                              ErrorContainer &error)
 {
     const std::string uuid = blossomLeaf.input.get("uuid").getString();
+    const Kitsunemimi::Hanami::UserContext userContext(context);
 
-    bool success = false;
-    const std::string resultLocation = GET_STRING_CONFIG("sagiri", "result_location", success);
-    const std::string filePath = resultLocation + "/" + uuid;
-
-    // TODO: precheck if file exist
-    if(deleteFileOrDir(filePath, error) == false)
+    // check if request-result exist within the table
+    Kitsunemimi::Json::JsonItem result;
+    if(SagiriRoot::requestResultTable->getRequestResult(result,
+                                                        uuid,
+                                                        userContext,
+                                                        error,
+                                                        false) == false)
     {
-        status.statusCode = Hanami::NOT_FOUND_RTYPE;
+        status.errorMessage = "Request-result with UUID '" + uuid + "' not found.";
+        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
+        return false;
+    }
+
+    // delete entry from db
+    if(SagiriRoot::requestResultTable->deleteRequestResult(uuid, userContext, error) == false)
+    {
+        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

@@ -27,12 +27,14 @@
 
 #include <database/data_set_table.h>
 #include <database/cluster_snapshot_table.h>
+#include <database/request_result_table.h>
 #include <core/temp_file_handler.h>
 #include <api/blossom_initializing.h>
 
 TempFileHandler* SagiriRoot::tempFileHandler = nullptr;
 DataSetTable* SagiriRoot::dataSetTable = nullptr;
 ClusterSnapshotTable* SagiriRoot::clusterSnapshotTable = nullptr;
+RequestResultTable* SagiriRoot::requestResultTable = nullptr;
 Kitsunemimi::Sakura::SqlDatabase* SagiriRoot::database = nullptr;
 
 SagiriRoot::SagiriRoot() {}
@@ -71,6 +73,15 @@ SagiriRoot::init()
     if(dataSetTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize dataset-table in database.");
+        LOG_ERROR(error);
+        return false;
+    }
+
+    // initialize request-result-table
+    requestResultTable = new RequestResultTable(database);
+    if(requestResultTable->initTable(error) == false)
+    {
+        error.addMeesage("Failed to initialize request-result-table in database.");
         LOG_ERROR(error);
         return false;
     }

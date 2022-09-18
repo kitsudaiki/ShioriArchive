@@ -1,5 +1,5 @@
 /**
- * @file        list_data_set.cpp
+ * @file        list_request_result.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,17 +20,17 @@
  *      limitations under the License.
  */
 
-#include "list_data_set.h"
+#include "list_request_result.h"
 
 #include <sagiri_root.h>
-#include <database/data_set_table.h>
+#include <database/request_result_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
 using namespace Kitsunemimi::Sakura;
 
-ListDataSet::ListDataSet()
-    : Kitsunemimi::Sakura::Blossom("Get information of all uploaded sets fo dataset as table.")
+ListRequestResult::ListRequestResult()
+    : Kitsunemimi::Sakura::Blossom("Get overview of all request results.")
 {
     //----------------------------------------------------------------------------------------------
     // output
@@ -53,16 +53,16 @@ ListDataSet::ListDataSet()
  * @brief runTask
  */
 bool
-ListDataSet::runTask(BlossomLeaf &blossomLeaf,
-                       const Kitsunemimi::DataMap &context,
-                       BlossomStatus &status,
-                       Kitsunemimi::ErrorContainer &error)
+ListRequestResult::runTask(BlossomLeaf &blossomLeaf,
+                           const Kitsunemimi::DataMap &context,
+                           BlossomStatus &status,
+                           Kitsunemimi::ErrorContainer &error)
 {
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(SagiriRoot::dataSetTable->getAllDataSet(table, userContext, error) == false)
+    if(SagiriRoot::requestResultTable->getAllRequestResult(table, userContext, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

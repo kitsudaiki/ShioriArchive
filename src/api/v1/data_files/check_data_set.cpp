@@ -23,6 +23,7 @@
 #include "check_data_set.h"
 
 #include <sagiri_root.h>
+#include <database/request_result_table.h>
 #include <database/data_set_table.h>
 #include <core/data_set_files/data_set_file.h>
 
@@ -85,19 +86,22 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get result
-    bool success = false;
-    const std::string resultLocation = GET_STRING_CONFIG("sagiri", "result_location", success);
-    const std::string filePath = resultLocation + "/" + resultUuid;
-
-    // TODO: precheck if file exist
-    std::string resultText = "";
-    if(readFile(resultText, filePath, error) == false)
+    // check if request-result exist within the table
+    Kitsunemimi::Json::JsonItem result;
+    if(SagiriRoot::requestResultTable->getRequestResult(result,
+                                                        resultUuid,
+                                                        userContext,
+                                                        error,
+                                                        true) == false)
     {
-        status.statusCode = Hanami::NOT_FOUND_RTYPE;
+        status.errorMessage = "Request-result with UUID '" + resultUuid + "' not found.";
+        status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
+        error.addMeesage(status.errorMessage);
         return false;
     }
+
     Json::JsonItem resultData;
-    if(resultData.parse(resultText, error) == false)
+    if(resultData.parse(result.get("data").getString(), error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

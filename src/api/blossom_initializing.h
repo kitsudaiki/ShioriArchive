@@ -46,6 +46,7 @@
 
 #include <api/v1/request_results/delete_request_result.h>
 #include <api/v1/request_results/get_request_result.h>
+#include <api/v1/request_results/list_request_result.h>
 
 using Kitsunemimi::Sakura::SakuraLangInterface;
 
@@ -185,6 +186,13 @@ resultBlossoms()
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "get");
+
+    assert(interface->addBlossom(group, "list", new ListRequestResult()));
+    endpoints->addEndpoint("v1/request_result/all",
+                           Kitsunemimi::Hanami::GET_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "list");
 
     assert(interface->addBlossom(group, "delete", new DeleteRequestResult()));
     endpoints->addEndpoint("v1/request_result",

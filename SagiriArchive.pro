@@ -127,12 +127,14 @@ SOURCES += src/main.cpp \
     src/api/v1/data_files/mnist/finalize_mnist_data_set.cpp \
     src/api/v1/request_results/delete_request_result.cpp \
     src/api/v1/request_results/get_request_result.cpp \
+    src/api/v1/request_results/list_request_result.cpp \
     src/core/data_set_files/data_set_file.cpp \
     src/core/data_set_files/image_data_set_file.cpp \
     src/core/data_set_files/table_data_set_file.cpp \
     src/core/temp_file_handler.cpp \
     src/database/cluster_snapshot_table.cpp \
     src/database/data_set_table.cpp \
+    src/database/request_result_table.cpp \
     src/sagiri_root.cpp
 
 HEADERS += \
@@ -153,6 +155,7 @@ HEADERS += \
     src/api/v1/data_files/mnist/finalize_mnist_data_set.h \
     src/api/v1/request_results/delete_request_result.h \
     src/api/v1/request_results/get_request_result.h \
+    src/api/v1/request_results/list_request_result.h \
     src/args.h \
     src/callbacks.h \
     src/config.h \
@@ -162,6 +165,7 @@ HEADERS += \
     src/core/temp_file_handler.h \
     src/database/cluster_snapshot_table.h \
     src/database/data_set_table.h \
+    src/database/request_result_table.h \
     src/sagiri_root.h \
     ../libKitsunemimiHanamiMessages/hanami_messages/sagiri_messages.h
 

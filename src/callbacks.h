@@ -27,6 +27,7 @@
 #include <core/data_set_files/data_set_file.h>
 #include <database/data_set_table.h>
 #include <database/cluster_snapshot_table.h>
+#include <database/request_result_table.h>
 #include <sagiri_root.h>
 
 #include <libKitsunemimiCommon/logger.h>
@@ -45,6 +46,12 @@
 #include <../libKitsunemimiHanamiMessages/protobuffers/sagiri_messages.proto3.pb.h>
 #include <../libKitsunemimiHanamiMessages/hanami_messages/sagiri_messages.h>
 
+/**
+ * @brief handleProtobufFileUpload
+ * @param data
+ * @param dataSize
+ * @return
+ */
 bool
 handleProtobufFileUpload(const void* data,
                          const uint64_t dataSize)
@@ -99,6 +106,12 @@ handleProtobufFileUpload(const void* data,
     return true;
 }
 
+/**
+ * @brief handleHanamiFileUpload
+ * @param data
+ * @param dataSize
+ * @return
+ */
 bool
 handleHanamiFileUpload(const void* data,
                        const uint64_t dataSize)
@@ -152,6 +165,11 @@ handleHanamiFileUpload(const void* data,
     return true;
 }
 
+/**
+ * @brief streamDataCallback
+ * @param data
+ * @param dataSize
+ */
 void streamDataCallback(void*,
                         Kitsunemimi::Sakura::Session*,
                         const void* data,
@@ -252,7 +270,8 @@ handleDataSetRequest(const Sagiri::DatasetRequest_Message &msg,
     // get payload
     uint64_t payloadSize = 0;
     float* payload = file->getPayload(payloadSize, msg.columnName);
-    if(payload == nullptr) {
+    if(payload == nullptr)
+    {
         // TODO: error
         delete file;
         delete payload;
@@ -284,22 +303,33 @@ handleResultPush(const Sagiri::ResultPush_Message &msg,
                  Kitsunemimi::Sakura::Session* session,
                  const uint64_t blockerId)
 {
-    bool success = false;
     Kitsunemimi::ErrorContainer error;
 
-    // TODO: handle result
-    const std::string resultLocation = GET_STRING_CONFIG("sagiri", "result_location", success);
-    if(writeFile(resultLocation + "/" + msg.uuid, msg.results, error) == false)
+    Kitsunemimi::Json::JsonItem resultData;
+    resultData.insert("uuid", msg.uuid);
+    resultData.insert("name", msg.name);
+    resultData.insert("data", msg.results);
+    resultData.insert("visibility", "private");
+
+    Kitsunemimi::Hanami::UserContext userContext;
+    userContext.userId = msg.userId;
+    userContext.projectId = msg.projectId;
+
+    if(SagiriRoot::requestResultTable->addRequestResult(resultData, userContext, error) == false)
     {
         LOG_ERROR(error);
 
         const std::string ret = "fail";
-        session->sendResponse(ret.c_str(), ret.size(), blockerId, error);
+        if(session->sendResponse(ret.c_str(), ret.size(), blockerId, error) == false) {
+            LOG_ERROR(error);
+        }
         return;
     }
 
     const std::string ret = "success";
-    session->sendResponse(ret.c_str(), ret.size(), blockerId, error);
+    if(session->sendResponse(ret.c_str(), ret.size(), blockerId, error) == false) {
+        LOG_ERROR(error);
+    }
 }
 
 /**
@@ -501,7 +531,7 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
 
                 handleErrorLog(msg);
             }
-        break;
+            break;
         default:
             handleFail("Received unknown generic message", session, blockerId);
             break;

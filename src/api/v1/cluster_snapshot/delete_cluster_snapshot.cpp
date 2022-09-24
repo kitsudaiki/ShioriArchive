@@ -29,23 +29,22 @@
 #include <libKitsunemimiCommon/methods/file_methods.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
+#include <libKitsunemimiHanamiCommon/defines.h>
 
-
-using namespace Kitsunemimi;
+using namespace Kitsunemimi::Sakura;
 
 DeleteClusterSnapshot::DeleteClusterSnapshot()
-    : Kitsunemimi::Sakura::Blossom("Delete a result-set from shiori.")
+    : Blossom("Delete a result-set from shiori.")
 {
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid",
-                       Sakura::SAKURA_STRING_TYPE,
+                       SAKURA_STRING_TYPE,
                        true,
                        "UUID of the cluster-snapshot to delete.");
-    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                 "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+    assert(addFieldRegex("uuid", UUID_REGEX));
 
     //----------------------------------------------------------------------------------------------
     //
@@ -56,10 +55,10 @@ DeleteClusterSnapshot::DeleteClusterSnapshot()
  * @brief runTask
  */
 bool
-DeleteClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
+DeleteClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
                                const Kitsunemimi::DataMap &context,
-                               Sakura::BlossomStatus &status,
-                               ErrorContainer &error)
+                               BlossomStatus &status,
+                               Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
@@ -72,7 +71,7 @@ DeleteClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
                                                             error,
                                                             true) == false)
     {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
@@ -84,14 +83,14 @@ DeleteClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
                                                                userContext,
                                                                error) == false)
     {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // delete local files
     if(Kitsunemimi::deleteFileOrDir(location, error) == false)
     {
-        status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 

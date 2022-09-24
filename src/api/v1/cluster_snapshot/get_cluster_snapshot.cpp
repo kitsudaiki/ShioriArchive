@@ -27,17 +27,17 @@
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
-using namespace Kitsunemimi;
+using namespace Kitsunemimi::Sakura;
 
 GetClusterSnapshot::GetClusterSnapshot()
-    : Kitsunemimi::Sakura::Blossom("Get snapshot of a cluster.")
+    : Blossom("Get snapshot of a cluster.")
 {
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid",
-                       Sakura::SAKURA_STRING_TYPE,
+                       SAKURA_STRING_TYPE,
                        true,
                        "UUID of the original request-task, which placed the result in shiori.");
     assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
@@ -48,16 +48,16 @@ GetClusterSnapshot::GetClusterSnapshot()
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("uuid",
-                        Sakura::SAKURA_STRING_TYPE,
+                        SAKURA_STRING_TYPE,
                         "UUID of the data-set.");
     registerOutputField("name",
-                        Sakura::SAKURA_STRING_TYPE,
+                        SAKURA_STRING_TYPE,
                         "Name of the data-set.");
     registerOutputField("location",
-                        Sakura::SAKURA_STRING_TYPE,
+                        SAKURA_STRING_TYPE,
                         "File path on local storage.");
     registerOutputField("header",
-                        Sakura::SAKURA_MAP_TYPE,
+                        SAKURA_MAP_TYPE,
                         "Header-information of the snapshot-file.");
 
     //----------------------------------------------------------------------------------------------
@@ -69,10 +69,10 @@ GetClusterSnapshot::GetClusterSnapshot()
  * @brief runTask
  */
 bool
-GetClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
+GetClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
                             const Kitsunemimi::DataMap &context,
-                            Sakura::BlossomStatus &status,
-                            ErrorContainer &error)
+                            BlossomStatus &status,
+                            Kitsunemimi::ErrorContainer &error)
 {
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);

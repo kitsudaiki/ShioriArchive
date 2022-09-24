@@ -35,11 +35,12 @@
 #include <libKitsunemimiConfig/config_handler.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
+#include <libKitsunemimiHanamiCommon/defines.h>
 
 using namespace Kitsunemimi;
 
 CheckDataSet::CheckDataSet()
-    : Kitsunemimi::Sakura::Blossom("Compare a list of values with a data-set to check correctness.")
+    : Blossom("Compare a list of values with a data-set to check correctness.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -49,15 +50,13 @@ CheckDataSet::CheckDataSet()
                        Sakura::SAKURA_STRING_TYPE,
                        true,
                        "UUID of the data-set to compare to.");
-    assert(addFieldRegex("result_uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                        "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+    assert(addFieldRegex("result_uuid", UUID_REGEX));
 
     registerInputField("data_set_uuid",
                        Sakura::SAKURA_STRING_TYPE,
                        true,
                        "UUID of the data-set to compare to.");
-    assert(addFieldRegex("data_set_uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                          "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+    assert(addFieldRegex("data_set_uuid", UUID_REGEX));
 
     //----------------------------------------------------------------------------------------------
     // output

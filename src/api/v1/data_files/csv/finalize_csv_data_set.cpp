@@ -31,6 +31,7 @@
 #include <libKitsunemimiHanamiCommon/uuid.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
+#include <libKitsunemimiHanamiCommon/defines.h>
 #include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 
 #include <libKitsunemimiSakuraLang/structs.h>
@@ -44,13 +45,9 @@
 
 using namespace Kitsunemimi::Sakura;
 
-// prepare regex for value-identification
-const std::regex intVal("^-?([0-9]+)$");
-const std::regex floatVal("^-?([0-9]+)\\.([0-9]+)$");
-
 FinalizeCsvDataSet::FinalizeCsvDataSet()
-    : Kitsunemimi::Sakura::Blossom("Finalize uploaded dataset by checking completeness of the "
-                                   "uploaded and convert into generic format.")
+    : Blossom("Finalize uploaded data-set by checking completeness of the "
+              "uploaded and convert into generic format.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -59,15 +56,14 @@ FinalizeCsvDataSet::FinalizeCsvDataSet()
     registerInputField("uuid",
                        SAKURA_STRING_TYPE,
                        true,
-                       "Name of the new set.");
-    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                 "[a-fA-F0-9]{12}"));
+                       "UUID of the new data-set.");
+    assert(addFieldRegex("uuid", UUID_REGEX));
+
     registerInputField("uuid_input_file",
                        SAKURA_STRING_TYPE,
                        true,
                        "UUID to identify the file for date upload of input-data.");
-    assert(addFieldRegex("uuid_input_file", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                            "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+    assert(addFieldRegex("uuid_input_file", UUID_REGEX));
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -75,7 +71,7 @@ FinalizeCsvDataSet::FinalizeCsvDataSet()
 
     registerOutputField("uuid",
                         SAKURA_STRING_TYPE,
-                        "UUID of the new set.");
+                        "UUID of the new data-set.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -159,12 +155,12 @@ FinalizeCsvDataSet::convertField(float* segmentPos,
         *segmentPos = 0.0f;
     }
     // int/long
-    else if(regex_match(cell, intVal))
+    else if(regex_match(cell, std::regex(INT_VALUE_REGEX)))
     {
         *segmentPos = static_cast<float>(std::stoi(cell.c_str()));
     }
     // float/double
-    else if(regex_match(cell, floatVal))
+    else if(regex_match(cell, std::regex(FLOAT_VALUE_REGEX)))
     {
         *segmentPos = std::strtof(cell.c_str(), NULL);
     }

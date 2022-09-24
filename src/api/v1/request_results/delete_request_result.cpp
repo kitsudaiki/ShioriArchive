@@ -26,11 +26,12 @@
 #include <database/request_result_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
+#include <libKitsunemimiHanamiCommon/defines.h>
 
 using namespace Kitsunemimi;
 
 DeleteRequestResult::DeleteRequestResult()
-    : Kitsunemimi::Sakura::Blossom("Delete a result-set from shiori.")
+    : Blossom("Delete a request-result from shiori.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -40,8 +41,7 @@ DeleteRequestResult::DeleteRequestResult()
                        Sakura::SAKURA_STRING_TYPE,
                        true,
                        "UUID of the original request-task, which placed the result in shiori.");
-    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                 "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+    assert(addFieldRegex("uuid", UUID_REGEX));
 
     //----------------------------------------------------------------------------------------------
     //

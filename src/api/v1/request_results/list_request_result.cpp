@@ -30,7 +30,7 @@
 using namespace Kitsunemimi::Sakura;
 
 ListRequestResult::ListRequestResult()
-    : Kitsunemimi::Sakura::Blossom("Get overview of all request results.")
+    : Blossom("List all visilbe request-results.")
 {
     //----------------------------------------------------------------------------------------------
     // output
@@ -39,6 +39,11 @@ ListRequestResult::ListRequestResult()
     registerOutputField("header",
                         SAKURA_ARRAY_TYPE,
                         "Array with the namings all columns of the table.");
+    assert(addFieldMatch("header", new Kitsunemimi::DataValue("[\"uuid\","
+                                                              "\"project_id\","
+                                                              "\"owner_id\","
+                                                              "\"visibility\","
+                                                              "\"name\"]")));
 
     registerOutputField("body",
                         SAKURA_ARRAY_TYPE,

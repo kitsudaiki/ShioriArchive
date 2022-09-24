@@ -29,11 +29,12 @@
 #include <libKitsunemimiCommon/methods/file_methods.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
+#include <libKitsunemimiHanamiCommon/defines.h>
 
 using namespace Kitsunemimi;
 
 DeleteDataSet::DeleteDataSet()
-    : Kitsunemimi::Sakura::Blossom("Delete a speific set of dataset.")
+    : Blossom("Delete a speific data-set.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -43,8 +44,7 @@ DeleteDataSet::DeleteDataSet()
                        Sakura::SAKURA_STRING_TYPE,
                        true,
                        "UUID of the data-set to delete.");
-    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                 "[a-fA-F0-9]{12}"));
+    assert(addFieldRegex("uuid", UUID_REGEX));
 
     //----------------------------------------------------------------------------------------------
     //

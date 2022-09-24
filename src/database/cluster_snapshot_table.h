@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_CLUSTER_SNAPSHOT_TABLE_H
-#define SAGIRIARCHIVE_CLUSTER_SNAPSHOT_TABLE_H
+#ifndef SHIORIARCHIVE_CLUSTER_SNAPSHOT_TABLE_H
+#define SHIORIARCHIVE_CLUSTER_SNAPSHOT_TABLE_H
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiHanamiDatabase/hanami_sql_table.h>
@@ -58,4 +58,4 @@ public:
                          Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SAGIRIARCHIVE_CLUSTER_SNAPSHOT_TABLE_H
+#endif // SHIORIARCHIVE_CLUSTER_SNAPSHOT_TABLE_H

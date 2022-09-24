@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_DATASETFILE_H
-#define SAGIRIARCHIVE_DATASETFILE_H
+#ifndef SHIORIARCHIVE_DATASETFILE_H
+#define SHIORIARCHIVE_DATASETFILE_H
 
 #include <libKitsunemimiCommon/logger.h>
 
@@ -116,4 +116,4 @@ protected:
 
 DataSetFile* readDataSetFile(const std::string &filePath);
 
-#endif // SAGIRIARCHIVE_DATASETFILE_H
+#endif // SHIORIARCHIVE_DATASETFILE_H

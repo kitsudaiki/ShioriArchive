@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_TABLEDATASETFILE_H
-#define SAGIRIARCHIVE_TABLEDATASETFILE_H
+#ifndef SHIORIARCHIVE_TABLEDATASETFILE_H
+#define SHIORIARCHIVE_TABLEDATASETFILE_H
 
 #include <core/data_set_files/data_set_file.h>
 
@@ -46,4 +46,4 @@ protected:
     void readHeader(const uint8_t* u8buffer);
 };
 
-#endif // SAGIRIARCHIVE_TABLEDATASETFILE_H
+#endif // SHIORIARCHIVE_TABLEDATASETFILE_H

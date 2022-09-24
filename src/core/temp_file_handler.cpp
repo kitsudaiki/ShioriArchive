@@ -38,7 +38,7 @@ TempFileHandler::~TempFileHandler()
 {
     bool success = false;
     Kitsunemimi::ErrorContainer error;
-    const std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
+    const std::string targetFilePath = GET_STRING_CONFIG("shiori", "data_set_location", success);
 
     std::vector<std::string> result;
     std::map<std::string, Kitsunemimi::BinaryFile*>::iterator it;
@@ -72,7 +72,7 @@ TempFileHandler::initNewFile(const std::string &id, const uint64_t size)
     }
 
     bool success = false;
-    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
+    std::string targetFilePath = GET_STRING_CONFIG("shiori", "data_set_location", success);
     targetFilePath += "/" + id;
 
     Kitsunemimi::ErrorContainer error;
@@ -160,7 +160,7 @@ TempFileHandler::removeData(const std::string &id)
 {
     bool success = false;
     Kitsunemimi::ErrorContainer error;
-    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
+    std::string targetFilePath = GET_STRING_CONFIG("shiori", "data_set_location", success);
 
     std::map<std::string, Kitsunemimi::BinaryFile*>::const_iterator it;
     it = m_tempFiles.find(id);
@@ -195,7 +195,7 @@ TempFileHandler::moveData(const std::string &uuid,
                           Kitsunemimi::ErrorContainer &error)
 {
     bool success = false;
-    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
+    std::string targetFilePath = GET_STRING_CONFIG("shiori", "data_set_location", success);
 
     std::map<std::string, Kitsunemimi::BinaryFile*>::const_iterator it;
     it = m_tempFiles.find(uuid);

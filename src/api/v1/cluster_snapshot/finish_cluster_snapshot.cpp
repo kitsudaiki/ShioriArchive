@@ -22,7 +22,7 @@
 
 #include "finish_cluster_snapshot.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/cluster_snapshot_table.h>
 #include <core/temp_file_handler.h>
 
@@ -103,7 +103,7 @@ FinalizeClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::clusterSnapshotTable->getClusterSnapshot(result,
+    if(ShioriRoot::clusterSnapshotTable->getClusterSnapshot(result,
                                                             uuid,
                                                             userContext,
                                                             error,
@@ -116,7 +116,7 @@ FinalizeClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
 
     // read input-data from temp-file
     Kitsunemimi::DataBuffer inputBuffer;
-    if(SagiriRoot::tempFileHandler->getData(inputBuffer, inputUuid) == false)
+    if(ShioriRoot::tempFileHandler->getData(inputBuffer, inputUuid) == false)
     {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
         status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
@@ -125,7 +125,7 @@ FinalizeClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
 
     // move temp-file to target-location
     const std::string targetLocation = result.get("location").getString();
-    if(SagiriRoot::tempFileHandler->moveData(inputUuid, targetLocation, error) == false)
+    if(ShioriRoot::tempFileHandler->moveData(inputUuid, targetLocation, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

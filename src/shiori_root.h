@@ -1,5 +1,5 @@
 /**
- * @file        sagiri_root.h
+ * @file        shiori_root.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_SAGIRIROOT_H
-#define SAGIRIARCHIVE_SAGIRIROOT_H
+#ifndef SHIORIARCHIVE_SHIORIROOT_H
+#define SHIORIARCHIVE_SHIORIROOT_H
 
 namespace Kitsunemimi {
 namespace Sakura {
@@ -33,10 +33,10 @@ class ClusterSnapshotTable;
 class RequestResultTable;
 class TempFileHandler;
 
-class SagiriRoot
+class ShioriRoot
 {
 public:
-    SagiriRoot();
+    ShioriRoot();
 
     bool init();
 
@@ -47,4 +47,4 @@ public:
     static Kitsunemimi::Sakura::SqlDatabase* database;
 };
 
-#endif // SAGIRIARCHIVE_SAGIRIROOT_H
+#endif // SHIORIARCHIVE_SHIORIROOT_H

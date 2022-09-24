@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_CONFIG_H
-#define SAGIRIARCHIVE_CONFIG_H
+#ifndef SHIORIARCHIVE_CONFIG_H
+#define SHIORIARCHIVE_CONFIG_H
 
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiHanamiCommon/config.h>
@@ -35,10 +35,10 @@ registerConfigs(Kitsunemimi::ErrorContainer &error)
 {
     Kitsunemimi::Hanami::registerBasicConfigs(error);
 
-    REGISTER_STRING_CONFIG( "sagiri", "data_set_location",         error, "", true );
-    REGISTER_STRING_CONFIG( "sagiri", "error_location",            error, "", true );
-    REGISTER_STRING_CONFIG( "sagiri", "audit_location",            error, "", true );
-    REGISTER_STRING_CONFIG( "sagiri", "cluster_snapshot_location", error, "", true );
+    REGISTER_STRING_CONFIG( "shiori", "data_set_location",         error, "", true );
+    REGISTER_STRING_CONFIG( "shiori", "error_location",            error, "", true );
+    REGISTER_STRING_CONFIG( "shiori", "audit_location",            error, "", true );
+    REGISTER_STRING_CONFIG( "shiori", "cluster_snapshot_location", error, "", true );
 }
 
-#endif // SAGIRIARCHIVE_CONFIG_H
+#endif // SHIORIARCHIVE_CONFIG_H

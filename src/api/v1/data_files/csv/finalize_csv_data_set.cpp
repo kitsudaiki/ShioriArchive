@@ -22,7 +22,7 @@
 
 #include "finalize_csv_data_set.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/data_set_table.h>
 #include <core/temp_file_handler.h>
 #include <core/data_set_files/data_set_file.h>
@@ -97,7 +97,7 @@ FinalizeCsvDataSet::runTask(BlossomLeaf &blossomLeaf,
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::dataSetTable->getDataSet(result, uuid, userContext, error, true) == false)
+    if(ShioriRoot::dataSetTable->getDataSet(result, uuid, userContext, error, true) == false)
     {
         status.errorMessage = "Data with uuid '" + uuid + "' not found.";
         status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
@@ -106,7 +106,7 @@ FinalizeCsvDataSet::runTask(BlossomLeaf &blossomLeaf,
 
     // read input-data from temp-file
     Kitsunemimi::DataBuffer inputBuffer;
-    if(SagiriRoot::tempFileHandler->getData(inputBuffer, inputUuid) == false)
+    if(ShioriRoot::tempFileHandler->getData(inputBuffer, inputUuid) == false)
     {
         status.errorMessage = "Input-data with uuid '" + inputUuid + "' not found.";
         status.statusCode = Kitsunemimi::Hanami::NOT_FOUND_RTYPE;
@@ -124,7 +124,7 @@ FinalizeCsvDataSet::runTask(BlossomLeaf &blossomLeaf,
     }
 
     // delete temp-files
-    SagiriRoot::tempFileHandler->removeData(inputUuid);
+    ShioriRoot::tempFileHandler->removeData(inputUuid);
 
     // create output
     blossomLeaf.output.insert("uuid", uuid);

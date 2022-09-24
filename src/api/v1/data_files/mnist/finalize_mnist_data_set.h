@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H
-#define SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H
+#ifndef SHIORIARCHIVE_MNIST_FINALIZE_DATA_SET_H
+#define SHIORIARCHIVE_MNIST_FINALIZE_DATA_SET_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 #include <libKitsunemimiCommon/buffer/data_buffer.h>
@@ -45,4 +45,4 @@ private:
                           const Kitsunemimi::DataBuffer &labelBuffer);
 };
 
-#endif // SAGIRIARCHIVE_MNIST_FINALIZE_DATA_SET_H
+#endif // SHIORIARCHIVE_MNIST_FINALIZE_DATA_SET_H

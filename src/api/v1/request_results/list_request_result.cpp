@@ -22,7 +22,7 @@
 
 #include "list_request_result.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/request_result_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -62,7 +62,7 @@ ListRequestResult::runTask(BlossomLeaf &blossomLeaf,
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(SagiriRoot::requestResultTable->getAllRequestResult(table, userContext, error) == false)
+    if(ShioriRoot::requestResultTable->getAllRequestResult(table, userContext, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

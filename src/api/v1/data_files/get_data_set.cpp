@@ -22,7 +22,7 @@
 
 #include "get_data_set.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/data_set_table.h>
 #include <core/data_set_files/data_set_file.h>
 #include <core/data_set_files/image_data_set_file.h>
@@ -101,7 +101,7 @@ GetDataSet::runTask(BlossomLeaf &blossomLeaf,
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
-    if(SagiriRoot::dataSetTable->getDataSet(blossomLeaf.output,
+    if(ShioriRoot::dataSetTable->getDataSet(blossomLeaf.output,
                                             dataUuid,
                                             userContext,
                                             error,

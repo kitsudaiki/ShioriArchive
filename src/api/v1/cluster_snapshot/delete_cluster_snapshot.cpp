@@ -22,7 +22,7 @@
 
 #include "delete_cluster_snapshot.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/cluster_snapshot_table.h>
 
 #include <libKitsunemimiJson/json_item.h>
@@ -34,7 +34,7 @@
 using namespace Kitsunemimi;
 
 DeleteClusterSnapshot::DeleteClusterSnapshot()
-    : Kitsunemimi::Sakura::Blossom("Delete a result-set from sagiri.")
+    : Kitsunemimi::Sakura::Blossom("Delete a result-set from shiori.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -66,7 +66,7 @@ DeleteClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::clusterSnapshotTable->getClusterSnapshot(result,
+    if(ShioriRoot::clusterSnapshotTable->getClusterSnapshot(result,
                                                             dataUuid,
                                                             userContext,
                                                             error,
@@ -80,7 +80,7 @@ DeleteClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const std::string location = result.get("location").getString();
 
     // delete entry from db
-    if(SagiriRoot::clusterSnapshotTable->deleteClusterSnapshot(dataUuid,
+    if(ShioriRoot::clusterSnapshotTable->deleteClusterSnapshot(dataUuid,
                                                                userContext,
                                                                error) == false)
     {

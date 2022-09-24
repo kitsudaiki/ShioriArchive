@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_GET_PROGRESS_DATA_SET_H
-#define SAGIRIARCHIVE_GET_PROGRESS_DATA_SET_H
+#ifndef SHIORIARCHIVE_GET_PROGRESS_DATA_SET_H
+#define SHIORIARCHIVE_GET_PROGRESS_DATA_SET_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
@@ -39,4 +39,4 @@ protected:
 };
 
 
-#endif // SAGIRIARCHIVE_GET_PROGRESS_DATA_SET_H
+#endif // SHIORIARCHIVE_GET_PROGRESS_DATA_SET_H

@@ -22,7 +22,7 @@
 
 #include "get_progress_data_set.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/data_set_table.h>
 #include <core/data_set_files/data_set_file.h>
 #include <core/data_set_files/image_data_set_file.h>
@@ -81,7 +81,7 @@ GetProgressDataSet::runTask(BlossomLeaf &blossomLeaf,
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     Kitsunemimi::Json::JsonItem databaseOutput;
-    if(SagiriRoot::dataSetTable->getDataSet(databaseOutput,
+    if(ShioriRoot::dataSetTable->getDataSet(databaseOutput,
                                             dataUuid,
                                             userContext,
                                             error,

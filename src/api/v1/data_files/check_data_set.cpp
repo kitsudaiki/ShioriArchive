@@ -22,7 +22,7 @@
 
 #include "check_data_set.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/request_result_table.h>
 #include <database/data_set_table.h>
 #include <core/data_set_files/data_set_file.h>
@@ -88,7 +88,7 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     // get result
     // check if request-result exist within the table
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::requestResultTable->getRequestResult(result,
+    if(ShioriRoot::requestResultTable->getRequestResult(result,
                                                         resultUuid,
                                                         userContext,
                                                         error,
@@ -108,7 +108,7 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     }
 
     // get data-info from database
-    if(SagiriRoot::dataSetTable->getDataSet(blossomLeaf.output,
+    if(ShioriRoot::dataSetTable->getDataSet(blossomLeaf.output,
                                             dataUuid,
                                             userContext,
                                             error,

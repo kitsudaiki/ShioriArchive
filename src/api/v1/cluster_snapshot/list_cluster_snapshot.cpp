@@ -22,7 +22,7 @@
 
 #include "list_cluster_snapshot.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/cluster_snapshot_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -62,7 +62,7 @@ ListClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(SagiriRoot::clusterSnapshotTable->getAllClusterSnapshot(table, userContext, error) == false)
+    if(ShioriRoot::clusterSnapshotTable->getAllClusterSnapshot(table, userContext, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

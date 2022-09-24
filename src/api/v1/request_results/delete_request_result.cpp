@@ -22,7 +22,7 @@
 
 #include "delete_request_result.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/request_result_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -30,7 +30,7 @@
 using namespace Kitsunemimi;
 
 DeleteRequestResult::DeleteRequestResult()
-    : Kitsunemimi::Sakura::Blossom("Delete a result-set from sagiri.")
+    : Kitsunemimi::Sakura::Blossom("Delete a result-set from shiori.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -39,7 +39,7 @@ DeleteRequestResult::DeleteRequestResult()
     registerInputField("uuid",
                        Sakura::SAKURA_STRING_TYPE,
                        true,
-                       "UUID of the original request-task, which placed the result in sagiri.");
+                       "UUID of the original request-task, which placed the result in shiori.");
     assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
                                  "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
 
@@ -62,7 +62,7 @@ DeleteRequestResult::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // check if request-result exist within the table
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::requestResultTable->getRequestResult(result,
+    if(ShioriRoot::requestResultTable->getRequestResult(result,
                                                         uuid,
                                                         userContext,
                                                         error,
@@ -75,7 +75,7 @@ DeleteRequestResult::runTask(Sakura::BlossomLeaf &blossomLeaf,
     }
 
     // delete entry from db
-    if(SagiriRoot::requestResultTable->deleteRequestResult(uuid, userContext, error) == false)
+    if(ShioriRoot::requestResultTable->deleteRequestResult(uuid, userContext, error) == false)
     {
         status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

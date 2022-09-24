@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_TEMPFILEHANDLER_H
-#define SAGIRIARCHIVE_TEMPFILEHANDLER_H
+#ifndef SHIORIARCHIVE_TEMPFILEHANDLER_H
+#define SHIORIARCHIVE_TEMPFILEHANDLER_H
 
 #include <string>
 #include <map>
@@ -55,4 +55,4 @@ private:
     std::map<std::string, Kitsunemimi::BinaryFile*> m_tempFiles;
 };
 
-#endif // SAGIRIARCHIVE_TEMPFILEHANDLER_H
+#endif // SHIORIARCHIVE_TEMPFILEHANDLER_H

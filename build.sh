@@ -111,23 +111,23 @@ echo "##########################################################################
 echo ""
 get_required_private_repo_github "libAzukiHeart" "develop" 8
 get_required_private_repo_github "libMisakiGuard" "develop" 8
-get_required_private_repo_github "libSagiriArchive" "develop" 8
+get_required_private_repo_github "libShioriArchive" "develop" 8
 echo ""
 echo "###########################################################################################################"
 
 #-----------------------------------------------------------------------------------------------------------------
 
-# create build directory for SagiriArchive and go into this directory
-LIB_KITSUNE_SAKURA_TREE_DIR="$BUILD_DIR/SagiriArchive"
+# create build directory for ShioriArchive and go into this directory
+LIB_KITSUNE_SAKURA_TREE_DIR="$BUILD_DIR/ShioriArchive"
 mkdir -p $LIB_KITSUNE_SAKURA_TREE_DIR
 cd $LIB_KITSUNE_SAKURA_TREE_DIR
 
-# build SagiriArchive with qmake
-/usr/lib/x86_64-linux-gnu/qt5/bin/qmake "$PARENT_DIR/SagiriArchive/SagiriArchive.pro" -spec linux-g++ "CONFIG += optimize_full"
+# build ShioriArchive with qmake
+/usr/lib/x86_64-linux-gnu/qt5/bin/qmake "$PARENT_DIR/ShioriArchive/ShioriArchive.pro" -spec linux-g++ "CONFIG += optimize_full"
 /usr/bin/make -j8
 
 # copy build-result and include-files into the result-directory
-cp "$LIB_KITSUNE_SAKURA_TREE_DIR/SagiriArchive" "$RESULT_DIR/"
+cp "$LIB_KITSUNE_SAKURA_TREE_DIR/ShioriArchive" "$RESULT_DIR/"
 
 #-----------------------------------------------------------------------------------------------------------------
 

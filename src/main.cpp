@@ -26,7 +26,7 @@
 #include <args.h>
 #include <thread>
 #include <callbacks.h>
-#include <sagiri_root.h>
+#include <shiori_root.h>
 
 #include <libKitsunemimiHanamiCommon/generic_main.h>
 #include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
@@ -43,7 +43,7 @@ using Kitsunemimi::Hanami::initMain;
 int main(int argc, char *argv[])
 {
     Kitsunemimi::ErrorContainer error;
-    if(initMain(argc, argv, "sagiri", &registerArguments, &registerConfigs, error) == false)
+    if(initMain(argc, argv, "shiori", &registerArguments, &registerConfigs, error) == false)
     {
         LOG_ERROR(error);
         return 1;
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 
     // initialize server and connections based on the config-file
     const std::vector<std::string> groupNames = {"misaki"};
-    if(HanamiMessaging::getInstance()->initialize("sagiri",
+    if(HanamiMessaging::getInstance()->initialize("shiori",
                                                   groupNames,
                                                   nullptr,
                                                   &streamDataCallback,
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     Azuki::initAzukiBlossoms();
     Misaki::initMisakiBlossoms();
 
-    SagiriRoot rootObj;
+    ShioriRoot rootObj;
     if(rootObj.init() == false) {
         return 1;
     }

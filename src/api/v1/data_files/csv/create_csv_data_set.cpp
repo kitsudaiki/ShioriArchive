@@ -22,7 +22,7 @@
 
 #include "create_csv_data_set.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/data_set_table.h>
 #include <core/temp_file_handler.h>
 
@@ -97,7 +97,7 @@ CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
 
     // get directory to store data from config
     bool success = false;
-    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "data_set_location", success);
+    std::string targetFilePath = GET_STRING_CONFIG("shiori", "data_set_location", success);
     if(success == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
@@ -107,7 +107,7 @@ CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
 
     // init temp-file for input-data
     const std::string inputUuid = Kitsunemimi::Hanami::generateUuid().toString();
-    if(SagiriRoot::tempFileHandler->initNewFile(inputUuid, inputDataSize) == false)
+    if(ShioriRoot::tempFileHandler->initNewFile(inputUuid, inputDataSize) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to initialize temporary file for new input-data.");
@@ -134,7 +134,7 @@ CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
     blossomLeaf.output.insert("temp_files", tempFiles);
 
     // add to database
-    if(SagiriRoot::dataSetTable->addDataSet(blossomLeaf.output, userContext, error) == false)
+    if(ShioriRoot::dataSetTable->addDataSet(blossomLeaf.output, userContext, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

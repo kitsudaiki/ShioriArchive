@@ -22,7 +22,7 @@
 
 #include "get_request_result.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/request_result_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -40,7 +40,7 @@ GetRequestResult::GetRequestResult()
     registerInputField("uuid",
                        Sakura::SAKURA_STRING_TYPE,
                        true,
-                       "UUID of the original request-task, which placed the result in sagiri.");
+                       "UUID of the original request-task, which placed the result in shiori.");
     assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
                                  "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
 
@@ -76,7 +76,7 @@ GetRequestResult::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // check if request-result exist within the table
-    if(SagiriRoot::requestResultTable->getRequestResult(blossomLeaf.output,
+    if(ShioriRoot::requestResultTable->getRequestResult(blossomLeaf.output,
                                                         uuid,
                                                         userContext,
                                                         error,

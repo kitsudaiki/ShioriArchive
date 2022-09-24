@@ -22,7 +22,7 @@
 
 #include "get_cluster_snapshot.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/cluster_snapshot_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -39,7 +39,7 @@ GetClusterSnapshot::GetClusterSnapshot()
     registerInputField("uuid",
                        Sakura::SAKURA_STRING_TYPE,
                        true,
-                       "UUID of the original request-task, which placed the result in sagiri.");
+                       "UUID of the original request-task, which placed the result in shiori.");
     assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
                                  "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
 
@@ -77,7 +77,7 @@ GetClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
-    if(SagiriRoot::clusterSnapshotTable->getClusterSnapshot(blossomLeaf.output,
+    if(ShioriRoot::clusterSnapshotTable->getClusterSnapshot(blossomLeaf.output,
                                                             dataUuid,
                                                             userContext,
                                                             error,

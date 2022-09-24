@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_BLOSSOM_INITIALIZING_H
-#define SAGIRIARCHIVE_BLOSSOM_INITIALIZING_H
+#ifndef SHIORIARCHIVE_BLOSSOM_INITIALIZING_H
+#define SHIORIARCHIVE_BLOSSOM_INITIALIZING_H
 
 #include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
 #include <libKitsunemimiCommon/logger.h>
@@ -210,4 +210,4 @@ initBlossoms()
     resultBlossoms();
 }
 
-#endif // SAGIRIARCHIVE_BLOSSOM_INITIALIZING_H
+#endif // SHIORIARCHIVE_BLOSSOM_INITIALIZING_H

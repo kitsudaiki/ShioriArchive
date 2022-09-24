@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_LIST_DATA_SET_H
-#define SAGIRIARCHIVE_LIST_DATA_SET_H
+#ifndef SHIORIARCHIVE_LIST_DATA_SET_H
+#define SHIORIARCHIVE_LIST_DATA_SET_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
@@ -38,4 +38,4 @@ protected:
                  Kitsunemimi::ErrorContainer &error);
 };
 
-#endif // SAGIRIARCHIVE_LIST_DATA_SET_H
+#endif // SHIORIARCHIVE_LIST_DATA_SET_H

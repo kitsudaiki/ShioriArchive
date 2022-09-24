@@ -22,7 +22,7 @@
 
 #include "list_data_set.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/data_set_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -62,7 +62,7 @@ ListDataSet::runTask(BlossomLeaf &blossomLeaf,
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(SagiriRoot::dataSetTable->getAllDataSet(table, userContext, error) == false)
+    if(ShioriRoot::dataSetTable->getAllDataSet(table, userContext, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

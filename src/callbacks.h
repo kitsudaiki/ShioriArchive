@@ -20,15 +20,15 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_CALLBACKS_H
-#define SAGIRIARCHIVE_CALLBACKS_H
+#ifndef SHIORIARCHIVE_CALLBACKS_H
+#define SHIORIARCHIVE_CALLBACKS_H
 
 #include <core/temp_file_handler.h>
 #include <core/data_set_files/data_set_file.h>
 #include <database/data_set_table.h>
 #include <database/cluster_snapshot_table.h>
 #include <database/request_result_table.h>
-#include <sagiri_root.h>
+#include <shiori_root.h>
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/files/text_file.h>
@@ -41,10 +41,10 @@
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 
-#include <libSagiriArchive/sagiri_messages.h>
+#include <libShioriArchive/shiori_messages.h>
 
-#include <../libKitsunemimiHanamiMessages/protobuffers/sagiri_messages.proto3.pb.h>
-#include <../libKitsunemimiHanamiMessages/hanami_messages/sagiri_messages.h>
+#include <../libKitsunemimiHanamiMessages/protobuffers/shiori_messages.proto3.pb.h>
+#include <../libKitsunemimiHanamiMessages/hanami_messages/shiori_messages.h>
 
 /**
  * @brief handleProtobufFileUpload
@@ -65,7 +65,7 @@ handleProtobufFileUpload(const void* data,
         return false;
     }
 
-    if(SagiriRoot::tempFileHandler->addDataToPos(msg.fileuuid(),
+    if(ShioriRoot::tempFileHandler->addDataToPos(msg.fileuuid(),
                                                  msg.position(),
                                                  msg.data().c_str(),
                                                  msg.data().size()) == false)
@@ -83,7 +83,7 @@ handleProtobufFileUpload(const void* data,
 
     if(msg.type() == UploadDataType::DATASET_TYPE)
     {
-        if(SagiriRoot::dataSetTable->setUploadFinish(msg.datasetuuid(),
+        if(ShioriRoot::dataSetTable->setUploadFinish(msg.datasetuuid(),
                                                      msg.fileuuid(),
                                                      error) == false)
         {
@@ -94,7 +94,7 @@ handleProtobufFileUpload(const void* data,
 
     if(msg.type() == UploadDataType::CLUSTER_SNAPSHOT_TYPE)
     {
-        if(SagiriRoot::clusterSnapshotTable->setUploadFinish(msg.datasetuuid(),
+        if(ShioriRoot::clusterSnapshotTable->setUploadFinish(msg.datasetuuid(),
                                                              msg.fileuuid(),
                                                              error) == false)
         {
@@ -125,7 +125,7 @@ handleHanamiFileUpload(const void* data,
         return false;
     }
 
-    if(SagiriRoot::tempFileHandler->addDataToPos(msg.fileUuid,
+    if(ShioriRoot::tempFileHandler->addDataToPos(msg.fileUuid,
                                                  msg.position,
                                                  msg.payload,
                                                  msg.numberOfBytes) == false)
@@ -142,7 +142,7 @@ handleHanamiFileUpload(const void* data,
 
     if(msg.type == UploadDataType::DATASET_TYPE)
     {
-        if(SagiriRoot::dataSetTable->setUploadFinish(msg.datasetUuid,
+        if(ShioriRoot::dataSetTable->setUploadFinish(msg.datasetUuid,
                                                      msg.fileUuid,
                                                      error) == false)
         {
@@ -153,7 +153,7 @@ handleHanamiFileUpload(const void* data,
 
     if(msg.type == UploadDataType::CLUSTER_SNAPSHOT_TYPE)
     {
-        if(SagiriRoot::clusterSnapshotTable->setUploadFinish(msg.datasetUuid,
+        if(ShioriRoot::clusterSnapshotTable->setUploadFinish(msg.datasetUuid,
                                                              msg.fileUuid,
                                                              error) == false)
         {
@@ -221,7 +221,7 @@ getDatetime()
  * @param blockerId blocker-id for the response
  */
 inline void
-handleClusterSnapshotRequest(const Sagiri::ClusterSnapshotPull_Message &msg,
+handleClusterSnapshotRequest(const Shiori::ClusterSnapshotPull_Message &msg,
                              Kitsunemimi::Sakura::Session* session,
                              const uint64_t blockerId)
 {
@@ -257,7 +257,7 @@ handleClusterSnapshotRequest(const Sagiri::ClusterSnapshotPull_Message &msg,
  * @param blockerId blocker-id for the response
  */
 inline void
-handleDataSetRequest(const Sagiri::DatasetRequest_Message &msg,
+handleDataSetRequest(const Shiori::DatasetRequest_Message &msg,
                      Kitsunemimi::Sakura::Session* session,
                      const uint64_t blockerId)
 {
@@ -299,7 +299,7 @@ handleDataSetRequest(const Sagiri::DatasetRequest_Message &msg,
  * @param blockerId blocker-id for the response
  */
 inline void
-handleResultPush(const Sagiri::ResultPush_Message &msg,
+handleResultPush(const Shiori::ResultPush_Message &msg,
                  Kitsunemimi::Sakura::Session* session,
                  const uint64_t blockerId)
 {
@@ -315,7 +315,7 @@ handleResultPush(const Sagiri::ResultPush_Message &msg,
     userContext.userId = msg.userId;
     userContext.projectId = msg.projectId;
 
-    if(SagiriRoot::requestResultTable->addRequestResult(resultData, userContext, error) == false)
+    if(ShioriRoot::requestResultTable->addRequestResult(resultData, userContext, error) == false)
     {
         LOG_ERROR(error);
 
@@ -344,7 +344,7 @@ handleErrorLog(const Kitsunemimi::Hanami::ErrorLog_Message &msg)
     Kitsunemimi::ErrorContainer error;
 
     // TODO: handle result
-    const std::string resultLocation = GET_STRING_CONFIG("sagiri", "error_location", success);
+    const std::string resultLocation = GET_STRING_CONFIG("shiori", "error_location", success);
     std::string filePath = resultLocation + "/";
     if(msg.userId == "") {
         filePath += "generic";
@@ -390,13 +390,13 @@ handleErrorLog(const Kitsunemimi::Hanami::ErrorLog_Message &msg)
  * @param msg message to process
  */
 inline void
-handleAuditLog(const Sagiri::AuditLog_Message &msg)
+handleAuditLog(const Shiori::AuditLog_Message &msg)
 {
     bool success = false;
     Kitsunemimi::ErrorContainer error;
 
     // TODO: handle result
-    const std::string resultLocation = GET_STRING_CONFIG("sagiri", "audit_location", success);
+    const std::string resultLocation = GET_STRING_CONFIG("shiori", "audit_location", success);
     std::string filePath = resultLocation + "/";
     if(msg.userId == "") {
         filePath += "generic";
@@ -468,9 +468,9 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
 
     switch(u8Data[6])
     {
-        case Sagiri::CLUSTER_SNAPSHOT_PULL_MESSAGE_TYPE:
+        case Shiori::CLUSTER_SNAPSHOT_PULL_MESSAGE_TYPE:
             {
-                Sagiri::ClusterSnapshotPull_Message msg;
+                Shiori::ClusterSnapshotPull_Message msg;
                 if(msg.read(data, dataSize) == false)
                 {
                     handleFail("Receive broken cluster-snapshot-message", session, blockerId);
@@ -480,9 +480,9 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
                 handleClusterSnapshotRequest(msg, session, blockerId);
             }
             break;
-        case Sagiri::DATASET_REQUEST_MESSAGE_TYPE:
+        case Shiori::DATASET_REQUEST_MESSAGE_TYPE:
             {
-                Sagiri::DatasetRequest_Message msg;
+                Shiori::DatasetRequest_Message msg;
                 if(msg.read(data, dataSize) == false)
                 {
                     handleFail("Receive broken dataset-requests-message", session, blockerId);
@@ -492,9 +492,9 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
                 handleDataSetRequest(msg, session, blockerId);
             }
             break;
-        case Sagiri::RESULT_PUSH_MESSAGE_TYPE:
+        case Shiori::RESULT_PUSH_MESSAGE_TYPE:
             {
-                Sagiri::ResultPush_Message msg;
+                Shiori::ResultPush_Message msg;
                 if(msg.read(data, dataSize) == false)
                 {
                     handleFail("Receive broken result-push-message", session, blockerId);
@@ -504,9 +504,9 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
                 handleResultPush(msg, session, blockerId);
             }
             break;
-        case Sagiri::AUDIT_LOG_MESSAGE_TYPE:
+        case Shiori::AUDIT_LOG_MESSAGE_TYPE:
             {
-                Sagiri::AuditLog_Message msg;
+                Shiori::AuditLog_Message msg;
                 if(msg.read(data, dataSize) == false)
                 {
                     Kitsunemimi::ErrorContainer error;
@@ -538,4 +538,4 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
     }
 }
 
-#endif // SAGIRIARCHIVE_CALLBACKS_H
+#endif // SHIORIARCHIVE_CALLBACKS_H

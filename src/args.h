@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef SAGIRIARCHIVE_ARGS_H
-#define SAGIRIARCHIVE_ARGS_H
+#ifndef SHIORIARCHIVE_ARGS_H
+#define SHIORIARCHIVE_ARGS_H
 
 #include <libKitsunemimiArgs/arg_parser.h>
 #include <libKitsunemimiHanamiCommon/args.h>
@@ -45,4 +45,4 @@ registerArguments(Kitsunemimi::Args::ArgParser* argparser,
     return true;
 }
 
-#endif // SAGIRIARCHIVE_ARGS_H
+#endif // SHIORIARCHIVE_ARGS_H

@@ -1,5 +1,5 @@
 /**
- * @file        sagiri_root.cpp
+ * @file        shiori_root.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include "sagiri_root.h"
+#include "shiori_root.h"
 
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
@@ -31,21 +31,21 @@
 #include <core/temp_file_handler.h>
 #include <api/blossom_initializing.h>
 
-TempFileHandler* SagiriRoot::tempFileHandler = nullptr;
-DataSetTable* SagiriRoot::dataSetTable = nullptr;
-ClusterSnapshotTable* SagiriRoot::clusterSnapshotTable = nullptr;
-RequestResultTable* SagiriRoot::requestResultTable = nullptr;
-Kitsunemimi::Sakura::SqlDatabase* SagiriRoot::database = nullptr;
+TempFileHandler* ShioriRoot::tempFileHandler = nullptr;
+DataSetTable* ShioriRoot::dataSetTable = nullptr;
+ClusterSnapshotTable* ShioriRoot::clusterSnapshotTable = nullptr;
+RequestResultTable* ShioriRoot::requestResultTable = nullptr;
+Kitsunemimi::Sakura::SqlDatabase* ShioriRoot::database = nullptr;
 
-SagiriRoot::SagiriRoot() {}
+ShioriRoot::ShioriRoot() {}
 
 /**
- * @brief init sagiri-root-object
+ * @brief init shiori-root-object
  *
  * @return true, if successfull, else false
  */
 bool
-SagiriRoot::init()
+ShioriRoot::init()
 {
     Kitsunemimi::ErrorContainer error;
     bool success = false;

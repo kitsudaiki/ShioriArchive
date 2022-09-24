@@ -22,7 +22,7 @@
 
 #include "create_cluster_snapshot.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/cluster_snapshot_table.h>
 #include <core/temp_file_handler.h>
 
@@ -129,7 +129,7 @@ CreateClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // get directory to store data from config
     bool success = false;
-    std::string targetFilePath = GET_STRING_CONFIG("sagiri", "cluster_snapshot_location", success);
+    std::string targetFilePath = GET_STRING_CONFIG("shiori", "cluster_snapshot_location", success);
     if(success == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
@@ -139,7 +139,7 @@ CreateClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // init temp-file for input-data
     const std::string inputUuid = Kitsunemimi::Hanami::generateUuid().toString();
-    if(SagiriRoot::tempFileHandler->initNewFile(inputUuid, inputDataSize) == false)
+    if(ShioriRoot::tempFileHandler->initNewFile(inputUuid, inputDataSize) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Failed to initialize temporary file for new input-data.");
@@ -167,7 +167,7 @@ CreateClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
     blossomLeaf.output.insert("temp_files", tempFiles);
 
     // add to database
-    if(SagiriRoot::clusterSnapshotTable->addClusterSnapshot(blossomLeaf.output,
+    if(ShioriRoot::clusterSnapshotTable->addClusterSnapshot(blossomLeaf.output,
                                                             userContext,
                                                             error) == false)
     {

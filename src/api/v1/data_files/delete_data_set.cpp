@@ -22,7 +22,7 @@
 
 #include "delete_data_set.h"
 
-#include <sagiri_root.h>
+#include <shiori_root.h>
 #include <database/data_set_table.h>
 
 #include <libKitsunemimiJson/json_item.h>
@@ -65,7 +65,7 @@ DeleteDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
 
     // get location from database
     Kitsunemimi::Json::JsonItem result;
-    if(SagiriRoot::dataSetTable->getDataSet(result,
+    if(ShioriRoot::dataSetTable->getDataSet(result,
                                             dataUuid,
                                             userContext,
                                             error,
@@ -79,7 +79,7 @@ DeleteDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const std::string location = result.get("location").getString();
 
     // delete entry from db
-    if(SagiriRoot::dataSetTable->deleteDataSet(dataUuid, userContext, error) == false)
+    if(ShioriRoot::dataSetTable->deleteDataSet(dataUuid, userContext, error) == false)
     {
         status.statusCode = Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

@@ -30,7 +30,7 @@
 using namespace Kitsunemimi::Sakura;
 
 ListDataSet::ListDataSet()
-    : Kitsunemimi::Sakura::Blossom("Get information of all uploaded sets fo dataset as table.")
+    : Blossom("List all visible data-sets.")
 {
     //----------------------------------------------------------------------------------------------
     // output
@@ -39,6 +39,12 @@ ListDataSet::ListDataSet()
     registerOutputField("header",
                         SAKURA_ARRAY_TYPE,
                         "Array with the namings all columns of the table.");
+    assert(addFieldMatch("header", new Kitsunemimi::DataValue("[\"uuid\","
+                                                              "\"project_id\","
+                                                              "\"owner_id\","
+                                                              "\"visibility\","
+                                                              "\"name\","
+                                                              "\"type\"]")));
 
     registerOutputField("body",
                         SAKURA_ARRAY_TYPE,

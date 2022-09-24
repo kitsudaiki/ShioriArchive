@@ -27,21 +27,26 @@
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
-using namespace Kitsunemimi;
+using namespace Kitsunemimi::Sakura;
 
 ListClusterSnapshot::ListClusterSnapshot()
-    : Kitsunemimi::Sakura::Blossom("List snapshots of all cluster.")
+    : Blossom("List snapshots of all visible cluster.")
 {
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("header",
-                        Sakura::SAKURA_ARRAY_TYPE,
+                        SAKURA_ARRAY_TYPE,
                         "Array with the namings all columns of the table.");
-    // TODO: regex for header
+    assert(addFieldMatch("header", new Kitsunemimi::DataValue("[\"uuid\","
+                                                              "\"project_id\","
+                                                              "\"owner_id\","
+                                                              "\"visibility\","
+                                                              "\"name\"]")));
+
     registerOutputField("body",
-                        Sakura::SAKURA_ARRAY_TYPE,
+                        SAKURA_ARRAY_TYPE,
                         "Array with all rows of the table, which array arrays too.");
 
     //----------------------------------------------------------------------------------------------
@@ -53,10 +58,10 @@ ListClusterSnapshot::ListClusterSnapshot()
  * @brief runTask
  */
 bool
-ListClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
+ListClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
                              const Kitsunemimi::DataMap &context,
-                             Sakura::BlossomStatus &status,
-                             ErrorContainer &error)
+                             BlossomStatus &status,
+                             Kitsunemimi::ErrorContainer &error)
 {
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
@@ -68,7 +73,6 @@ ListClusterSnapshot::runTask(Sakura::BlossomLeaf &blossomLeaf,
         return false;
     }
 
-    table.deleteColumn("pw_hash");
     blossomLeaf.output.insert("header", table.getInnerHeader());
     blossomLeaf.output.insert("body", table.getBody());
 

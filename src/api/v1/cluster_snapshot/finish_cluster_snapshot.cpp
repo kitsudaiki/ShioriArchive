@@ -33,7 +33,7 @@
 using namespace Kitsunemimi::Sakura;
 
 FinalizeClusterSnapshot::FinalizeClusterSnapshot()
-    : Kitsunemimi::Sakura::Blossom("Finish snapshot of a cluster.")
+    : Blossom("Finish snapshot of a cluster.")
 {
     //----------------------------------------------------------------------------------------------
     // input

@@ -29,6 +29,7 @@
 #include <core/data_set_files/table_data_set_file.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
+#include <libKitsunemimiHanamiCommon/defines.h>
 
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
@@ -46,8 +47,7 @@ GetProgressDataSet::GetProgressDataSet()
                        SAKURA_STRING_TYPE,
                        true,
                        "UUID of the dataset set to delete.");
-    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                 "[a-fA-F0-9]{12}"));
+    assert(addFieldRegex("uuid", UUID_REGEX));
 
     //----------------------------------------------------------------------------------------------
     // output

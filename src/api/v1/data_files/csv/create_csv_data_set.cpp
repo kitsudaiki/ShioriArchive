@@ -29,6 +29,7 @@
 #include <libKitsunemimiHanamiCommon/uuid.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
+#include <libKitsunemimiHanamiCommon/defines.h>
 #include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 
 #include <libKitsunemimiSakuraLang/structs.h>
@@ -41,7 +42,7 @@
 using namespace Kitsunemimi::Sakura;
 
 CreateCsvDataSet::CreateCsvDataSet()
-    : Kitsunemimi::Sakura::Blossom("Init new dataset.")
+    : Blossom("Init new csv-file data-set.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -50,9 +51,9 @@ CreateCsvDataSet::CreateCsvDataSet()
     registerInputField("name",
                        SAKURA_STRING_TYPE,
                        true,
-                       "Name of the new set.");
+                       "Name of the new data-set.");
     assert(addFieldBorder("name", 4, 256));
-    assert(addFieldRegex("name", "[a-zA-Z][a-zA-Z_0-9]*"));
+    assert(addFieldRegex("name", NAME_REGEX));
 
     registerInputField("input_data_size",
                        SAKURA_INT_TYPE,
@@ -66,16 +67,22 @@ CreateCsvDataSet::CreateCsvDataSet()
 
     registerOutputField("uuid",
                         SAKURA_STRING_TYPE,
-                        "UUID of the new set.");
+                        "UUID of the new data-set.");
     registerOutputField("name",
                         SAKURA_STRING_TYPE,
-                        "Name of the new set.");
-    registerOutputField("user_id",
+                        "Name of the new data-set.");
+    registerOutputField("owner_id",
                         SAKURA_STRING_TYPE,
-                        "UUID of the user who uploaded the data.");
+                        "ID of the user, who created the data-set.");
+    registerOutputField("project_id",
+                        SAKURA_STRING_TYPE,
+                        "ID of the project, where the data-set belongs to.");
+    registerOutputField("visibility",
+                        SAKURA_STRING_TYPE,
+                        "Visibility of the data-set (private, shared, public).");
     registerOutputField("type",
                         SAKURA_STRING_TYPE,
-                        "Type of the new set (For example: csv)");
+                        "Type of the new set (csv)");
     registerOutputField("uuid_input_file",
                         SAKURA_STRING_TYPE,
                         "UUID to identify the file for date upload of input-data.");
@@ -86,9 +93,9 @@ CreateCsvDataSet::CreateCsvDataSet()
 }
 
 bool
-CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
+CreateCsvDataSet::runTask(BlossomLeaf &blossomLeaf,
                           const Kitsunemimi::DataMap &context,
-                          Kitsunemimi::Sakura::BlossomStatus &status,
+                          BlossomStatus &status,
                           Kitsunemimi::ErrorContainer &error)
 {
     const std::string name = blossomLeaf.input.get("name").getString();
@@ -145,9 +152,6 @@ CreateCsvDataSet::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
 
     // remove blocked values from output
     blossomLeaf.output.remove("location");
-    blossomLeaf.output.remove("project_id");
-    blossomLeaf.output.remove("owner_id");
-    blossomLeaf.output.remove("visibility");
     blossomLeaf.output.remove("temp_files");
 
     return true;

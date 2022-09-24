@@ -26,37 +26,45 @@
 #include <database/request_result_table.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
+#include <libKitsunemimiHanamiCommon/defines.h>
 
-using namespace Kitsunemimi;
+using namespace Kitsunemimi::Sakura;
 
 GetRequestResult::GetRequestResult()
-    : Kitsunemimi::Sakura::Blossom("Get a specific result, which was placed by a "
-                                   "request-task from kyouko.")
+    : Blossom("Get a specific request-result")
 {
     //----------------------------------------------------------------------------------------------
     // input
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid",
-                       Sakura::SAKURA_STRING_TYPE,
+                       SAKURA_STRING_TYPE,
                        true,
                        "UUID of the original request-task, which placed the result in shiori.");
-    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                 "[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"));
+    assert(addFieldRegex("uuid", UUID_REGEX));
 
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("uuid",
-                        Sakura::SAKURA_STRING_TYPE,
-                        "UUID of the data-set.");
+                        SAKURA_STRING_TYPE,
+                        "UUID of the request-result.");
     registerOutputField("name",
-                        Sakura::SAKURA_STRING_TYPE,
-                        "Name of the data-set.");
+                        SAKURA_STRING_TYPE,
+                        "Name of the request-result.");
+    registerOutputField("owner_id",
+                        SAKURA_STRING_TYPE,
+                        "ID of the user, who created the request-result.");
+    registerOutputField("project_id",
+                        SAKURA_STRING_TYPE,
+                        "ID of the project, where the request-result belongs to.");
+    registerOutputField("visibility",
+                        SAKURA_STRING_TYPE,
+                        "Visibility of the request-result (private, shared, public).");
     registerOutputField("data",
-                        Sakura::SAKURA_ARRAY_TYPE,
-                        "Result of the request-task.");
+                        SAKURA_ARRAY_TYPE,
+                        "Result of the request-task as json-array.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -67,10 +75,10 @@ GetRequestResult::GetRequestResult()
  * @brief runTask
  */
 bool
-GetRequestResult::runTask(Sakura::BlossomLeaf &blossomLeaf,
+GetRequestResult::runTask(BlossomLeaf &blossomLeaf,
                           const Kitsunemimi::DataMap &context,
-                          Sakura::BlossomStatus &status,
-                          ErrorContainer &error)
+                          BlossomStatus &status,
+                          Kitsunemimi::ErrorContainer &error)
 {
     const std::string uuid = blossomLeaf.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
@@ -97,9 +105,6 @@ GetRequestResult::runTask(Sakura::BlossomLeaf &blossomLeaf,
     }
 
     blossomLeaf.output.insert("data", parsedData.getItemContent()->copy(), true);
-    blossomLeaf.output.remove("owner_id");
-    blossomLeaf.output.remove("project_id");
-    blossomLeaf.output.remove("visibility");
 
     return true;
 }

@@ -45,6 +45,7 @@ RequestResultTable::RequestResultTable(Kitsunemimi::Sakura::SqlDatabase* db)
 
     DbHeaderEntry data;
     data.name = "data";
+    data.hide = true;
     m_tableHeader.push_back(data);
 }
 

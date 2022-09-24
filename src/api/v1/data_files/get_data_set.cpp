@@ -29,6 +29,7 @@
 #include <core/data_set_files/table_data_set_file.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
+#include <libKitsunemimiHanamiCommon/defines.h>
 
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
@@ -36,7 +37,7 @@
 using namespace Kitsunemimi::Sakura;
 
 GetDataSet::GetDataSet()
-    : Blossom("Get information of a specific set of dataset.")
+    : Blossom("Get information of a specific data-set.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -45,9 +46,8 @@ GetDataSet::GetDataSet()
     registerInputField("uuid",
                        SAKURA_STRING_TYPE,
                        true,
-                       "UUID of the dataset set to delete.");
-    assert(addFieldRegex("uuid", "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-"
-                                 "[a-fA-F0-9]{12}"));
+                       "UUID of the data-set set to delete.");
+    assert(addFieldRegex("uuid", UUID_REGEX));
 
     //----------------------------------------------------------------------------------------------
     // output
@@ -59,15 +59,21 @@ GetDataSet::GetDataSet()
     registerOutputField("name",
                         SAKURA_STRING_TYPE,
                         "Name of the data-set.");
-    registerOutputField("type",
+    registerOutputField("owner_id",
                         SAKURA_STRING_TYPE,
-                        "Type of the new set (For example: CSV)");
-    registerOutputField("user_id",
+                        "ID of the user, who created the data-set.");
+    registerOutputField("project_id",
                         SAKURA_STRING_TYPE,
-                        "UUID of the user who uploaded the data.");
+                        "ID of the project, where the data-set belongs to.");
+    registerOutputField("visibility",
+                        SAKURA_STRING_TYPE,
+                        "Visibility of the data-set (private, shared, public).");
     registerOutputField("location",
                         SAKURA_STRING_TYPE,
-                        "File path on local storage.");
+                        "Local file-path of the data-set.");
+    registerOutputField("type",
+                        SAKURA_STRING_TYPE,
+                        "Type of the new set (csv or mnist)");
     registerOutputField("inputs",
                         SAKURA_INT_TYPE,
                         "Number of inputs.");
@@ -77,12 +83,6 @@ GetDataSet::GetDataSet()
     registerOutputField("lines",
                         SAKURA_INT_TYPE,
                         "Number of lines.");
-    registerOutputField("average_value",
-                        SAKURA_FLOAT_TYPE,
-                        "Average value within the data-set.");
-    registerOutputField("max_value",
-                        SAKURA_FLOAT_TYPE,
-                        "Maximum value within the data-set.");
 
     //----------------------------------------------------------------------------------------------
     //
@@ -121,9 +121,6 @@ GetDataSet::runTask(BlossomLeaf &blossomLeaf,
     }
 
     // remove irrelevant fields
-    blossomLeaf.output.remove("owner_id");
-    blossomLeaf.output.remove("project_id");
-    blossomLeaf.output.remove("visibility");
     blossomLeaf.output.remove("temp_files");
 
     return true;
@@ -167,8 +164,8 @@ GetDataSet::getHeaderInformation(Kitsunemimi::Json::JsonItem &result,
         result.insert("inputs", static_cast<long>(size));
         result.insert("outputs", static_cast<long>(imgF->imageHeader.numberOfOutputs));
         result.insert("lines", static_cast<long>(imgF->imageHeader.numberOfImages));
-        result.insert("average_value", static_cast<float>(imgF->imageHeader.avgValue));
-        result.insert("max_value", static_cast<float>(imgF->imageHeader.maxValue));
+        // result.insert("average_value", static_cast<float>(imgF->imageHeader.avgValue));
+        // result.insert("max_value", static_cast<float>(imgF->imageHeader.maxValue));
 
         return true;
     }
@@ -196,8 +193,8 @@ GetDataSet::getHeaderInformation(Kitsunemimi::Json::JsonItem &result,
         result.insert("inputs", inputs);
         result.insert("outputs", outputs);
         result.insert("lines", static_cast<long>(imgT->tableHeader.numberOfLines));
-        result.insert("average_value", 0.0f);
-        result.insert("max_value", 0.0f);
+        // result.insert("average_value", 0.0f);
+        // result.insert("max_value", 0.0f);
 
         return true;
     }

@@ -104,7 +104,7 @@ GetRequestResult::runTask(BlossomLeaf &blossomLeaf,
         return false;
     }
 
-    blossomLeaf.output.insert("data", parsedData.getItemContent()->copy(), true);
+    blossomLeaf.output.insert("data", parsedData.stealItemContent(), true);
 
     return true;
 }

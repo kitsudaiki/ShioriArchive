@@ -94,7 +94,7 @@ GetClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-    blossomLeaf.output.insert("header", parsedHeader.getItemContent()->copy(), true);
+    blossomLeaf.output.insert("header", parsedHeader.stealItemContent(), true);
 
     // remove irrelevant fields
     blossomLeaf.output.remove("owner_id");

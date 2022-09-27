@@ -221,7 +221,7 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
         for(uint32_t i = 0; i < pictureSize; i++)
         {
             const uint32_t pos = pic * pictureSize + i + dataOffset;
-            segment[segmentPos] = (static_cast<float>(dataBufferPtr[pos]) / 255.0f);
+            segment[segmentPos] = static_cast<float>(dataBufferPtr[pos]);
 
             // update values for metadata
             averageVal += segment[segmentPos];

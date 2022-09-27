@@ -120,7 +120,6 @@ CreateClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
     const std::string userId = blossomLeaf.input.get("id").getString();
     const std::string projectId = blossomLeaf.input.get("project_id").getString();
     const long inputDataSize = blossomLeaf.input.get("input_data_size").getLong();
-    const std::string header = blossomLeaf.input.get("header").toString();
 
     // snapshots are created by another internal process, which gives the id's not in the context
     // object, but as normal values
@@ -157,7 +156,7 @@ CreateClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
     blossomLeaf.output.insert("uuid", uuid);
     blossomLeaf.output.insert("name", name);
     blossomLeaf.output.insert("location", targetFilePath);
-    blossomLeaf.output.insert("header", header);
+    blossomLeaf.output.insert("header", blossomLeaf.input.get("header"));
     blossomLeaf.output.insert("project_id", projectId);
     blossomLeaf.output.insert("owner_id", userId);
     blossomLeaf.output.insert("visibility", "private");

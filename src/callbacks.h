@@ -305,10 +305,18 @@ handleResultPush(const Shiori::ResultPush_Message &msg,
 {
     Kitsunemimi::ErrorContainer error;
 
+    Kitsunemimi::Json::JsonItem dataParser;
+    if(dataParser.parse(msg.results, error) == false)
+    {
+        error.addMeesage("Error while receivind result-data");
+        LOG_ERROR(error);
+        return;
+    }
+
     Kitsunemimi::Json::JsonItem resultData;
     resultData.insert("uuid", msg.uuid);
     resultData.insert("name", msg.name);
-    resultData.insert("data", msg.results);
+    resultData.insert("data", dataParser.stealItemContent());
     resultData.insert("visibility", "private");
 
     Kitsunemimi::Hanami::UserContext userContext;

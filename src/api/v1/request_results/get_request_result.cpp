@@ -96,15 +96,5 @@ GetRequestResult::runTask(BlossomLeaf &blossomLeaf,
         return false;
     }
 
-    // parse data to array
-    Kitsunemimi::Json::JsonItem parsedData;
-    if(parsedData.parse(blossomLeaf.output.get("data").getString(), error) == false)
-    {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
-    blossomLeaf.output.insert("data", parsedData.stealItemContent(), true);
-
     return true;
 }

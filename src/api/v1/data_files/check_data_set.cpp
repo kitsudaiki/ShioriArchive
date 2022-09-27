@@ -99,13 +99,6 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
         return false;
     }
 
-    Json::JsonItem resultData;
-    if(resultData.parse(result.get("data").getString(), error) == false)
-    {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-
     // get data-info from database
     if(ShioriRoot::dataSetTable->getDataSet(blossomLeaf.output,
                                             dataUuid,
@@ -146,7 +139,7 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     const float* content = reinterpret_cast<const float*>(&u8Data[dataPos]);
 
     // iterate over all values and check
-    DataArray* compareData = resultData.getItemContent()->toArray();
+    DataArray* compareData = result.get("data").getItemContent()->toArray();
     for(uint64_t i = 0; i < compareData->size(); i++)
     {
         const uint64_t actualPos = (i * lineSize) + lineOffset;

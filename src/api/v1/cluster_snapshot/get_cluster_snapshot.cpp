@@ -87,15 +87,6 @@ GetClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
         return false;
     }
 
-    // prepare header-information for output
-    Kitsunemimi::Json::JsonItem parsedHeader;
-    if(parsedHeader.parse(blossomLeaf.output.get("header").getString(), error) == false)
-    {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        return false;
-    }
-    blossomLeaf.output.insert("header", parsedHeader.stealItemContent(), true);
-
     // remove irrelevant fields
     blossomLeaf.output.remove("owner_id");
     blossomLeaf.output.remove("project_id");

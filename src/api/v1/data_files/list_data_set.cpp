@@ -59,7 +59,7 @@ ListDataSet::ListDataSet()
  * @brief runTask
  */
 bool
-ListDataSet::runTask(BlossomLeaf &blossomLeaf,
+ListDataSet::runTask(BlossomIO &blossomIO,
                        const Kitsunemimi::DataMap &context,
                        BlossomStatus &status,
                        Kitsunemimi::ErrorContainer &error)
@@ -74,8 +74,8 @@ ListDataSet::runTask(BlossomLeaf &blossomLeaf,
         return false;
     }
 
-    blossomLeaf.output.insert("header", table.getInnerHeader());
-    blossomLeaf.output.insert("body", table.getBody());
+    blossomIO.output.insert("header", table.getInnerHeader());
+    blossomIO.output.insert("body", table.getBody());
 
     return true;
 }

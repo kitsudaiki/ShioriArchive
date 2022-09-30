@@ -102,14 +102,14 @@ CreateMnistDataSet::CreateMnistDataSet()
 }
 
 bool
-CreateMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
+CreateMnistDataSet::runTask(BlossomIO &blossomIO,
                             const Kitsunemimi::DataMap &context,
                             BlossomStatus &status,
                             Kitsunemimi::ErrorContainer &error)
 {
-    const std::string name = blossomLeaf.input.get("name").getString();
-    const long inputDataSize = blossomLeaf.input.get("input_data_size").getLong();
-    const long labelDataSize = blossomLeaf.input.get("label_data_size").getLong();
+    const std::string name = blossomIO.input.get("name").getString();
+    const long inputDataSize = blossomIO.input.get("input_data_size").getLong();
+    const long labelDataSize = blossomIO.input.get("label_data_size").getLong();
     const std::string uuid = Kitsunemimi::Hanami::generateUuid().toString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
@@ -148,34 +148,34 @@ CreateMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
     targetFilePath.append(uuid + "_mnist_" + userContext.userId);
 
     // register in database
-    blossomLeaf.output.insert("uuid", uuid);
-    blossomLeaf.output.insert("name", name);
-    blossomLeaf.output.insert("type", "mnist");
-    blossomLeaf.output.insert("location", targetFilePath);
-    blossomLeaf.output.insert("project_id", userContext.projectId);
-    blossomLeaf.output.insert("owner_id", userContext.userId);
-    blossomLeaf.output.insert("visibility", "private");
+    blossomIO.output.insert("uuid", uuid);
+    blossomIO.output.insert("name", name);
+    blossomIO.output.insert("type", "mnist");
+    blossomIO.output.insert("location", targetFilePath);
+    blossomIO.output.insert("project_id", userContext.projectId);
+    blossomIO.output.insert("owner_id", userContext.userId);
+    blossomIO.output.insert("visibility", "private");
 
     // init placeholder for temp-file progress to database
     Kitsunemimi::Json::JsonItem tempFiles;
     tempFiles.insert(inputUuid, Kitsunemimi::Json::JsonItem(0.0f));
     tempFiles.insert(labelUuid, Kitsunemimi::Json::JsonItem(0.0f));
-    blossomLeaf.output.insert("temp_files", tempFiles);
+    blossomIO.output.insert("temp_files", tempFiles);
 
     // add to database
-    if(ShioriRoot::dataSetTable->addDataSet(blossomLeaf.output, userContext, error) == false)
+    if(ShioriRoot::dataSetTable->addDataSet(blossomIO.output, userContext, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
 
     // add values to output
-    blossomLeaf.output.insert("uuid_input_file", inputUuid);
-    blossomLeaf.output.insert("uuid_label_file", labelUuid);
+    blossomIO.output.insert("uuid_input_file", inputUuid);
+    blossomIO.output.insert("uuid_label_file", labelUuid);
 
     // remove blocked values from output
-    blossomLeaf.output.remove("location");
-    blossomLeaf.output.remove("temp_files");
+    blossomIO.output.remove("location");
+    blossomIO.output.remove("temp_files");
 
     return true;
 }

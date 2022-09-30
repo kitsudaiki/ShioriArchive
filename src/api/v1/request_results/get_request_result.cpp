@@ -75,16 +75,16 @@ GetRequestResult::GetRequestResult()
  * @brief runTask
  */
 bool
-GetRequestResult::runTask(BlossomLeaf &blossomLeaf,
+GetRequestResult::runTask(BlossomIO &blossomIO,
                           const Kitsunemimi::DataMap &context,
                           BlossomStatus &status,
                           Kitsunemimi::ErrorContainer &error)
 {
-    const std::string uuid = blossomLeaf.input.get("uuid").getString();
+    const std::string uuid = blossomIO.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // check if request-result exist within the table
-    if(ShioriRoot::requestResultTable->getRequestResult(blossomLeaf.output,
+    if(ShioriRoot::requestResultTable->getRequestResult(blossomIO.output,
                                                         uuid,
                                                         userContext,
                                                         error,

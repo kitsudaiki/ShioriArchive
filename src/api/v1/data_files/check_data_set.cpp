@@ -75,13 +75,13 @@ CheckDataSet::CheckDataSet()
  * @brief runTask
  */
 bool
-CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
+CheckDataSet::runTask(Sakura::BlossomIO &blossomIO,
                       const Kitsunemimi::DataMap &context,
                       Sakura::BlossomStatus &status,
                       ErrorContainer &error)
 {
-    const std::string resultUuid = blossomLeaf.input.get("result_uuid").getString();
-    const std::string dataUuid = blossomLeaf.input.get("data_set_uuid").getString();
+    const std::string resultUuid = blossomIO.input.get("result_uuid").getString();
+    const std::string dataUuid = blossomIO.input.get("data_set_uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get result
@@ -100,7 +100,7 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     }
 
     // get data-info from database
-    if(ShioriRoot::dataSetTable->getDataSet(blossomLeaf.output,
+    if(ShioriRoot::dataSetTable->getDataSet(blossomIO.output,
                                             dataUuid,
                                             userContext,
                                             error,
@@ -111,7 +111,7 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     }
 
     // get file information
-    const std::string location = blossomLeaf.output.get("location").getString();
+    const std::string location = blossomIO.output.get("location").getString();
 
     Kitsunemimi::DataBuffer buffer;
     DataSetFile::DataSetHeader dataSetHeader;
@@ -152,8 +152,8 @@ CheckDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
     // add result to output
     const float correctness = (100.0f / static_cast<float>(compareData->size()))
                               * static_cast<float>(correctValues);
-    blossomLeaf.output.deleteContent();
-    blossomLeaf.output.insert("correctness", correctness);
+    blossomIO.output.deleteContent();
+    blossomIO.output.insert("correctness", correctness);
 
     return true;
 }

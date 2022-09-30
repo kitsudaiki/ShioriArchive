@@ -58,7 +58,7 @@ ListRequestResult::ListRequestResult()
  * @brief runTask
  */
 bool
-ListRequestResult::runTask(BlossomLeaf &blossomLeaf,
+ListRequestResult::runTask(BlossomIO &blossomIO,
                            const Kitsunemimi::DataMap &context,
                            BlossomStatus &status,
                            Kitsunemimi::ErrorContainer &error)
@@ -73,8 +73,8 @@ ListRequestResult::runTask(BlossomLeaf &blossomLeaf,
         return false;
     }
 
-    blossomLeaf.output.insert("header", table.getInnerHeader());
-    blossomLeaf.output.insert("body", table.getBody());
+    blossomIO.output.insert("header", table.getInnerHeader());
+    blossomIO.output.insert("body", table.getBody());
 
     return true;
 }

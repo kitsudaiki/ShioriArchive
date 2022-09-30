@@ -55,12 +55,12 @@ DeleteDataSet::DeleteDataSet()
  * @brief runTask
  */
 bool
-DeleteDataSet::runTask(Sakura::BlossomLeaf &blossomLeaf,
+DeleteDataSet::runTask(Sakura::BlossomIO &blossomIO,
                          const Kitsunemimi::DataMap &context,
                          Sakura::BlossomStatus &status,
                          ErrorContainer &error)
 {
-    const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
+    const std::string dataUuid = blossomIO.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get location from database

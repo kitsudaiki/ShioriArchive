@@ -69,15 +69,15 @@ GetClusterSnapshot::GetClusterSnapshot()
  * @brief runTask
  */
 bool
-GetClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
+GetClusterSnapshot::runTask(BlossomIO &blossomIO,
                             const Kitsunemimi::DataMap &context,
                             BlossomStatus &status,
                             Kitsunemimi::ErrorContainer &error)
 {
-    const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
+    const std::string dataUuid = blossomIO.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
-    if(ShioriRoot::clusterSnapshotTable->getClusterSnapshot(blossomLeaf.output,
+    if(ShioriRoot::clusterSnapshotTable->getClusterSnapshot(blossomIO.output,
                                                             dataUuid,
                                                             userContext,
                                                             error,
@@ -88,10 +88,10 @@ GetClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
     }
 
     // remove irrelevant fields
-    blossomLeaf.output.remove("owner_id");
-    blossomLeaf.output.remove("project_id");
-    blossomLeaf.output.remove("visibility");
-    blossomLeaf.output.remove("temp_files");
+    blossomIO.output.remove("owner_id");
+    blossomIO.output.remove("project_id");
+    blossomIO.output.remove("visibility");
+    blossomIO.output.remove("temp_files");
 
     return true;
 }

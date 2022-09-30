@@ -93,15 +93,15 @@ GetDataSet::GetDataSet()
  * @brief runTask
  */
 bool
-GetDataSet::runTask(BlossomLeaf &blossomLeaf,
+GetDataSet::runTask(BlossomIO &blossomIO,
                       const Kitsunemimi::DataMap &context,
                       BlossomStatus &status,
                       Kitsunemimi::ErrorContainer &error)
 {
-    const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
+    const std::string dataUuid = blossomIO.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
-    if(ShioriRoot::dataSetTable->getDataSet(blossomLeaf.output,
+    if(ShioriRoot::dataSetTable->getDataSet(blossomIO.output,
                                             dataUuid,
                                             userContext,
                                             error,
@@ -112,8 +112,8 @@ GetDataSet::runTask(BlossomLeaf &blossomLeaf,
     }
 
     // get file information
-    const std::string location = blossomLeaf.output.get("location").getString();
-    if(getHeaderInformation(blossomLeaf.output, location, error) == false)
+    const std::string location = blossomIO.output.get("location").getString();
+    if(getHeaderInformation(blossomIO.output, location, error) == false)
     {
         error.addMeesage("Failed the read information from file '" + location + "'");
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
@@ -121,7 +121,7 @@ GetDataSet::runTask(BlossomLeaf &blossomLeaf,
     }
 
     // remove irrelevant fields
-    blossomLeaf.output.remove("temp_files");
+    blossomIO.output.remove("temp_files");
 
     return true;
 }

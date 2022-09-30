@@ -72,12 +72,12 @@ GetProgressDataSet::GetProgressDataSet()
  * @brief runTask
  */
 bool
-GetProgressDataSet::runTask(BlossomLeaf &blossomLeaf,
+GetProgressDataSet::runTask(BlossomIO &blossomIO,
                             const Kitsunemimi::DataMap &context,
                             BlossomStatus &status,
                             Kitsunemimi::ErrorContainer &error)
 {
-    const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
+    const std::string dataUuid = blossomIO.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     Kitsunemimi::Json::JsonItem databaseOutput;
@@ -92,7 +92,7 @@ GetProgressDataSet::runTask(BlossomLeaf &blossomLeaf,
     }
 
     // add uuid
-    blossomLeaf.output.insert("uuid", databaseOutput.get("uuid"));
+    blossomIO.output.insert("uuid", databaseOutput.get("uuid"));
 
     // parse and add temp-file-information
     const std::string tempFilesStr = databaseOutput.get("temp_files").toString();
@@ -102,7 +102,7 @@ GetProgressDataSet::runTask(BlossomLeaf &blossomLeaf,
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;
     }
-    blossomLeaf.output.insert("temp_files", tempFiles);
+    blossomIO.output.insert("temp_files", tempFiles);
 
     // check and add if complete
     const std::vector<std::string> keys = tempFiles.getKeys();
@@ -113,7 +113,7 @@ GetProgressDataSet::runTask(BlossomLeaf &blossomLeaf,
             finishedAll = false;
         }
     }
-    blossomLeaf.output.insert("complete", finishedAll);
+    blossomIO.output.insert("complete", finishedAll);
 
     return true;
 }

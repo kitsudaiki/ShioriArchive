@@ -55,12 +55,12 @@ DeleteClusterSnapshot::DeleteClusterSnapshot()
  * @brief runTask
  */
 bool
-DeleteClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
+DeleteClusterSnapshot::runTask(BlossomIO &blossomIO,
                                const Kitsunemimi::DataMap &context,
                                BlossomStatus &status,
                                Kitsunemimi::ErrorContainer &error)
 {
-    const std::string dataUuid = blossomLeaf.input.get("uuid").getString();
+    const std::string dataUuid = blossomIO.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get location from database

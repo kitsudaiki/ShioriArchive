@@ -110,16 +110,16 @@ CreateClusterSnapshot::CreateClusterSnapshot()
  * @brief runTask
  */
 bool
-CreateClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
+CreateClusterSnapshot::runTask(BlossomIO &blossomIO,
                                const Kitsunemimi::DataMap &,
                                BlossomStatus &status,
                                Kitsunemimi::ErrorContainer &error)
 {
-    const std::string uuid = blossomLeaf.input.get("uuid").getString();
-    const std::string name = blossomLeaf.input.get("name").getString();
-    const std::string userId = blossomLeaf.input.get("id").getString();
-    const std::string projectId = blossomLeaf.input.get("project_id").getString();
-    const long inputDataSize = blossomLeaf.input.get("input_data_size").getLong();
+    const std::string uuid = blossomIO.input.get("uuid").getString();
+    const std::string name = blossomIO.input.get("name").getString();
+    const std::string userId = blossomIO.input.get("id").getString();
+    const std::string projectId = blossomIO.input.get("project_id").getString();
+    const long inputDataSize = blossomIO.input.get("input_data_size").getLong();
 
     // snapshots are created by another internal process, which gives the id's not in the context
     // object, but as normal values
@@ -153,21 +153,21 @@ CreateClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
     targetFilePath.append(uuid + "_snapshot_" + userId);
 
     // register in database
-    blossomLeaf.output.insert("uuid", uuid);
-    blossomLeaf.output.insert("name", name);
-    blossomLeaf.output.insert("location", targetFilePath);
-    blossomLeaf.output.insert("header", blossomLeaf.input.get("header"));
-    blossomLeaf.output.insert("project_id", projectId);
-    blossomLeaf.output.insert("owner_id", userId);
-    blossomLeaf.output.insert("visibility", "private");
+    blossomIO.output.insert("uuid", uuid);
+    blossomIO.output.insert("name", name);
+    blossomIO.output.insert("location", targetFilePath);
+    blossomIO.output.insert("header", blossomIO.input.get("header"));
+    blossomIO.output.insert("project_id", projectId);
+    blossomIO.output.insert("owner_id", userId);
+    blossomIO.output.insert("visibility", "private");
 
     // init placeholder for temp-file progress to database
     Kitsunemimi::Json::JsonItem tempFiles;
     tempFiles.insert(tempFileUuid, Kitsunemimi::Json::JsonItem(0.0f));
-    blossomLeaf.output.insert("temp_files", tempFiles);
+    blossomIO.output.insert("temp_files", tempFiles);
 
     // add to database
-    if(ShioriRoot::clusterSnapshotTable->addClusterSnapshot(blossomLeaf.output,
+    if(ShioriRoot::clusterSnapshotTable->addClusterSnapshot(blossomIO.output,
                                                             userContext,
                                                             error) == false)
     {
@@ -176,15 +176,15 @@ CreateClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
     }
 
     // add values to output
-    blossomLeaf.output.insert("uuid_input_file", tempFileUuid);
+    blossomIO.output.insert("uuid_input_file", tempFileUuid);
 
     // remove blocked values from output
-    blossomLeaf.output.remove("location");
-    blossomLeaf.output.remove("header");
-    blossomLeaf.output.remove("project_id");
-    blossomLeaf.output.remove("owner_id");
-    blossomLeaf.output.remove("visibility");
-    blossomLeaf.output.remove("temp_files");
+    blossomIO.output.remove("location");
+    blossomIO.output.remove("header");
+    blossomIO.output.remove("project_id");
+    blossomIO.output.remove("owner_id");
+    blossomIO.output.remove("visibility");
+    blossomIO.output.remove("temp_files");
 
     return true;
 }

@@ -85,15 +85,15 @@ FinalizeClusterSnapshot::FinalizeClusterSnapshot()
  * @brief runTask
  */
 bool
-FinalizeClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
+FinalizeClusterSnapshot::runTask(BlossomIO &blossomIO,
                                  const Kitsunemimi::DataMap &,
                                  BlossomStatus &status,
                                  Kitsunemimi::ErrorContainer &error)
 {
-    const std::string uuid = blossomLeaf.input.get("uuid").getString();
-    const std::string inputUuid = blossomLeaf.input.get("uuid_input_file").getString();
-    const std::string userId = blossomLeaf.input.get("id").getString();
-    const std::string projectId = blossomLeaf.input.get("project_id").getString();
+    const std::string uuid = blossomIO.input.get("uuid").getString();
+    const std::string inputUuid = blossomIO.input.get("uuid_input_file").getString();
+    const std::string userId = blossomIO.input.get("id").getString();
+    const std::string projectId = blossomIO.input.get("project_id").getString();
 
     // snapshots are created by another internal process, which gives the id's not in the context
     // object, but as normal values
@@ -132,7 +132,7 @@ FinalizeClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
     }
 
     // create output
-    blossomLeaf.output.insert("uuid", uuid);
+    blossomIO.output.insert("uuid", uuid);
 
     return true;
 }

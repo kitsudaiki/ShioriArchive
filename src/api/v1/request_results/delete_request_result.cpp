@@ -52,12 +52,12 @@ DeleteRequestResult::DeleteRequestResult()
  * @brief runTask
  */
 bool
-DeleteRequestResult::runTask(Sakura::BlossomLeaf &blossomLeaf,
+DeleteRequestResult::runTask(Sakura::BlossomIO &blossomIO,
                              const Kitsunemimi::DataMap &context,
                              Sakura::BlossomStatus &status,
                              ErrorContainer &error)
 {
-    const std::string uuid = blossomLeaf.input.get("uuid").getString();
+    const std::string uuid = blossomIO.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // check if request-result exist within the table

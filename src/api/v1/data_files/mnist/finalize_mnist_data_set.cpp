@@ -84,14 +84,14 @@ FinalizeMnistDataSet::FinalizeMnistDataSet()
  * @brief runTask
  */
 bool
-FinalizeMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
+FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
                               const Kitsunemimi::DataMap &context,
                               BlossomStatus &status,
                               Kitsunemimi::ErrorContainer &error)
 {
-    const std::string uuid = blossomLeaf.input.get("uuid").getString();
-    const std::string inputUuid = blossomLeaf.input.get("uuid_input_file").getString();
-    const std::string labelUuid = blossomLeaf.input.get("uuid_label_file").getString();
+    const std::string uuid = blossomIO.input.get("uuid").getString();
+    const std::string inputUuid = blossomIO.input.get("uuid_input_file").getString();
+    const std::string labelUuid = blossomIO.input.get("uuid_label_file").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get location from database
@@ -137,7 +137,7 @@ FinalizeMnistDataSet::runTask(BlossomLeaf &blossomLeaf,
     ShioriRoot::tempFileHandler->removeData(labelUuid);
 
     // create output
-    blossomLeaf.output.insert("uuid", uuid);
+    blossomIO.output.insert("uuid", uuid);
 
     return true;
 }

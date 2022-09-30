@@ -58,7 +58,7 @@ ListClusterSnapshot::ListClusterSnapshot()
  * @brief runTask
  */
 bool
-ListClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
+ListClusterSnapshot::runTask(BlossomIO &blossomIO,
                              const Kitsunemimi::DataMap &context,
                              BlossomStatus &status,
                              Kitsunemimi::ErrorContainer &error)
@@ -73,8 +73,8 @@ ListClusterSnapshot::runTask(BlossomLeaf &blossomLeaf,
         return false;
     }
 
-    blossomLeaf.output.insert("header", table.getInnerHeader());
-    blossomLeaf.output.insert("body", table.getBody());
+    blossomIO.output.insert("header", table.getInnerHeader());
+    blossomIO.output.insert("body", table.getBody());
 
     return true;
 }

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0] - 2022-10-17
+
+### Added
+- support for protobuf-messages for file-upload
+
+### Chnaged
+- rename component
+- pack user-information into structs
+- renamings coming from dependencies
+- handle request-results in database, instead of a file
+
+
 ## [0.3.1] - 2022-07-02
 
 ### Changed

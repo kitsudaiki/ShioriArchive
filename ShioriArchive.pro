@@ -20,9 +20,9 @@ LIBS += -L../libMisakiGuard/src/debug -lMisakiGuard
 LIBS += -L../libMisakiGuard/src/release -lMisakiGuard
 INCLUDEPATH += ../libMisakiGuard/include
 
-LIBS += -L../libKitsunemimiHanamiNetwork/src -lKitsunemimiHanamiMessaging
-LIBS += -L../libKitsunemimiHanamiNetwork/src/debug -lKitsunemimiHanamiMessaging
-LIBS += -L../libKitsunemimiHanamiNetwork/src/release -lKitsunemimiHanamiMessaging
+LIBS += -L../libKitsunemimiHanamiNetwork/src -lKitsunemimiHanamiNetwork
+LIBS += -L../libKitsunemimiHanamiNetwork/src/debug -lKitsunemimiHanamiNetwork
+LIBS += -L../libKitsunemimiHanamiNetwork/src/release -lKitsunemimiHanamiNetwork
 INCLUDEPATH += ../libKitsunemimiHanamiNetwork/include
 
 LIBS += -L../libKitsunemimiHanamiEndpoints/src -lKitsunemimiHanamiEndpoints

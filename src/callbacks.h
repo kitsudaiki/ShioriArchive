@@ -41,10 +41,8 @@
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 
-#include <libShioriArchive/shiori_messages.h>
-
 #include <../libKitsunemimiHanamiMessages/protobuffers/shiori_messages.proto3.pb.h>
-#include <../libKitsunemimiHanamiMessages/hanami_messages/shiori_messages.h>
+#include <../libKitsunemimiHanamiMessages/message_sub_types.h>
 
 /**
  * @brief handleProtobufFileUpload
@@ -107,65 +105,6 @@ handleProtobufFileUpload(const void* data,
 }
 
 /**
- * @brief handleHanamiFileUpload
- * @param data
- * @param dataSize
- * @return
- */
-bool
-handleHanamiFileUpload(const void* data,
-                       const uint64_t dataSize)
-{
-    Kitsunemimi::Hanami::FileUpload_Message msg;
-    if(msg.read(const_cast<void*>(data), dataSize) == false)
-    {
-        Kitsunemimi::ErrorContainer error;
-        error.addMeesage("Got invalid FileUpload-Message");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    if(ShioriRoot::tempFileHandler->addDataToPos(msg.fileUuid,
-                                                 msg.position,
-                                                 msg.payload,
-                                                 msg.numberOfBytes) == false)
-    {
-        // TODO: error-handling
-        return false;
-    }
-
-    if(msg.isLast == false) {
-        return false;
-    }
-
-    Kitsunemimi::ErrorContainer error;
-
-    if(msg.type == UploadDataType::DATASET_TYPE)
-    {
-        if(ShioriRoot::dataSetTable->setUploadFinish(msg.datasetUuid,
-                                                     msg.fileUuid,
-                                                     error) == false)
-        {
-            // TODO: error-handling
-            return false;
-        }
-    }
-
-    if(msg.type == UploadDataType::CLUSTER_SNAPSHOT_TYPE)
-    {
-        if(ShioriRoot::clusterSnapshotTable->setUploadFinish(msg.datasetUuid,
-                                                             msg.fileUuid,
-                                                             error) == false)
-        {
-            // TODO: error-handling
-            return false;
-        }
-    }
-
-    return true;
-}
-
-/**
  * @brief streamDataCallback
  * @param data
  * @param dataSize
@@ -179,11 +118,7 @@ void streamDataCallback(void*,
         return;
     }
 
-    if(Kitsunemimi::Hanami::isHanamiProtocol(data, dataSize)) {
-        handleHanamiFileUpload(data, dataSize);
-    } else {
-        handleProtobufFileUpload(data, dataSize);
-    }
+    handleProtobufFileUpload(data, dataSize);
 }
 
 /**
@@ -221,16 +156,16 @@ getDatetime()
  * @param blockerId blocker-id for the response
  */
 inline void
-handleClusterSnapshotRequest(const Shiori::ClusterSnapshotPull_Message &msg,
+handleClusterSnapshotRequest(const ClusterSnapshotPull_Message &msg,
                              Kitsunemimi::Sakura::Session* session,
                              const uint64_t blockerId)
 {
     Kitsunemimi::ErrorContainer error;
 
     // init file
-    Kitsunemimi::BinaryFile* targetFile = new Kitsunemimi::BinaryFile(msg.location);
+    Kitsunemimi::BinaryFile* targetFile = new Kitsunemimi::BinaryFile(msg.location());
     DataSetFile::DataSetHeader header;
-    DataBuffer content;
+    Kitsunemimi::DataBuffer content;
     if(targetFile->readCompleteFile(content, error) == false)
     {
         //TODO: handle error
@@ -257,19 +192,19 @@ handleClusterSnapshotRequest(const Shiori::ClusterSnapshotPull_Message &msg,
  * @param blockerId blocker-id for the response
  */
 inline void
-handleDataSetRequest(const Shiori::DatasetRequest_Message &msg,
+handleDataSetRequest(const DatasetRequest_Message &msg,
                      Kitsunemimi::Sakura::Session* session,
                      const uint64_t blockerId)
 {
     // init file
-    DataSetFile* file = readDataSetFile(msg.location);
+    DataSetFile* file = readDataSetFile(msg.location());
     if(file == nullptr) {
         return;
     }
 
     // get payload
     uint64_t payloadSize = 0;
-    float* payload = file->getPayload(payloadSize, msg.columnName);
+    float* payload = file->getPayload(payloadSize, msg.columnname());
     if(payload == nullptr)
     {
         // TODO: error
@@ -299,14 +234,14 @@ handleDataSetRequest(const Shiori::DatasetRequest_Message &msg,
  * @param blockerId blocker-id for the response
  */
 inline void
-handleResultPush(const Shiori::ResultPush_Message &msg,
+handleResultPush(const ResultPush_Message &msg,
                  Kitsunemimi::Sakura::Session* session,
                  const uint64_t blockerId)
 {
     Kitsunemimi::ErrorContainer error;
 
     Kitsunemimi::Json::JsonItem dataParser;
-    if(dataParser.parse(msg.results, error) == false)
+    if(dataParser.parse(msg.results(), error) == false)
     {
         error.addMeesage("Error while receivind result-data");
         LOG_ERROR(error);
@@ -314,14 +249,14 @@ handleResultPush(const Shiori::ResultPush_Message &msg,
     }
 
     Kitsunemimi::Json::JsonItem resultData;
-    resultData.insert("uuid", msg.uuid);
-    resultData.insert("name", msg.name);
+    resultData.insert("uuid", msg.uuid());
+    resultData.insert("name", msg.name());
     resultData.insert("data", dataParser.stealItemContent());
     resultData.insert("visibility", "private");
 
     Kitsunemimi::Hanami::UserContext userContext;
-    userContext.userId = msg.userId;
-    userContext.projectId = msg.projectId;
+    userContext.userId = msg.userid();
+    userContext.projectId = msg.projectid();
 
     if(ShioriRoot::requestResultTable->addRequestResult(resultData, userContext, error) == false)
     {
@@ -346,7 +281,7 @@ handleResultPush(const Shiori::ResultPush_Message &msg,
  * @param msg message to process
  */
 inline void
-handleErrorLog(const Kitsunemimi::Hanami::ErrorLog_Message &msg)
+handleErrorLog(const ErrorLog_Message &msg)
 {
     bool success = false;
     Kitsunemimi::ErrorContainer error;
@@ -354,10 +289,10 @@ handleErrorLog(const Kitsunemimi::Hanami::ErrorLog_Message &msg)
     // TODO: handle result
     const std::string resultLocation = GET_STRING_CONFIG("shiori", "error_location", success);
     std::string filePath = resultLocation + "/";
-    if(msg.userId == "") {
+    if(msg.userid() == "") {
         filePath += "generic";
     } else {
-        filePath += msg. userId;
+        filePath += msg. userid();
     }
 
     // create an empty file, if no exist
@@ -376,14 +311,14 @@ handleErrorLog(const Kitsunemimi::Hanami::ErrorLog_Message &msg)
 
     // fill table
     tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
-    tableOutput.addRow(std::vector<std::string>{"component", msg.component});
-    if(msg.context != "") {
-        tableOutput.addRow(std::vector<std::string>{"context", msg.context});
+    tableOutput.addRow(std::vector<std::string>{"component", msg.component()});
+    if(msg.context() != "") {
+        tableOutput.addRow(std::vector<std::string>{"context", msg.context()});
     }
-    if(msg.values != "") {
-        tableOutput.addRow(std::vector<std::string>{"values", msg.values});
+    if(msg.values() != "") {
+        tableOutput.addRow(std::vector<std::string>{"values", msg.values()});
     }
-    tableOutput.addRow(std::vector<std::string>{"error", msg.errorMsg});
+    tableOutput.addRow(std::vector<std::string>{"error", msg.errormsg()});
 
     // write to file
     const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
@@ -398,7 +333,7 @@ handleErrorLog(const Kitsunemimi::Hanami::ErrorLog_Message &msg)
  * @param msg message to process
  */
 inline void
-handleAuditLog(const Shiori::AuditLog_Message &msg)
+handleAuditLog(const AuditLog_Message &msg)
 {
     bool success = false;
     Kitsunemimi::ErrorContainer error;
@@ -406,10 +341,10 @@ handleAuditLog(const Shiori::AuditLog_Message &msg)
     // TODO: handle result
     const std::string resultLocation = GET_STRING_CONFIG("shiori", "audit_location", success);
     std::string filePath = resultLocation + "/";
-    if(msg.userId == "") {
+    if(msg.userid() == "") {
         filePath += "generic";
     } else {
-        filePath += msg.userId;
+        filePath += msg.userid();
     }
 
     // create an empty file, if no exist
@@ -428,9 +363,9 @@ handleAuditLog(const Shiori::AuditLog_Message &msg)
 
     // fill table
     tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
-    tableOutput.addRow(std::vector<std::string>{"component", msg.component});
-    tableOutput.addRow(std::vector<std::string>{"endpoint", msg.endpoint});
-    tableOutput.addRow(std::vector<std::string>{"type", msg.type});
+    tableOutput.addRow(std::vector<std::string>{"component", msg.component()});
+    tableOutput.addRow(std::vector<std::string>{"endpoint", msg.endpoint()});
+    tableOutput.addRow(std::vector<std::string>{"type", msg.type()});
 
     // write to file
     const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
@@ -468,18 +403,17 @@ handleFail(const std::string &msg,
  */
 void
 genericMessageCallback(Kitsunemimi::Sakura::Session* session,
+                       const uint32_t messageSubType,
                        void* data,
                        const uint64_t dataSize,
                        const uint64_t blockerId)
 {
-    u_int8_t* u8Data = static_cast<uint8_t*>(data);
-
-    switch(u8Data[6])
+    switch(messageSubType)
     {
-        case Shiori::CLUSTER_SNAPSHOT_PULL_MESSAGE_TYPE:
+        case SHIORI_CLUSTER_SNAPSHOT_PULL_MESSAGE_TYPE:
             {
-                Shiori::ClusterSnapshotPull_Message msg;
-                if(msg.read(data, dataSize) == false)
+                ClusterSnapshotPull_Message msg;
+                if(msg.ParseFromArray(data, dataSize) == false)
                 {
                     handleFail("Receive broken cluster-snapshot-message", session, blockerId);
                     return;
@@ -488,10 +422,10 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
                 handleClusterSnapshotRequest(msg, session, blockerId);
             }
             break;
-        case Shiori::DATASET_REQUEST_MESSAGE_TYPE:
+        case SHIORI_DATASET_REQUEST_MESSAGE_TYPE:
             {
-                Shiori::DatasetRequest_Message msg;
-                if(msg.read(data, dataSize) == false)
+                DatasetRequest_Message msg;
+                if(msg.ParseFromArray(data, dataSize) == false)
                 {
                     handleFail("Receive broken dataset-requests-message", session, blockerId);
                     return;
@@ -500,10 +434,10 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
                 handleDataSetRequest(msg, session, blockerId);
             }
             break;
-        case Shiori::RESULT_PUSH_MESSAGE_TYPE:
+        case SHIORI_RESULT_PUSH_MESSAGE_TYPE:
             {
-                Shiori::ResultPush_Message msg;
-                if(msg.read(data, dataSize) == false)
+                ResultPush_Message msg;
+                if(msg.ParseFromArray(data, dataSize) == false)
                 {
                     handleFail("Receive broken result-push-message", session, blockerId);
                     return;
@@ -512,10 +446,10 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
                 handleResultPush(msg, session, blockerId);
             }
             break;
-        case Shiori::AUDIT_LOG_MESSAGE_TYPE:
+        case SHIORI_AUDIT_LOG_MESSAGE_TYPE:
             {
-                Shiori::AuditLog_Message msg;
-                if(msg.read(data, dataSize) == false)
+                AuditLog_Message msg;
+                if(msg.ParseFromArray(data, dataSize) == false)
                 {
                     Kitsunemimi::ErrorContainer error;
                     error.addMeesage("Receive broken audit-log-message");
@@ -526,10 +460,10 @@ genericMessageCallback(Kitsunemimi::Sakura::Session* session,
                 handleAuditLog(msg);
             }
             break;
-        case 255:
+        case SHIORI_ERROR_LOG_MESSAGE_TYPE:
             {
-                Kitsunemimi::Hanami::ErrorLog_Message msg;
-                if(msg.read(data, dataSize) == false)
+                ErrorLog_Message msg;
+                if(msg.ParseFromArray(data, dataSize) == false)
                 {
                     Kitsunemimi::ErrorContainer error;
                     error.addMeesage("Receive broken error-log-message");

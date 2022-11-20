@@ -43,15 +43,15 @@ AuditLogTable::AuditLogTable(Kitsunemimi::Sakura::SqlDatabase* db)
     userid.maxLength = 256;
     m_tableHeader.push_back(userid);
 
-    DbHeaderEntry endpoint;
-    endpoint.name = "endpoint";
-    endpoint.maxLength = 1024;
-    m_tableHeader.push_back(endpoint);
-
     DbHeaderEntry component;
     component.name = "component";
     component.maxLength = 128;
     m_tableHeader.push_back(component);
+
+    DbHeaderEntry endpoint;
+    endpoint.name = "endpoint";
+    endpoint.maxLength = 1024;
+    m_tableHeader.push_back(endpoint);
 
     DbHeaderEntry requestType;
     requestType.name = "request_type";
@@ -87,8 +87,8 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
     Kitsunemimi::Json::JsonItem data;
     data.insert("timestamp", timestamp);
     data.insert("user_id", userId);
-    data.insert("component", component);
     data.insert("endpoint", endpoint);
+    data.insert("component", component);
     data.insert("request_type", requestType);
 
     if(add(data, error) == false)

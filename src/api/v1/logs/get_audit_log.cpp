@@ -57,8 +57,8 @@ GetAuditLog::GetAuditLog()
                         "Array with the namings all columns of the table.");
     assert(addFieldMatch("header", new Kitsunemimi::DataValue("[\"timestamp\","
                                                               "\"user_id\","
-                                                              "\"endpoint\","
                                                               "\"component\","
+                                                              "\"endpoint\","
                                                               "\"request_type\"]")));
     registerOutputField("body",
                         SAKURA_ARRAY_TYPE,

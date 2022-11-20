@@ -101,79 +101,24 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
 }
 
 /**
- * @brief get a specific audit-log-entry from the database
- *
- * @param result reference for the result-output
- * @param errorLogEntryUuid uuid of the data
- * @param error reference for error-output
- * @param showHiddenValues set to true to also show as hidden marked fields
- *
- * @return true, if successful, else false
- */
-bool
-AuditLogTable::getAuditLogEntry(Kitsunemimi::Json::JsonItem &result,
-                                const std::string &errorLogEntryUuid,
-                                Kitsunemimi::ErrorContainer &error,
-                                const bool showHiddenValues)
-{
-    // get user from db
-    std::vector<RequestCondition> conditions;
-    conditions.emplace_back("uuid", errorLogEntryUuid);
-
-    // get dataset from db
-    if(get(result, conditions, error, showHiddenValues) == false)
-    {
-        error.addMeesage("Failed to get audit-log-entry with UUID '"
-                         + errorLogEntryUuid
-                         + "' from database");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    return true;
-}
-
-/**
  * @brief get all audit-log-entries from the database
  *
  * @param result reference for the result-output
+ * @param userId id of the user, whos logs are requested
  * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
 AuditLogTable::getAllAuditLogEntries(Kitsunemimi::TableItem &result,
+                                     const std::string &userId,
                                      Kitsunemimi::ErrorContainer &error)
 {
     std::vector<RequestCondition> conditions;
+    conditions.push_back(RequestCondition("user_id", userId));
     if(getAll(result, conditions, error, true) == false)
     {
         error.addMeesage("Failed to get all audit-log-entries from database");
-        return false;
-    }
-
-    return true;
-}
-
-/**
- * @brief delete audit-log-entry from the database
- *
- * @param errorLogEntryUuid uuid of the data
- * @param error reference for error-output
- *
- * @return true, if successful, else false
- */
-bool
-AuditLogTable::deleteAuditLogEntry(const std::string &errorLogEntryUuid,
-                                   Kitsunemimi::ErrorContainer &error)
-{
-    std::vector<RequestCondition> conditions;
-    conditions.emplace_back("uuid", errorLogEntryUuid);
-    if(del(conditions, error) == false)
-    {
-        error.addMeesage("Failed to delete audit-log-entry with UUID '"
-                         + errorLogEntryUuid
-                         + "' from database");
         return false;
     }
 

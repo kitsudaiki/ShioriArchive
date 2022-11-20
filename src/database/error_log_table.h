@@ -46,14 +46,9 @@ public:
                           const std::string &values,
                           const std::string &message,
                           Kitsunemimi::ErrorContainer &error);
-    bool getErrorLogEntry(Kitsunemimi::Json::JsonItem &result,
-                          const std::string &errorLogEntryUuid,
-                          Kitsunemimi::ErrorContainer &error,
-                          const bool showHiddenValues);
     bool getAllErrorLogEntries(Kitsunemimi::TableItem &result,
+                               const std::string &userId,
                                Kitsunemimi::ErrorContainer &error);
-    bool deleteErrorLogEntry(const std::string &errorLogEntryUuid,
-                             Kitsunemimi::ErrorContainer &error);
 };
 
 #endif // SHIORIARCHIVE_ERROR_LOG_TABLE_H

@@ -45,14 +45,9 @@ public:
                           const std::string &endpoint,
                           const std::string &requestType,
                           Kitsunemimi::ErrorContainer &error);
-    bool getAuditLogEntry(Kitsunemimi::Json::JsonItem &result,
-                          const std::string &errorLogEntryUuid,
-                          Kitsunemimi::ErrorContainer &error,
-                          const bool showHiddenValues);
     bool getAllAuditLogEntries(Kitsunemimi::TableItem &result,
+                               const std::string &userId,
                                Kitsunemimi::ErrorContainer &error);
-    bool deleteAuditLogEntry(const std::string &errorLogEntryUuid,
-                             Kitsunemimi::ErrorContainer &error);
 };
 
 #endif // SHIORIARCHIVE_AUDIT_LOG_TABLE_H

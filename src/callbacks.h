@@ -295,7 +295,7 @@ handleErrorLog(const ErrorLog_Message &msg)
     {
         error.addMeesage("ERROR: Failed to write error-log into database");
 
-        // HINT: use normal stdout, because LOG_ERROR would trigger this function again
+        // HINT(kitsudaiki): use normal stdout, because LOG_ERROR would trigger this function again
         //       and could create a crash because of a stack-overflow
         std::cout<<error.toString()<<std::endl;
     }

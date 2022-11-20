@@ -48,6 +48,9 @@
 #include <api/v1/request_results/get_request_result.h>
 #include <api/v1/request_results/list_request_result.h>
 
+#include <api/v1/logs/get_audit_log.h>
+#include <api/v1/logs/get_error_log.h>
+
 using Kitsunemimi::Sakura::SakuraLangInterface;
 
 /**
@@ -202,12 +205,38 @@ resultBlossoms()
                            "delete");
 }
 
+/**
+ * @brief init logs blossoms
+ */
+void
+logsBlossoms()
+{
+    Kitsunemimi::Hanami::Endpoint* endpoints = Kitsunemimi::Hanami::Endpoint::getInstance();
+    SakuraLangInterface* interface = SakuraLangInterface::getInstance();
+    const std::string group = "logs";
+
+    assert(interface->addBlossom(group, "get_audit_log", new GetAuditLog()));
+    endpoints->addEndpoint("v1/audit_log",
+                           Kitsunemimi::Hanami::GET_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "get_audit_log");
+
+    assert(interface->addBlossom(group, "get_error_log", new GetErrorLog()));
+    endpoints->addEndpoint("v1/error_log",
+                           Kitsunemimi::Hanami::GET_TYPE,
+                           Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                           group,
+                           "get_error_log");
+}
+
 void
 initBlossoms()
 {
     dataSetBlossoms();
     clusterSnapshotBlossoms();
     resultBlossoms();
+    logsBlossoms();
 }
 
 #endif // SHIORIARCHIVE_BLOSSOM_INITIALIZING_H

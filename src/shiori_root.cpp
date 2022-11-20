@@ -28,6 +28,8 @@
 #include <database/data_set_table.h>
 #include <database/cluster_snapshot_table.h>
 #include <database/request_result_table.h>
+#include <database/error_log_table.h>
+#include <database/audit_log_table.h>
 #include <core/temp_file_handler.h>
 #include <api/blossom_initializing.h>
 
@@ -35,6 +37,8 @@ TempFileHandler* ShioriRoot::tempFileHandler = nullptr;
 DataSetTable* ShioriRoot::dataSetTable = nullptr;
 ClusterSnapshotTable* ShioriRoot::clusterSnapshotTable = nullptr;
 RequestResultTable* ShioriRoot::requestResultTable = nullptr;
+ErrorLogTable* ShioriRoot::errorLogTable = nullptr;
+AuditLogTable* ShioriRoot::auditLogTable = nullptr;
 Kitsunemimi::Sakura::SqlDatabase* ShioriRoot::database = nullptr;
 
 ShioriRoot::ShioriRoot() {}
@@ -91,6 +95,24 @@ ShioriRoot::init()
     if(clusterSnapshotTable->initTable(error) == false)
     {
         error.addMeesage("Failed to initialize cluster-snapshot-table in database.");
+        LOG_ERROR(error);
+        return false;
+    }
+
+    // initialize error-log-table
+    errorLogTable = new ErrorLogTable(database);
+    if(errorLogTable->initTable(error) == false)
+    {
+        error.addMeesage("Failed to initialize error-log-table in database.");
+        LOG_ERROR(error);
+        return false;
+    }
+
+    // initialize audit-log-table
+    auditLogTable = new AuditLogTable(database);
+    if(auditLogTable->initTable(error) == false)
+    {
+        error.addMeesage("Failed to initialize audit-log-table in database.");
         LOG_ERROR(error);
         return false;
     }

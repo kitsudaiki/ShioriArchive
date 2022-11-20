@@ -132,8 +132,10 @@ SOURCES += src/main.cpp \
     src/core/data_set_files/image_data_set_file.cpp \
     src/core/data_set_files/table_data_set_file.cpp \
     src/core/temp_file_handler.cpp \
+    src/database/audit_log_table.cpp \
     src/database/cluster_snapshot_table.cpp \
     src/database/data_set_table.cpp \
+    src/database/error_log_table.cpp \
     src/database/request_result_table.cpp \
     src/shiori_root.cpp
 
@@ -163,8 +165,10 @@ HEADERS += \
     src/core/data_set_files/image_data_set_file.h \
     src/core/data_set_files/table_data_set_file.h \
     src/core/temp_file_handler.h \
+    src/database/audit_log_table.h \
     src/database/cluster_snapshot_table.h \
     src/database/data_set_table.h \
+    src/database/error_log_table.h \
     src/database/request_result_table.h \
     src/shiori_root.h \
     ../libKitsunemimiHanamiMessages/hanami_messages/shiori_messages.h

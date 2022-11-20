@@ -34,7 +34,7 @@
 using namespace Kitsunemimi::Sakura;
 
 GetErrorLog::GetErrorLog()
-    : Blossom("Get error-log of a user.")
+    : Blossom("Get error-log of a user. Only an admin is allowed to request the error-log.")
 {
     //----------------------------------------------------------------------------------------------
     // input
@@ -42,9 +42,7 @@ GetErrorLog::GetErrorLog()
     registerInputField("user_id",
                        SAKURA_STRING_TYPE,
                        false,
-                       "ID of the user, whos entries are requested. Only an admin is allowed to "
-                       "set this values. Any other user get only its own log output based on the "
-                       "token-context.");
+                       "ID of the user, whos entries are requested.");
     assert(addFieldBorder("user_id", 4, 256));
     assert(addFieldRegex("user_id", ID_EXT_REGEX));
 
@@ -80,21 +78,16 @@ GetErrorLog::runTask(BlossomIO &blossomIO,
                      Kitsunemimi::ErrorContainer &error)
 {
     const Kitsunemimi::Hanami::UserContext userContext(context);
-    std::string userId = blossomIO.input.get("user_id").getString();
 
-    // check that if user-id is set, that the user is also an admin
-    if(userContext.isAdmin == false
-            && userId.length() != 0)
+    // check that the user is an admin
+    if(userContext.isAdmin == false)
     {
         status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
-        status.errorMessage = "'user_id' can only be set by an admin";
+        status.errorMessage = "only an admin is allowed to request error-logs";
         return false;
     }
 
-    // if no user-id was defined, use the id of the context
-    if(userId.length() == 0) {
-        userId = userContext.userId;
-    }
+    const std::string userId = blossomIO.input.get("user_id").getString();
 
     // get data from table
     Kitsunemimi::TableItem table;

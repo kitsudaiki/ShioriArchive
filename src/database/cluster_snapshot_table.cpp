@@ -65,7 +65,7 @@ ClusterSnapshotTable::ClusterSnapshotTable(Kitsunemimi::Sakura::SqlDatabase* db)
 ClusterSnapshotTable::~ClusterSnapshotTable() {}
 
 /**
- * @brief add new metadata of a dataset into the database
+ * @brief add new metadata of a snapshot into the database
  *
  * @param userData json-item with all information of the data to add to database
  * @param userContext context-object with all user specific information
@@ -88,7 +88,7 @@ ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::Json::JsonItem &data,
 }
 
 /**
- * @brief get a metadata-entry for a specific dataset from the database
+ * @brief get a metadata-entry for a specific snapshot from the database
  *
  * @param result reference for the result-output
  * @param snapshotUuid uuid of the data
@@ -123,7 +123,7 @@ ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::Json::JsonItem &result,
 }
 
 /**
- * @brief get metadata of all datasets from the database
+ * @brief get metadata of all snapshots from the database
  *
  * @param result reference for the result-output
  * @param userContext context-object with all user specific information
@@ -147,7 +147,7 @@ ClusterSnapshotTable::getAllClusterSnapshot(Kitsunemimi::TableItem &result,
 }
 
 /**
- * @brief delete metadata of a dataset from the database
+ * @brief delete metadata of a snapshot from the database
  *
  * @param snapshotUuid uuid of the data
  * @param userContext context-object with all user specific information

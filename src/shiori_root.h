@@ -31,6 +31,8 @@ class SqlDatabase;
 class DataSetTable;
 class ClusterSnapshotTable;
 class RequestResultTable;
+class ErrorLogTable;
+class AuditLogTable;
 class TempFileHandler;
 
 class ShioriRoot
@@ -44,6 +46,8 @@ public:
     static DataSetTable* dataSetTable;
     static ClusterSnapshotTable* clusterSnapshotTable;
     static RequestResultTable* requestResultTable;
+    static ErrorLogTable* errorLogTable;
+    static AuditLogTable* auditLogTable;
     static Kitsunemimi::Sakura::SqlDatabase* database;
 };
 

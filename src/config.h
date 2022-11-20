@@ -36,8 +36,6 @@ registerConfigs(Kitsunemimi::ErrorContainer &error)
     Kitsunemimi::Hanami::registerBasicConfigs(error);
 
     REGISTER_STRING_CONFIG( "shiori", "data_set_location",         error, "", true );
-    REGISTER_STRING_CONFIG( "shiori", "error_location",            error, "", true );
-    REGISTER_STRING_CONFIG( "shiori", "audit_location",            error, "", true );
     REGISTER_STRING_CONFIG( "shiori", "cluster_snapshot_location", error, "", true );
 }
 

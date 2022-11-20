@@ -28,12 +28,12 @@
 #include <database/data_set_table.h>
 #include <database/cluster_snapshot_table.h>
 #include <database/request_result_table.h>
+#include <database/audit_log_table.h>
+#include <database/error_log_table.h>
 #include <shiori_root.h>
 
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiCommon/files/text_file.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
-#include <libKitsunemimiCommon/items/table_item.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiConfig/config_handler.h>
@@ -51,7 +51,8 @@
  * @return
  */
 bool
-handleProtobufFileUpload(const void* data,
+handleProtobufFileUpload(Kitsunemimi::Sakura::Session* session,
+                         const void* data,
                          const uint64_t dataSize)
 {
     FileUpload_Message msg;
@@ -110,7 +111,7 @@ handleProtobufFileUpload(const void* data,
  * @param dataSize
  */
 void streamDataCallback(void*,
-                        Kitsunemimi::Sakura::Session*,
+                        Kitsunemimi::Sakura::Session* session,
                         const void* data,
                         const uint64_t dataSize)
 {
@@ -118,7 +119,7 @@ void streamDataCallback(void*,
         return;
     }
 
-    handleProtobufFileUpload(data, dataSize);
+    handleProtobufFileUpload(session, data, dataSize);
 }
 
 /**
@@ -283,47 +284,20 @@ handleResultPush(const ResultPush_Message &msg,
 inline void
 handleErrorLog(const ErrorLog_Message &msg)
 {
-    bool success = false;
     Kitsunemimi::ErrorContainer error;
-
-    // TODO: handle result
-    const std::string resultLocation = GET_STRING_CONFIG("shiori", "error_location", success);
-    std::string filePath = resultLocation + "/";
-    if(msg.userid() == "") {
-        filePath += "generic";
-    } else {
-        filePath += msg. userid();
-    }
-
-    // create an empty file, if no exist
-    if(std::filesystem::exists(filePath) == false)
+    if(ShioriRoot::errorLogTable->addErrorLogEntry(getDatetime(),
+                                                   msg.userid(),
+                                                   msg.component(),
+                                                   msg.context(),
+                                                   msg.values(),
+                                                   msg.errormsg(),
+                                                   error) == false)
     {
-        // create new file and write content
-        std::ofstream outputFile;
-        outputFile.open(filePath);
-        outputFile.close();
-    }
+        error.addMeesage("ERROR: Failed to write error-log into database");
 
-    // init table
-    Kitsunemimi::TableItem tableOutput;
-    tableOutput.addColumn("key");
-    tableOutput.addColumn("value");
-
-    // fill table
-    tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
-    tableOutput.addRow(std::vector<std::string>{"component", msg.component()});
-    if(msg.context() != "") {
-        tableOutput.addRow(std::vector<std::string>{"context", msg.context()});
-    }
-    if(msg.values() != "") {
-        tableOutput.addRow(std::vector<std::string>{"values", msg.values()});
-    }
-    tableOutput.addRow(std::vector<std::string>{"error", msg.errormsg()});
-
-    // write to file
-    const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
-    if(appendText(filePath, finalMessage, error) == false) {
-        LOG_ERROR(error);
+        // HINT: use normal stdout, because LOG_ERROR would trigger this function again
+        //       and could create a crash because of a stack-overflow
+        std::cout<<error.toString()<<std::endl;
     }
 }
 
@@ -335,41 +309,15 @@ handleErrorLog(const ErrorLog_Message &msg)
 inline void
 handleAuditLog(const AuditLog_Message &msg)
 {
-    bool success = false;
-    Kitsunemimi::ErrorContainer error;
-
-    // TODO: handle result
-    const std::string resultLocation = GET_STRING_CONFIG("shiori", "audit_location", success);
-    std::string filePath = resultLocation + "/";
-    if(msg.userid() == "") {
-        filePath += "generic";
-    } else {
-        filePath += msg.userid();
-    }
-
-    // create an empty file, if no exist
-    if(std::filesystem::exists(filePath) == false)
+    Kitsunemimi::ErrorContainer error; 
+    if(ShioriRoot::auditLogTable->addAuditLogEntry(getDatetime(),
+                                                   msg.userid(),
+                                                   msg.component(),
+                                                   msg.endpoint(),
+                                                   msg.type(),
+                                                   error) == false)
     {
-        // create new file and write content
-        std::ofstream outputFile;
-        outputFile.open(filePath);
-        outputFile.close();
-    }
-
-    // init table
-    Kitsunemimi::TableItem tableOutput;
-    tableOutput.addColumn("key");
-    tableOutput.addColumn("value");
-
-    // fill table
-    tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
-    tableOutput.addRow(std::vector<std::string>{"component", msg.component()});
-    tableOutput.addRow(std::vector<std::string>{"endpoint", msg.endpoint()});
-    tableOutput.addRow(std::vector<std::string>{"type", msg.type()});
-
-    // write to file
-    const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
-    if(appendText(filePath, finalMessage, error) == false) {
+        error.addMeesage("ERROR: Failed to write audit-log into database");
         LOG_ERROR(error);
     }
 }

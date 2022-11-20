@@ -1,5 +1,5 @@
 /**
- * @file        data_set_table.h
+ * @file        cluster_snapshot_table.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *

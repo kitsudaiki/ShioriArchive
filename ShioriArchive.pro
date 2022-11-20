@@ -125,6 +125,8 @@ SOURCES += src/main.cpp \
     src/api/v1/data_files/list_data_set.cpp \
     src/api/v1/data_files/mnist/create_mnist_data_set.cpp \
     src/api/v1/data_files/mnist/finalize_mnist_data_set.cpp \
+    src/api/v1/logs/get_audit_log.cpp \
+    src/api/v1/logs/get_error_log.cpp \
     src/api/v1/request_results/delete_request_result.cpp \
     src/api/v1/request_results/get_request_result.cpp \
     src/api/v1/request_results/list_request_result.cpp \
@@ -155,6 +157,8 @@ HEADERS += \
     src/api/v1/data_files/list_data_set.h \
     src/api/v1/data_files/mnist/create_mnist_data_set.h \
     src/api/v1/data_files/mnist/finalize_mnist_data_set.h \
+    src/api/v1/logs/get_audit_log.h \
+    src/api/v1/logs/get_error_log.h \
     src/api/v1/request_results/delete_request_result.h \
     src/api/v1/request_results/get_request_result.h \
     src/api/v1/request_results/list_request_result.h \

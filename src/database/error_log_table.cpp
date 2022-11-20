@@ -53,7 +53,7 @@ ErrorLogTable::ErrorLogTable(Kitsunemimi::Sakura::SqlDatabase* db)
     m_tableHeader.push_back(context);
 
     DbHeaderEntry values;
-    values.name = "values";
+    values.name = "input_values";
     m_tableHeader.push_back(values);
 
     DbHeaderEntry message;
@@ -93,7 +93,7 @@ ErrorLogTable::addErrorLogEntry(const std::string &timestamp,
     data.insert("user_id", userid);
     data.insert("component", component);
     data.insert("context", context);
-    data.insert("values", values);
+    data.insert("input_values", values);
     data.insert("message", message);
 
     if(add(data, error) == false)

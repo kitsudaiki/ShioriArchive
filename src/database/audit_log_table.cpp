@@ -89,7 +89,7 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
     data.insert("user_id", userId);
     data.insert("component", component);
     data.insert("endpoint", endpoint);
-    data.insert("requestType", requestType);
+    data.insert("request_type", requestType);
 
     if(add(data, error) == false)
     {

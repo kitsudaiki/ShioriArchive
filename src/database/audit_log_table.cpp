@@ -91,7 +91,7 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
     data.insert("component", component);
     data.insert("request_type", requestType);
 
-    if(add(data, error) == false)
+    if(insertToDb(data, error) == false)
     {
         error.addMeesage("Failed to add audit-log-entry to database");
         return false;
@@ -116,7 +116,7 @@ AuditLogTable::getAllAuditLogEntries(Kitsunemimi::TableItem &result,
 {
     std::vector<RequestCondition> conditions;
     conditions.push_back(RequestCondition("user_id", userId));
-    if(getAll(result, conditions, error, true) == false)
+    if(getFromDb(result, conditions, error, true) == false)
     {
         error.addMeesage("Failed to get all audit-log-entries from database");
         return false;

@@ -25,6 +25,7 @@
 #include <libKitsunemimiCommon/items/table_item.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiJson/json_item.h>
+#include <libKitsunemimiCrypto/common.h>
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
@@ -94,9 +95,12 @@ ErrorLogTable::addErrorLogEntry(const std::string &timestamp,
     data.insert("component", component);
     data.insert("context", context);
     data.insert("input_values", values);
-    data.insert("message", message);
 
-    if(add(data, error) == false)
+    std::string base64Msg;
+    Kitsunemimi::Crypto::encodeBase64(base64Msg, message.c_str(), message.size());
+    data.insert("message", base64Msg);
+
+    if(insertToDb(data, error) == false)
     {
         error.addMeesage("Failed to add error-log-entry to database");
         return false;
@@ -121,7 +125,7 @@ ErrorLogTable::getAllErrorLogEntries(Kitsunemimi::TableItem &result,
 {
     std::vector<RequestCondition> conditions;
     conditions.push_back(RequestCondition("user_id", userId));
-    if(getAll(result, conditions, error, true) == false)
+    if(getFromDb(result, conditions, error, true) == false)
     {
         error.addMeesage("Failed to get all error-log-entries from database");
         return false;

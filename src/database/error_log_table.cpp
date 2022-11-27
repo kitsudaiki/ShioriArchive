@@ -25,6 +25,7 @@
 #include <libKitsunemimiCommon/items/table_item.h>
 #include <libKitsunemimiCommon/methods/string_methods.h>
 #include <libKitsunemimiJson/json_item.h>
+#include <libKitsunemimiCrypto/common.h>
 
 #include <libKitsunemimiSakuraDatabase/sql_database.h>
 
@@ -94,7 +95,10 @@ ErrorLogTable::addErrorLogEntry(const std::string &timestamp,
     data.insert("component", component);
     data.insert("context", context);
     data.insert("input_values", values);
-    data.insert("message", message);
+
+    std::string base64Msg;
+    Kitsunemimi::Crypto::encodeBase64(base64Msg, message.c_str(), message.size());
+    data.insert("message", base64Msg);
 
     if(insertToDb(data, error) == false)
     {

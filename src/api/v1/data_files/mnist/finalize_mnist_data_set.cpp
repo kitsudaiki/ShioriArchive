@@ -240,10 +240,7 @@ FinalizeMnistDataSet::convertMnistData(const std::string &filePath,
             segmentPos++;
         }
         const uint32_t label = labelBufferPtr[pic + labelOffset];
-        if(pic == 0) {
-            std::cout<<"label: "<<label<<std::endl;
-        }
-        segment[(segmentPos - 10) + label] = maxVal;
+        segment[(segmentPos - 10) + label] = 1;
 
         // write line to file, if segment is full
         if(segmentPos == segmentSize)

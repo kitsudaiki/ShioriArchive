@@ -23,10 +23,9 @@
 #ifndef SHIORIARCHIVE_BLOSSOM_INITIALIZING_H
 #define SHIORIARCHIVE_BLOSSOM_INITIALIZING_H
 
-#include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
 #include <libKitsunemimiCommon/logger.h>
 
-#include <libKitsunemimiHanamiEndpoints/endpoint.h>
+#include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 
 #include <api/v1/data_files/list_data_set.h>
 #include <api/v1/data_files/get_data_set.h>
@@ -51,7 +50,7 @@
 #include <api/v1/logs/get_audit_log.h>
 #include <api/v1/logs/get_error_log.h>
 
-using Kitsunemimi::Sakura::SakuraLangInterface;
+using Kitsunemimi::Hanami::HanamiMessaging;
 
 /**
  * @brief init data_set blossoms
@@ -59,68 +58,67 @@ using Kitsunemimi::Sakura::SakuraLangInterface;
 void
 dataSetBlossoms()
 {
-    Kitsunemimi::Hanami::Endpoint* endpoints = Kitsunemimi::Hanami::Endpoint::getInstance();
-    SakuraLangInterface* interface = SakuraLangInterface::getInstance();
+    HanamiMessaging* interface = HanamiMessaging::getInstance();
     const std::string group = "data_set";
 
     assert(interface->addBlossom(group, "create_mnist", new CreateMnistDataSet()));
-    endpoints->addEndpoint("v1/mnist/data_set",
+    interface->addEndpoint("v1/mnist/data_set",
                            Kitsunemimi::Hanami::POST_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "create_mnist");
 
     assert(interface->addBlossom(group, "finalize_mnist", new FinalizeMnistDataSet()));
-    endpoints->addEndpoint("v1/mnist/data_set",
+    interface->addEndpoint("v1/mnist/data_set",
                            Kitsunemimi::Hanami::PUT_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "finalize_mnist");
 
     assert(interface->addBlossom(group, "create_csv", new CreateCsvDataSet()));
-    endpoints->addEndpoint("v1/csv/data_set",
+    interface->addEndpoint("v1/csv/data_set",
                            Kitsunemimi::Hanami::POST_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "create_csv");
 
     assert(interface->addBlossom(group, "finalize_csv", new FinalizeCsvDataSet()));
-    endpoints->addEndpoint("v1/csv/data_set",
+    interface->addEndpoint("v1/csv/data_set",
                            Kitsunemimi::Hanami::PUT_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "finalize_csv");
 
     assert(interface->addBlossom(group, "check", new CheckDataSet()));
-    endpoints->addEndpoint("v1/data_set/check",
+    interface->addEndpoint("v1/data_set/check",
                            Kitsunemimi::Hanami::POST_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "check");
 
     assert(interface->addBlossom(group, "progress", new GetProgressDataSet()));
-    endpoints->addEndpoint("v1/data_set/progress",
+    interface->addEndpoint("v1/data_set/progress",
                            Kitsunemimi::Hanami::GET_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "progress");
 
     assert(interface->addBlossom(group, "get", new GetDataSet()));
-    endpoints->addEndpoint("v1/data_set",
+    interface->addEndpoint("v1/data_set",
                            Kitsunemimi::Hanami::GET_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "get");
 
     assert(interface->addBlossom(group, "delete", new DeleteDataSet()));
-    endpoints->addEndpoint("v1/data_set",
+    interface->addEndpoint("v1/data_set",
                            Kitsunemimi::Hanami::DELETE_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "delete");
 
     assert(interface->addBlossom(group, "list", new ListDataSet()));
-    endpoints->addEndpoint("v1/data_set/all",
+    interface->addEndpoint("v1/data_set/all",
                            Kitsunemimi::Hanami::GET_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
@@ -133,40 +131,39 @@ dataSetBlossoms()
 void
 clusterSnapshotBlossoms()
 {
-    Kitsunemimi::Hanami::Endpoint* endpoints = Kitsunemimi::Hanami::Endpoint::getInstance();
-    SakuraLangInterface* interface = SakuraLangInterface::getInstance();
+    HanamiMessaging* interface = HanamiMessaging::getInstance();
     const std::string group = "cluster_snapshot";
 
     assert(interface->addBlossom(group, "create", new CreateClusterSnapshot()));
-    endpoints->addEndpoint("v1/cluster_snapshot",
+    interface->addEndpoint("v1/cluster_snapshot",
                            Kitsunemimi::Hanami::POST_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "create");
 
     assert(interface->addBlossom(group, "finalize", new FinalizeClusterSnapshot()));
-    endpoints->addEndpoint("v1/cluster_snapshot",
+    interface->addEndpoint("v1/cluster_snapshot",
                            Kitsunemimi::Hanami::PUT_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "finalize");
 
     assert(interface->addBlossom(group, "get", new GetClusterSnapshot()));
-    endpoints->addEndpoint("v1/cluster_snapshot",
+    interface->addEndpoint("v1/cluster_snapshot",
                            Kitsunemimi::Hanami::GET_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "get");
 
     assert(interface->addBlossom(group, "delete", new DeleteClusterSnapshot()));
-    endpoints->addEndpoint("v1/cluster_snapshot",
+    interface->addEndpoint("v1/cluster_snapshot",
                            Kitsunemimi::Hanami::DELETE_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "delete");
 
     assert(interface->addBlossom(group, "list", new ListClusterSnapshot()));
-    endpoints->addEndpoint("v1/cluster_snapshot/all",
+    interface->addEndpoint("v1/cluster_snapshot/all",
                            Kitsunemimi::Hanami::GET_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
@@ -179,26 +176,25 @@ clusterSnapshotBlossoms()
 void
 resultBlossoms()
 {
-    Kitsunemimi::Hanami::Endpoint* endpoints = Kitsunemimi::Hanami::Endpoint::getInstance();
-    SakuraLangInterface* interface = SakuraLangInterface::getInstance();
+    HanamiMessaging* interface = HanamiMessaging::getInstance();
     const std::string group = "request_result";
 
     assert(interface->addBlossom(group, "get", new GetRequestResult()));
-    endpoints->addEndpoint("v1/request_result",
+    interface->addEndpoint("v1/request_result",
                            Kitsunemimi::Hanami::GET_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "get");
 
     assert(interface->addBlossom(group, "list", new ListRequestResult()));
-    endpoints->addEndpoint("v1/request_result/all",
+    interface->addEndpoint("v1/request_result/all",
                            Kitsunemimi::Hanami::GET_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "list");
 
     assert(interface->addBlossom(group, "delete", new DeleteRequestResult()));
-    endpoints->addEndpoint("v1/request_result",
+    interface->addEndpoint("v1/request_result",
                            Kitsunemimi::Hanami::DELETE_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
@@ -211,19 +207,18 @@ resultBlossoms()
 void
 logsBlossoms()
 {
-    Kitsunemimi::Hanami::Endpoint* endpoints = Kitsunemimi::Hanami::Endpoint::getInstance();
-    SakuraLangInterface* interface = SakuraLangInterface::getInstance();
+    HanamiMessaging* interface = HanamiMessaging::getInstance();
     const std::string group = "logs";
 
     assert(interface->addBlossom(group, "get_audit_log", new GetAuditLog()));
-    endpoints->addEndpoint("v1/audit_log",
+    interface->addEndpoint("v1/audit_log",
                            Kitsunemimi::Hanami::GET_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,
                            "get_audit_log");
 
     assert(interface->addBlossom(group, "get_error_log", new GetErrorLog()));
-    endpoints->addEndpoint("v1/error_log",
+    interface->addEndpoint("v1/error_log",
                            Kitsunemimi::Hanami::GET_TYPE,
                            Kitsunemimi::Hanami::BLOSSOM_TYPE,
                            group,

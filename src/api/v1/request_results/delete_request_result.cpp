@@ -38,7 +38,7 @@ DeleteRequestResult::DeleteRequestResult()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid",
-                       Sakura::SAKURA_STRING_TYPE,
+                       Hanami::SAKURA_STRING_TYPE,
                        true,
                        "UUID of the original request-task, which placed the result in shiori.");
     assert(addFieldRegex("uuid", UUID_REGEX));
@@ -52,9 +52,9 @@ DeleteRequestResult::DeleteRequestResult()
  * @brief runTask
  */
 bool
-DeleteRequestResult::runTask(Sakura::BlossomIO &blossomIO,
+DeleteRequestResult::runTask(Hanami::BlossomIO &blossomIO,
                              const Kitsunemimi::DataMap &context,
-                             Sakura::BlossomStatus &status,
+                             Hanami::BlossomStatus &status,
                              ErrorContainer &error)
 {
     const std::string uuid = blossomIO.input.get("uuid").getString();

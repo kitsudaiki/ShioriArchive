@@ -30,14 +30,12 @@
 #include <libKitsunemimiHanamiCommon/defines.h>
 #include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 
-#include <libKitsunemimiSakuraLang/structs.h>
-
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi::Hanami;
 
 CreateClusterSnapshot::CreateClusterSnapshot()
     : Blossom("Init new snapshot of a cluster.")

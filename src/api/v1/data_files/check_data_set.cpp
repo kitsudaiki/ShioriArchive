@@ -47,13 +47,13 @@ CheckDataSet::CheckDataSet()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("result_uuid",
-                       Sakura::SAKURA_STRING_TYPE,
+                       Hanami::SAKURA_STRING_TYPE,
                        true,
                        "UUID of the data-set to compare to.");
     assert(addFieldRegex("result_uuid", UUID_REGEX));
 
     registerInputField("data_set_uuid",
-                       Sakura::SAKURA_STRING_TYPE,
+                       Hanami::SAKURA_STRING_TYPE,
                        true,
                        "UUID of the data-set to compare to.");
     assert(addFieldRegex("data_set_uuid", UUID_REGEX));
@@ -63,7 +63,7 @@ CheckDataSet::CheckDataSet()
     //----------------------------------------------------------------------------------------------
 
     registerOutputField("correctness",
-                        Sakura::SAKURA_FLOAT_TYPE,
+                        Hanami::SAKURA_FLOAT_TYPE,
                         "Correctness of the values compared to the data-set.");
 
     //----------------------------------------------------------------------------------------------
@@ -75,9 +75,9 @@ CheckDataSet::CheckDataSet()
  * @brief runTask
  */
 bool
-CheckDataSet::runTask(Sakura::BlossomIO &blossomIO,
+CheckDataSet::runTask(Hanami::BlossomIO &blossomIO,
                       const Kitsunemimi::DataMap &context,
-                      Sakura::BlossomStatus &status,
+                      Hanami::BlossomStatus &status,
                       ErrorContainer &error)
 {
     const std::string resultUuid = blossomIO.input.get("result_uuid").getString();

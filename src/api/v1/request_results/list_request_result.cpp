@@ -27,7 +27,7 @@
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi::Hanami;
 
 ListRequestResult::ListRequestResult()
     : Blossom("List all visilbe request-results.")

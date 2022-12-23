@@ -34,7 +34,7 @@
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi::Hanami;
 
 GetDataSet::GetDataSet()
     : Blossom("Get information of a specific data-set.")

@@ -28,7 +28,7 @@
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/defines.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi::Hanami;
 
 GetRequestResult::GetRequestResult()
     : Blossom("Get a specific request-result")

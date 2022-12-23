@@ -25,13 +25,11 @@
 #include <shiori_root.h>
 #include <database/audit_log_table.h>
 
-#include <libKitsunemimiSakuraLang/structs.h>
-
 #include <libKitsunemimiHanamiCommon/defines.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi::Hanami;
 
 GetAuditLog::GetAuditLog()
     : Blossom("Get audit-log of a user.")

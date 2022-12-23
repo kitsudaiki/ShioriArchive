@@ -41,7 +41,7 @@ DeleteDataSet::DeleteDataSet()
     //----------------------------------------------------------------------------------------------
 
     registerInputField("uuid",
-                       Sakura::SAKURA_STRING_TYPE,
+                       Hanami::SAKURA_STRING_TYPE,
                        true,
                        "UUID of the data-set to delete.");
     assert(addFieldRegex("uuid", UUID_REGEX));
@@ -55,10 +55,10 @@ DeleteDataSet::DeleteDataSet()
  * @brief runTask
  */
 bool
-DeleteDataSet::runTask(Sakura::BlossomIO &blossomIO,
-                         const Kitsunemimi::DataMap &context,
-                         Sakura::BlossomStatus &status,
-                         ErrorContainer &error)
+DeleteDataSet::runTask(Hanami::BlossomIO &blossomIO,
+                       const Kitsunemimi::DataMap &context,
+                       Hanami::BlossomStatus &status,
+                       ErrorContainer &error)
 {
     const std::string dataUuid = blossomIO.input.get("uuid").getString();
     const Kitsunemimi::Hanami::UserContext userContext(context);

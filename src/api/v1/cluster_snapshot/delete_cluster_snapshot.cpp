@@ -31,7 +31,7 @@
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/defines.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi::Hanami;
 
 DeleteClusterSnapshot::DeleteClusterSnapshot()
     : Blossom("Delete a result-set from shiori.")

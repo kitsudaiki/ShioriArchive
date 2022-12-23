@@ -34,14 +34,12 @@
 #include <libKitsunemimiHanamiCommon/defines.h>
 #include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 
-#include <libKitsunemimiSakuraLang/structs.h>
-
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCommon/files/binary_file.h>
 #include <libKitsunemimiCommon/methods/file_methods.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi::Hanami;
 
 FinalizeMnistDataSet::FinalizeMnistDataSet()
     : Blossom("Finalize uploaded data-set by checking completeness of the "

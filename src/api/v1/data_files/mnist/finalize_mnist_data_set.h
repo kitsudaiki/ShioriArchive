@@ -23,19 +23,19 @@
 #ifndef SHIORIARCHIVE_MNIST_FINALIZE_DATA_SET_H
 #define SHIORIARCHIVE_MNIST_FINALIZE_DATA_SET_H
 
-#include <libKitsunemimiSakuraLang/blossom.h>
+#include <libKitsunemimiHanamiNetwork/blossom.h>
 #include <libKitsunemimiCommon/buffer/data_buffer.h>
 
 class FinalizeMnistDataSet
-        : public Kitsunemimi::Sakura::Blossom
+        : public Kitsunemimi::Hanami::Blossom
 {
 public:
     FinalizeMnistDataSet();
 
 protected:
-    bool runTask(Kitsunemimi::Sakura::BlossomIO &blossomIO,
+    bool runTask(Kitsunemimi::Hanami::BlossomIO &blossomIO,
                  const Kitsunemimi::DataMap &context,
-                 Kitsunemimi::Sakura::BlossomStatus &status,
+                 Kitsunemimi::Hanami::BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
 
 private:

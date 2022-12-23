@@ -27,7 +27,7 @@
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi::Hanami;
 
 ListDataSet::ListDataSet()
     : Blossom("List all visible data-sets.")

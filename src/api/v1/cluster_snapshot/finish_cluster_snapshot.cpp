@@ -30,7 +30,7 @@
 
 #include <libKitsunemimiCommon/files/binary_file.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi::Hanami;
 
 FinalizeClusterSnapshot::FinalizeClusterSnapshot()
     : Blossom("Finish snapshot of a cluster.")

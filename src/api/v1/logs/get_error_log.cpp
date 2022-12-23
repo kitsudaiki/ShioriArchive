@@ -25,13 +25,11 @@
 #include <shiori_root.h>
 #include <database/error_log_table.h>
 
-#include <libKitsunemimiSakuraLang/structs.h>
-
 #include <libKitsunemimiHanamiCommon/defines.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi::Hanami;
 
 GetErrorLog::GetErrorLog()
     : Blossom("Get error-log of a user. Only an admin is allowed to request the error-log.")

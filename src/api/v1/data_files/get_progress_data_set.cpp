@@ -34,7 +34,7 @@
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
 
-using namespace Kitsunemimi::Sakura;
+using namespace Kitsunemimi::Hanami;
 
 GetProgressDataSet::GetProgressDataSet()
     : Blossom("Get upload progress of a specific data-set.")

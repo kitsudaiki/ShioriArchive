@@ -140,66 +140,77 @@ GetDataSet::getHeaderInformation(Kitsunemimi::Json::JsonItem &result,
                                  const std::string &location,
                                  Kitsunemimi::ErrorContainer &error)
 {
+    bool ret = false;
+
     DataSetFile* file = readDataSetFile(location);
     if(file == nullptr) {
-        return false;
+        return ret;
     }
 
-    // read data-set-header
-    if(file->readFromFile() == false)
+    do
     {
-        error.addMeesage("Failed to read header from file '" + location + "'");
-        return false;
-    }
-
-    if(file->type == DataSetFile::IMAGE_TYPE)
-    {
-        ImageDataSetFile* imgF = dynamic_cast<ImageDataSetFile*>(file);
-        if(imgF == nullptr) {
-            return false;
-        }
-
-        // write information to result
-        const uint64_t size = imgF->imageHeader.numberOfInputsX * imgF->imageHeader.numberOfInputsY;
-        result.insert("inputs", static_cast<long>(size));
-        result.insert("outputs", static_cast<long>(imgF->imageHeader.numberOfOutputs));
-        result.insert("lines", static_cast<long>(imgF->imageHeader.numberOfImages));
-        // result.insert("average_value", static_cast<float>(imgF->imageHeader.avgValue));
-        // result.insert("max_value", static_cast<float>(imgF->imageHeader.maxValue));
-
-        return true;
-    }
-    else if(file->type == DataSetFile::TABLE_TYPE)
-    {
-        TableDataSetFile* imgT = dynamic_cast<TableDataSetFile*>(file);
-        if(imgT == nullptr) {
-            return false;
-        }
-
-        long inputs = 0;
-        long outputs = 0;
-
-        // get number of inputs and outputs
-        for(const DataSetFile::TableHeaderEntry &entry : imgT->tableColumns)
+        // read data-set-header
+        if(file->readFromFile() == false)
         {
-            if(entry.isInput) {
-                inputs++;
-            }
-            if(entry.isOutput) {
-                outputs++;
-            }
+            error.addMeesage("Failed to read header from file '" + location + "'");
+            break;
         }
 
-        result.insert("inputs", inputs);
-        result.insert("outputs", outputs);
-        result.insert("lines", static_cast<long>(imgT->tableHeader.numberOfLines));
-        // result.insert("average_value", 0.0f);
-        // result.insert("max_value", 0.0f);
+        if(file->type == DataSetFile::IMAGE_TYPE)
+        {
+            ImageDataSetFile* imgF = dynamic_cast<ImageDataSetFile*>(file);
+            if(imgF == nullptr) {
+                break;
+            }
 
-        return true;
+            // write information to result
+            const uint64_t size = imgF->imageHeader.numberOfInputsX * imgF->imageHeader.numberOfInputsY;
+            result.insert("inputs", static_cast<long>(size));
+            result.insert("outputs", static_cast<long>(imgF->imageHeader.numberOfOutputs));
+            result.insert("lines", static_cast<long>(imgF->imageHeader.numberOfImages));
+            // result.insert("average_value", static_cast<float>(imgF->imageHeader.avgValue));
+            // result.insert("max_value", static_cast<float>(imgF->imageHeader.maxValue));
+
+            ret = true;
+            break;
+        }
+        else if(file->type == DataSetFile::TABLE_TYPE)
+        {
+            TableDataSetFile* imgT = dynamic_cast<TableDataSetFile*>(file);
+            if(imgT == nullptr) {
+                break;
+            }
+
+            long inputs = 0;
+            long outputs = 0;
+
+            // get number of inputs and outputs
+            for(const DataSetFile::TableHeaderEntry &entry : imgT->tableColumns)
+            {
+                if(entry.isInput) {
+                    inputs++;
+                }
+                if(entry.isOutput) {
+                    outputs++;
+                }
+            }
+
+            result.insert("inputs", inputs);
+            result.insert("outputs", outputs);
+            result.insert("lines", static_cast<long>(imgT->tableHeader.numberOfLines));
+            // result.insert("average_value", 0.0f);
+            // result.insert("max_value", 0.0f);
+
+            ret = true;
+            break;
+        }
+
+        // TODO: handle other types
+        break;
     }
+    while(true);
 
-    // TODO: handle other types
+    delete file;
 
-    return false;
+    return ret;
 }

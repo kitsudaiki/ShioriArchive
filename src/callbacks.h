@@ -164,10 +164,10 @@ handleClusterSnapshotRequest(const ClusterSnapshotPull_Message &msg,
     Kitsunemimi::ErrorContainer error;
 
     // init file
-    Kitsunemimi::BinaryFile* targetFile = new Kitsunemimi::BinaryFile(msg.location());
+    Kitsunemimi::BinaryFile targetFile(msg.location());
     DataSetFile::DataSetHeader header;
     Kitsunemimi::DataBuffer content;
-    if(targetFile->readCompleteFile(content, error) == false)
+    if(targetFile.readCompleteFile(content, error) == false)
     {
         //TODO: handle error
         LOG_ERROR(error);
@@ -203,26 +203,33 @@ handleDataSetRequest(const DatasetRequest_Message &msg,
         return;
     }
 
-    // get payload
-    uint64_t payloadSize = 0;
-    float* payload = file->getPayload(payloadSize, msg.columnname());
-    if(payload == nullptr)
+    float* payload = nullptr;
+
+    do
     {
-        // TODO: error
-        delete file;
-        delete payload;
+        // get payload
+        uint64_t payloadSize = 0;
+        payload = file->getPayload(payloadSize, msg.columnname());
+        if(payload == nullptr)
+        {
+            // TODO: error
+            break;
+        }
 
-        return;
-    }
+        // send data
+        Kitsunemimi::ErrorContainer error;
+        if(session->sendResponse(payload, payloadSize, blockerId, error) == false) {
+            LOG_ERROR(error);
+        }
 
-    // send data
-    Kitsunemimi::ErrorContainer error;
-    if(session->sendResponse(payload, payloadSize, blockerId, error) == false) {
-        LOG_ERROR(error);
+        break;
     }
+    while(true);
 
     delete file;
-    delete payload;
+    if(payload != nullptr) {
+        delete payload;
+    }
 
     return;
 }

@@ -105,6 +105,7 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
  *
  * @param result reference for the result-output
  * @param userId id of the user, whos logs are requested
+ * @param page a page has 100 entries so (page * 100)
  * @param error reference for error-output
  *
  * @return true, if successful, else false
@@ -112,11 +113,10 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
 bool
 AuditLogTable::getAllAuditLogEntries(Kitsunemimi::TableItem &result,
                                      const std::string &userId,
+                                     const uint64_t page,
                                      Kitsunemimi::ErrorContainer &error)
 {
-    std::vector<RequestCondition> conditions;
-    conditions.push_back(RequestCondition("user_id", userId));
-    if(getFromDb(result, conditions, error, true) == false)
+    if(getPageFromDb(result, userId, page, error) == false)
     {
         error.addMeesage("Failed to get all audit-log-entries from database");
         return false;

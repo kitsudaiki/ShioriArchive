@@ -48,6 +48,7 @@ public:
                           Kitsunemimi::ErrorContainer &error);
     bool getAllErrorLogEntries(Kitsunemimi::TableItem &result,
                                const std::string &userId,
+                               const uint64_t page,
                                Kitsunemimi::ErrorContainer &error);
 };
 

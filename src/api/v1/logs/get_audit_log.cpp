@@ -46,6 +46,13 @@ GetAuditLog::GetAuditLog()
     assert(addFieldBorder("user_id", 4, 256));
     assert(addFieldRegex("user_id", ID_EXT_REGEX));
 
+    registerInputField("page",
+                       SAKURA_INT_TYPE,
+                       true,
+                       "Page-number starting with 0 to access the logs. "
+                       "A page has up to 100 entries.");
+    assert(addFieldBorder("page", 0, 1000000000));
+
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
@@ -78,6 +85,7 @@ GetAuditLog::runTask(BlossomIO &blossomIO,
 {
     const Kitsunemimi::Hanami::UserContext userContext(context);
     std::string userId = blossomIO.input.get("user_id").getString();
+    const uint64_t page = blossomIO.input.get("page").getLong();
 
     // check that if user-id is set, that the user is also an admin
     if(userContext.isAdmin == false
@@ -95,7 +103,7 @@ GetAuditLog::runTask(BlossomIO &blossomIO,
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(ShioriRoot::auditLogTable->getAllAuditLogEntries(table, userId, error) == false)
+    if(ShioriRoot::auditLogTable->getAllAuditLogEntries(table, userId, page, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

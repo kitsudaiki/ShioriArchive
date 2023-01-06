@@ -44,6 +44,13 @@ GetErrorLog::GetErrorLog()
     assert(addFieldBorder("user_id", 4, 256));
     assert(addFieldRegex("user_id", ID_EXT_REGEX));
 
+    registerInputField("page",
+                       SAKURA_INT_TYPE,
+                       true,
+                       "Page-number starting with 0 to access the logs. "
+                       "A page has up to 100 entries.");
+    assert(addFieldBorder("page", 0, 1000000000));
+
     //----------------------------------------------------------------------------------------------
     // output
     //----------------------------------------------------------------------------------------------
@@ -76,6 +83,7 @@ GetErrorLog::runTask(BlossomIO &blossomIO,
                      Kitsunemimi::ErrorContainer &error)
 {
     const Kitsunemimi::Hanami::UserContext userContext(context);
+    const uint64_t page = blossomIO.input.get("page").getLong();
 
     // check that the user is an admin
     if(userContext.isAdmin == false)
@@ -89,7 +97,7 @@ GetErrorLog::runTask(BlossomIO &blossomIO,
 
     // get data from table
     Kitsunemimi::TableItem table;
-    if(ShioriRoot::errorLogTable->getAllErrorLogEntries(table, userId, error) == false)
+    if(ShioriRoot::errorLogTable->getAllErrorLogEntries(table, userId, page, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         return false;

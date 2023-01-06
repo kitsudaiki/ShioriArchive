@@ -228,7 +228,7 @@ handleDataSetRequest(const DatasetRequest_Message &msg,
 
     delete file;
     if(payload != nullptr) {
-        delete payload;
+        delete[] payload;
     }
 
     return;

@@ -61,7 +61,7 @@ DeleteRequestResult::runTask(Hanami::BlossomIO &blossomIO,
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // check if request-result exist within the table
-    Kitsunemimi::Json::JsonItem result;
+    JsonItem result;
     if(ShioriRoot::requestResultTable->getRequestResult(result,
                                                         uuid,
                                                         userContext,

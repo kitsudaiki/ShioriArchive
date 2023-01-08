@@ -136,7 +136,7 @@ GetDataSet::runTask(BlossomIO &blossomIO,
  * @return true, if successful, else false
  */
 bool
-GetDataSet::getHeaderInformation(Kitsunemimi::Json::JsonItem &result,
+GetDataSet::getHeaderInformation(Kitsunemimi::JsonItem &result,
                                  const std::string &location,
                                  Kitsunemimi::ErrorContainer &error)
 {

@@ -248,7 +248,7 @@ handleResultPush(const ResultPush_Message &msg,
 {
     Kitsunemimi::ErrorContainer error;
 
-    Kitsunemimi::Json::JsonItem dataParser;
+    Kitsunemimi::JsonItem dataParser;
     if(dataParser.parse(msg.results(), error) == false)
     {
         error.addMeesage("Error while receivind result-data");
@@ -256,7 +256,7 @@ handleResultPush(const ResultPush_Message &msg,
         return;
     }
 
-    Kitsunemimi::Json::JsonItem resultData;
+    Kitsunemimi::JsonItem resultData;
     resultData.insert("uuid", msg.uuid());
     resultData.insert("name", msg.name());
     resultData.insert("data", dataParser.stealItemContent());

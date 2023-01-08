@@ -89,7 +89,7 @@ ErrorLogTable::addErrorLogEntry(const std::string &timestamp,
                                 const std::string &message,
                                 Kitsunemimi::ErrorContainer &error)
 {
-    Kitsunemimi::Json::JsonItem data;
+    Kitsunemimi::JsonItem data;
     data.insert("timestamp", timestamp);
     data.insert("user_id", userid);
     data.insert("component", component);
@@ -97,7 +97,7 @@ ErrorLogTable::addErrorLogEntry(const std::string &timestamp,
     data.insert("input_values", values);
 
     std::string base64Msg;
-    Kitsunemimi::Crypto::encodeBase64(base64Msg, message.c_str(), message.size());
+    Kitsunemimi::encodeBase64(base64Msg, message.c_str(), message.size());
     data.insert("message", base64Msg);
 
     if(insertToDb(data, error) == false)

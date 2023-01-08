@@ -37,7 +37,7 @@ protected:
                  Kitsunemimi::Hanami::BlossomStatus &status,
                  Kitsunemimi::ErrorContainer &error);
 private:
-    bool getHeaderInformation(Kitsunemimi::Json::JsonItem &result,
+    bool getHeaderInformation(Kitsunemimi::JsonItem &result,
                               const std::string &location,
                               Kitsunemimi::ErrorContainer &error);
 };

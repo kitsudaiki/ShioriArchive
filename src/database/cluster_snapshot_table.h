@@ -27,9 +27,7 @@
 #include <libKitsunemimiHanamiDatabase/hanami_sql_table.h>
 
 namespace Kitsunemimi {
-namespace Json {
 class JsonItem;
-}
 }
 
 class ClusterSnapshotTable
@@ -39,10 +37,10 @@ public:
     ClusterSnapshotTable(Kitsunemimi::Sakura::SqlDatabase* db);
     ~ClusterSnapshotTable();
 
-    bool addClusterSnapshot(Kitsunemimi::Json::JsonItem &data,
+    bool addClusterSnapshot(Kitsunemimi::JsonItem &data,
                             const Kitsunemimi::Hanami::UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error);
-    bool getClusterSnapshot(Kitsunemimi::Json::JsonItem &result,
+    bool getClusterSnapshot(Kitsunemimi::JsonItem &result,
                             const std::string &snapshotUuid,
                             const Kitsunemimi::Hanami::UserContext &userContext,
                             Kitsunemimi::ErrorContainer &error,

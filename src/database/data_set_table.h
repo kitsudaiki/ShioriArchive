@@ -27,9 +27,7 @@
 #include <libKitsunemimiHanamiDatabase/hanami_sql_table.h>
 
 namespace Kitsunemimi {
-namespace Json {
 class JsonItem;
-}
 }
 
 class DataSetTable
@@ -39,10 +37,10 @@ public:
     DataSetTable(Kitsunemimi::Sakura::SqlDatabase* db);
     ~DataSetTable();
 
-    bool addDataSet(Kitsunemimi::Json::JsonItem &data,
+    bool addDataSet(Kitsunemimi::JsonItem &data,
                     const Kitsunemimi::Hanami::UserContext &userContext,
                     Kitsunemimi::ErrorContainer &error);
-    bool getDataSet(Kitsunemimi::Json::JsonItem &result,
+    bool getDataSet(Kitsunemimi::JsonItem &result,
                     const std::string &datasetUuid,
                     const Kitsunemimi::Hanami::UserContext &userContext,
                     Kitsunemimi::ErrorContainer &error,

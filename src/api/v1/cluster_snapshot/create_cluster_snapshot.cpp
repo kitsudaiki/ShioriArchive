@@ -160,8 +160,8 @@ CreateClusterSnapshot::runTask(BlossomIO &blossomIO,
     blossomIO.output.insert("visibility", "private");
 
     // init placeholder for temp-file progress to database
-    Kitsunemimi::Json::JsonItem tempFiles;
-    tempFiles.insert(tempFileUuid, Kitsunemimi::Json::JsonItem(0.0f));
+    Kitsunemimi::JsonItem tempFiles;
+    tempFiles.insert(tempFileUuid, Kitsunemimi::JsonItem(0.0f));
     blossomIO.output.insert("temp_files", tempFiles);
 
     // add to database

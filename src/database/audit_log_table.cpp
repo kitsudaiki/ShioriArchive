@@ -84,7 +84,7 @@ AuditLogTable::addAuditLogEntry(const std::string &timestamp,
                                 const std::string &requestType,
                                 Kitsunemimi::ErrorContainer &error)
 {
-    Kitsunemimi::Json::JsonItem data;
+    Kitsunemimi::JsonItem data;
     data.insert("timestamp", timestamp);
     data.insert("user_id", userId);
     data.insert("endpoint", endpoint);

@@ -93,7 +93,7 @@ FinalizeMnistDataSet::runTask(BlossomIO &blossomIO,
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get location from database
-    Kitsunemimi::Json::JsonItem result;
+    Kitsunemimi::JsonItem result;
     if(ShioriRoot::dataSetTable->getDataSet(result, uuid, userContext, error, true) == false)
     {
         status.errorMessage = "Data with uuid '" + uuid + "' not found.";

@@ -155,9 +155,9 @@ CreateMnistDataSet::runTask(BlossomIO &blossomIO,
     blossomIO.output.insert("visibility", "private");
 
     // init placeholder for temp-file progress to database
-    Kitsunemimi::Json::JsonItem tempFiles;
-    tempFiles.insert(inputUuid, Kitsunemimi::Json::JsonItem(0.0f));
-    tempFiles.insert(labelUuid, Kitsunemimi::Json::JsonItem(0.0f));
+    Kitsunemimi::JsonItem tempFiles;
+    tempFiles.insert(inputUuid, Kitsunemimi::JsonItem(0.0f));
+    tempFiles.insert(labelUuid, Kitsunemimi::JsonItem(0.0f));
     blossomIO.output.insert("temp_files", tempFiles);
 
     // add to database

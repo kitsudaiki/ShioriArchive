@@ -74,7 +74,7 @@ ClusterSnapshotTable::~ClusterSnapshotTable() {}
  * @return true, if successful, else false
  */
 bool
-ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::Json::JsonItem &data,
+ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::JsonItem &data,
                                          const Kitsunemimi::Hanami::UserContext &userContext,
                                          Kitsunemimi::ErrorContainer &error)
 {
@@ -99,7 +99,7 @@ ClusterSnapshotTable::addClusterSnapshot(Kitsunemimi::Json::JsonItem &data,
  * @return true, if successful, else false
  */
 bool
-ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::Json::JsonItem &result,
+ClusterSnapshotTable::getClusterSnapshot(Kitsunemimi::JsonItem &result,
                                          const std::string &snapshotUuid,
                                          const Kitsunemimi::Hanami::UserContext &userContext,
                                          Kitsunemimi::ErrorContainer &error,
@@ -189,7 +189,7 @@ ClusterSnapshotTable::setUploadFinish(const std::string &uuid,
 {
     std::vector<RequestCondition> conditions;
     conditions.emplace_back("uuid", uuid);
-    Kitsunemimi::Json::JsonItem result;
+    Kitsunemimi::JsonItem result;
 
     Kitsunemimi::Hanami::UserContext userContext;
     userContext.isAdmin = true;
@@ -212,7 +212,7 @@ ClusterSnapshotTable::setUploadFinish(const std::string &uuid,
 
     // update temp-files entry to 100%
     const std::string tempFilesStr = result.get("temp_files").toString();
-    Kitsunemimi::Json::JsonItem tempFiles;
+    Kitsunemimi::JsonItem tempFiles;
     if(tempFiles.parse(tempFilesStr, error) == false)
     {
         error.addMeesage("Failed to parse temp_files entry of snapshot with UUID '"
@@ -221,11 +221,11 @@ ClusterSnapshotTable::setUploadFinish(const std::string &uuid,
         LOG_ERROR(error);
         return false;
     }
-    tempFiles.insert(fileUuid, Kitsunemimi::Json::JsonItem(1.0f), true);
+    tempFiles.insert(fileUuid, Kitsunemimi::JsonItem(1.0f), true);
 
     // update new entry within the database
-    Kitsunemimi::Json::JsonItem newValues;
-    newValues.insert("temp_files", Kitsunemimi::Json::JsonItem(tempFiles.toString()));
+    Kitsunemimi::JsonItem newValues;
+    newValues.insert("temp_files", Kitsunemimi::JsonItem(tempFiles.toString()));
     if(update(newValues, userContext, conditions, error) == false)
     {
         error.addMeesage("Failed to update entry of snapshot with UUID '" + uuid + "' in database");

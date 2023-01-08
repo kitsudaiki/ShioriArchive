@@ -27,9 +27,7 @@
 #include <libKitsunemimiHanamiDatabase/hanami_sql_table.h>
 
 namespace Kitsunemimi {
-namespace Json {
 class JsonItem;
-}
 }
 
 class RequestResultTable
@@ -39,10 +37,10 @@ public:
     RequestResultTable(Kitsunemimi::Sakura::SqlDatabase* db);
     ~RequestResultTable();
 
-    bool addRequestResult(Kitsunemimi::Json::JsonItem &data,
+    bool addRequestResult(Kitsunemimi::JsonItem &data,
                           const Kitsunemimi::Hanami::UserContext &userContext,
                           Kitsunemimi::ErrorContainer &error);
-    bool getRequestResult(Kitsunemimi::Json::JsonItem &result,
+    bool getRequestResult(Kitsunemimi::JsonItem &result,
                           const std::string &resultUuid,
                           const Kitsunemimi::Hanami::UserContext &userContext,
                           Kitsunemimi::ErrorContainer &error,

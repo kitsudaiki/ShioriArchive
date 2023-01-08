@@ -86,7 +86,7 @@ CheckDataSet::runTask(Hanami::BlossomIO &blossomIO,
 
     // get result
     // check if request-result exist within the table
-    Kitsunemimi::Json::JsonItem result;
+    JsonItem result;
     if(ShioriRoot::requestResultTable->getRequestResult(result,
                                                         resultUuid,
                                                         userContext,

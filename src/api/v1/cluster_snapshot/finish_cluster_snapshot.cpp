@@ -102,7 +102,7 @@ FinalizeClusterSnapshot::runTask(BlossomIO &blossomIO,
     userContext.projectId = projectId;
 
     // get location from database
-    Kitsunemimi::Json::JsonItem result;
+    Kitsunemimi::JsonItem result;
     if(ShioriRoot::clusterSnapshotTable->getClusterSnapshot(result,
                                                             uuid,
                                                             userContext,

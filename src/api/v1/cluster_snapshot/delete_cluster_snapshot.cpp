@@ -64,7 +64,7 @@ DeleteClusterSnapshot::runTask(BlossomIO &blossomIO,
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get location from database
-    Kitsunemimi::Json::JsonItem result;
+    Kitsunemimi::JsonItem result;
     if(ShioriRoot::clusterSnapshotTable->getClusterSnapshot(result,
                                                             dataUuid,
                                                             userContext,

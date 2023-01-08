@@ -64,7 +64,7 @@ DeleteDataSet::runTask(Hanami::BlossomIO &blossomIO,
     const Kitsunemimi::Hanami::UserContext userContext(context);
 
     // get location from database
-    Kitsunemimi::Json::JsonItem result;
+    JsonItem result;
     if(ShioriRoot::dataSetTable->getDataSet(result,
                                             dataUuid,
                                             userContext,

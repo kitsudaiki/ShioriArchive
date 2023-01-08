@@ -27,9 +27,7 @@
 #include <libKitsunemimiHanamiDatabase/hanami_sql_log_table.h>
 
 namespace Kitsunemimi {
-namespace Json {
 class JsonItem;
-}
 }
 
 class ErrorLogTable

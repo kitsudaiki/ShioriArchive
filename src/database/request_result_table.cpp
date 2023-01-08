@@ -64,7 +64,7 @@ RequestResultTable::~RequestResultTable() {}
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::addRequestResult(Kitsunemimi::Json::JsonItem &data,
+RequestResultTable::addRequestResult(Kitsunemimi::JsonItem &data,
                                      const Kitsunemimi::Hanami::UserContext &userContext,
                                      Kitsunemimi::ErrorContainer &error)
 {
@@ -89,7 +89,7 @@ RequestResultTable::addRequestResult(Kitsunemimi::Json::JsonItem &data,
  * @return true, if successful, else false
  */
 bool
-RequestResultTable::getRequestResult(Kitsunemimi::Json::JsonItem &result,
+RequestResultTable::getRequestResult(Kitsunemimi::JsonItem &result,
                                      const std::string &resultUuid,
                                      const Kitsunemimi::Hanami::UserContext &userContext,
                                      Kitsunemimi::ErrorContainer &error,
